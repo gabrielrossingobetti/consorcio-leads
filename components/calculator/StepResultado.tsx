@@ -101,9 +101,9 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
         </div>
 
         {/* Consórcio */}
-        <div className="bg-green-50 border-2 border-green-400 rounded-2xl p-4 relative">
-          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-            <span className="bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">MELHOR OPÇÃO</span>
+        <div className="bg-green-50 border-2 border-green-400 rounded-2xl p-4 relative mt-3">
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap">
+            <span className="bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">✓ MELHOR OPÇÃO</span>
           </div>
           <div className="flex items-center gap-1.5 mb-3">
             <TrendingDown className="w-4 h-4 text-green-600" />

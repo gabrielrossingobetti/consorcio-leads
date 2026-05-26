@@ -1,5 +1,6 @@
 import Calculadora from '@/components/calculator/Calculadora'
-import { Shield, Star, Users } from 'lucide-react'
+import { Star, Users, Shield } from 'lucide-react'
+import Image from 'next/image'
 
 export const metadata = {
   title: 'Simulador de Consórcio | Descubra quanto você economiza',
@@ -10,13 +11,13 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50">
       <header className="py-4 px-6 flex justify-center">
-        <div className="flex items-center gap-2">
-          <div className="bg-blue-600 rounded-lg p-1.5">
-            <Shield className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-black text-gray-900 text-lg">Ademicon</span>
-          <span className="text-gray-400 text-sm font-medium">| Consórcio</span>
-        </div>
+        <Image
+          src="/ademicon-logo.png"
+          alt="Ademicon Administradora"
+          width={160}
+          height={48}
+          priority
+        />
       </header>
 
       <section className="px-4 py-6 md:py-12">
