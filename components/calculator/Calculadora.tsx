@@ -3,14 +3,16 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { BemType, calcular, ResultadoCalculo } from '@/lib/calculos'
+import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
 import StepBem from './StepBem'
 import StepValor from './StepValor'
 import StepPerfil from './StepPerfil'
 import StepResultado from './StepResultado'
+import StepResultadoInvestidor from './StepResultadoInvestidor'
+import StepMesesInvestidor from './StepMesesInvestidor'
 import StepContato from './StepContato'
 
-type Step = 'bem' | 'valor' | 'perfil' | 'resultado' | 'contato'
+type Step = 'bem' | 'valor' | 'perfil' | 'resultado' | 'contato' | 'meses_investidor' | 'resultado_investidor'
 
 function getUTMs() {
   if (typeof window === 'undefined') return {}
@@ -23,7 +25,8 @@ function getUTMs() {
   }
 }
 
-const STEPS: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
+const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
+const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'resultado_investidor', 'contato']
 
 export default function Calculadora() {
   const router = useRouter()
@@ -32,9 +35,12 @@ export default function Calculadora() {
   const [valor, setValor] = useState<number | null>(null)
   const [jaTentouFinanciar, setJaTentouFinanciar] = useState('')
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null)
+  const [resultadoInvestidor, setResultadoInvestidor] = useState<ResultadoInvestidor | null>(null)
+  const [mesesInvestidor, setMesesInvestidor] = useState<number>(12)
   const [simulacaoId, setSimulacaoId] = useState<string | null>(null)
   const [direction, setDirection] = useState(1)
 
+  const STEPS = bem === 'investidor' ? STEPS_INVESTIDOR : STEPS_NORMAL
   const stepIndex = STEPS.indexOf(step)
   const progress = ((stepIndex + 1) / STEPS.length) * 100
 
@@ -78,14 +84,25 @@ export default function Calculadora() {
         ...utms,
       }),
     })
-    router.push(
-      `/obrigado?nome=${encodeURIComponent(nome)}` +
-      `&economia=${resultado?.economiaTotal || 0}` +
-      `&bem=${bem}` +
-      `&valor=${resultado?.valor || 0}` +
-      `&parcela=${resultado?.parcelaConsorcio || 0}` +
-      `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
-    )
+    if (bem === 'investidor' && resultadoInvestidor) {
+      router.push(
+        `/obrigado?nome=${encodeURIComponent(nome)}` +
+        `&economia=${resultadoInvestidor.lucroLiquido}` +
+        `&bem=${bem}` +
+        `&valor=${resultadoInvestidor.carta}` +
+        `&parcela=${resultadoInvestidor.parcelaReduzida}` +
+        `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
+      )
+    } else {
+      router.push(
+        `/obrigado?nome=${encodeURIComponent(nome)}` +
+        `&economia=${resultado?.economiaTotal || 0}` +
+        `&bem=${bem}` +
+        `&valor=${resultado?.valor || 0}` +
+        `&parcela=${resultado?.parcelaConsorcio || 0}` +
+        `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
+      )
+    }
   }
 
   const variants = {
@@ -132,8 +149,29 @@ export default function Calculadora() {
             {step === 'valor' && bem && (
               <StepValor
                 bem={bem}
-                onConfirm={(v) => { setValor(v); goNext('perfil') }}
+                onConfirm={(v) => {
+                  setValor(v)
+                  goNext(bem === 'investidor' ? 'meses_investidor' : 'perfil')
+                }}
                 onBack={() => goBack('bem')}
+              />
+            )}
+            {step === 'meses_investidor' && bem === 'investidor' && valor && (
+              <StepMesesInvestidor
+                onConfirm={(meses) => {
+                  setMesesInvestidor(meses)
+                  const calc = calcularInvestidor(valor, meses)
+                  setResultadoInvestidor(calc)
+                  goNext('resultado_investidor')
+                }}
+                onBack={() => goBack('valor')}
+              />
+            )}
+            {step === 'resultado_investidor' && resultadoInvestidor && (
+              <StepResultadoInvestidor
+                resultado={resultadoInvestidor}
+                onContinuar={() => goNext('contato')}
+                onBack={() => goBack('meses_investidor')}
               />
             )}
             {step === 'perfil' && bem && valor && (
@@ -155,12 +193,12 @@ export default function Calculadora() {
                 onBack={() => goBack('bem')}
               />
             )}
-            {step === 'contato' && resultado && (
+            {step === 'contato' && (resultado || resultadoInvestidor) && (
               <StepContato
-                resultado={resultado}
+                resultado={resultado ?? { valor: valor ?? 0, parcelaConsorcio: resultadoInvestidor?.parcelaReduzida ?? 0 } as ResultadoCalculo}
                 jaTentouFinanciar={jaTentouFinanciar}
                 onSubmit={handleContato}
-                onBack={() => goBack('resultado')}
+                onBack={() => goBack(bem === 'investidor' ? 'resultado_investidor' : 'resultado')}
               />
             )}
           </motion.div>

@@ -12,10 +12,11 @@ interface Props {
 }
 
 const RANGES: Record<BemType, { min: number; max: number; step: number; default: number }> = {
-  imovel:  { min: 100000,  max: 1500000, step: 10000,  default: 350000 },
-  carro:   { min: 30000,   max: 300000,  step: 5000,   default: 80000  },
-  negocio: { min: 50000,   max: 500000,  step: 10000,  default: 150000 },
-  reforma: { min: 20000,   max: 200000,  step: 5000,   default: 60000  },
+  imovel:     { min: 100000, max: 1500000, step: 10000, default: 350000 },
+  carro:      { min: 30000,  max: 300000,  step: 5000,  default: 80000  },
+  negocio:    { min: 50000,  max: 500000,  step: 10000, default: 150000 },
+  reforma:    { min: 20000,  max: 200000,  step: 5000,  default: 60000  },
+  investidor: { min: 50000,  max: 500000,  step: 10000, default: 100000 },
 }
 
 export default function StepValor({ bem, onConfirm, onBack }: Props) {
@@ -32,7 +33,7 @@ export default function StepValor({ bem, onConfirm, onBack }: Props) {
         className="text-center mb-8"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          Qual o valor do seu {config.label.toLowerCase()}?
+          {bem === 'investidor' ? 'Qual o valor da carta que deseja contratar?' : `Qual o valor do seu ${config.label.toLowerCase()}?`}
         </h2>
         <p className="text-gray-500 text-base">Arraste para ajustar</p>
       </motion.div>

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Home, Car, Briefcase, Hammer } from 'lucide-react'
+import { Home, Car, Briefcase, Hammer, TrendingUp } from 'lucide-react'
 import { BemType } from '@/lib/calculos'
 
 interface Props {
@@ -45,6 +45,15 @@ const OPCOES = [
     corHover: 'hover:border-orange-500',
     bg: 'bg-orange-50',
   },
+  {
+    bem: 'investidor' as BemType,
+    icon: TrendingUp,
+    titulo: 'Investidor',
+    descricao: 'Quero investir e ter retorno',
+    cor: 'from-yellow-500 to-amber-600',
+    corHover: 'hover:border-yellow-500',
+    bg: 'bg-yellow-50',
+  },
 ]
 
 export default function StepBem({ onSelect }: Props) {
@@ -66,6 +75,7 @@ export default function StepBem({ onSelect }: Props) {
       <div className="grid grid-cols-2 gap-4">
         {OPCOES.map((opcao, i) => {
           const Icon = opcao.icon
+          const isInvestidor = opcao.bem === 'investidor'
           return (
             <motion.button
               key={opcao.bem}
@@ -74,17 +84,18 @@ export default function StepBem({ onSelect }: Props) {
               transition={{ delay: i * 0.08 }}
               onClick={() => onSelect(opcao.bem)}
               className={`
-                flex flex-col items-center gap-3 p-6 rounded-2xl border-2 border-gray-200
+                ${isInvestidor ? 'col-span-2 flex-row justify-start gap-4 px-6 py-4' : 'flex-col gap-3 p-6'}
+                flex items-center rounded-2xl border-2 border-gray-200
                 ${opcao.corHover} bg-white cursor-pointer transition-all duration-200
                 hover:shadow-lg hover:scale-105 active:scale-95
               `}
             >
-              <div className={`p-3 rounded-xl ${opcao.bg}`}>
+              <div className={`p-3 rounded-xl ${opcao.bg} flex-shrink-0`}>
                 <div className={`bg-gradient-to-br ${opcao.cor} p-2 rounded-lg`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <div className="text-center">
+              <div className={isInvestidor ? 'text-left' : 'text-center'}>
                 <p className="font-bold text-gray-900 text-base">{opcao.titulo}</p>
                 <p className="text-gray-500 text-xs mt-0.5">{opcao.descricao}</p>
               </div>

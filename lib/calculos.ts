@@ -1,4 +1,4 @@
-export type BemType = 'imovel' | 'carro' | 'negocio' | 'reforma'
+export type BemType = 'imovel' | 'carro' | 'negocio' | 'reforma' | 'investidor'
 
 interface ConfigBem {
   label: string
@@ -36,6 +36,13 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
     taxaAdminConsorcio: 15,
     prazoMeses: 100,
     prazoLabel: '100 meses (~8 anos)',
+  },
+  investidor: {
+    label: 'Investimento',
+    taxaFinanciamentoAnual: 0,
+    taxaAdminConsorcio: 0,
+    prazoMeses: 0,
+    prazoLabel: '',
   },
 }
 
@@ -108,6 +115,39 @@ export function calcular(bem: BemType, valor: number): ResultadoCalculo {
     percentualEconomia: Math.round(percentualEconomia),
     anosAluguelEconomizados: Math.round(anosAluguelEconomizados * 10) / 10,
     tempoMedioContemplacao,
+  }
+}
+
+export interface ResultadoInvestidor {
+  carta: number
+  mesesEstimados: number
+  lanceEmbutido: number
+  cartaLiquida: number
+  parcelaReduzida: number
+  totalParcelasPagas: number
+  valorRecebido: number
+  lucroLiquido: number
+  retornoPercent: number
+}
+
+export function calcularInvestidor(carta: number, mesesEstimados: number): ResultadoInvestidor {
+  const lanceEmbutido = carta * 0.25
+  const cartaLiquida = carta * 0.75
+  const parcelaReduzida = carta * 0.00337
+  const totalParcelasPagas = parcelaReduzida * mesesEstimados
+  const valorRecebido = cartaLiquida * 0.40
+  const lucroLiquido = valorRecebido - totalParcelasPagas
+
+  return {
+    carta,
+    mesesEstimados,
+    lanceEmbutido: Math.round(lanceEmbutido),
+    cartaLiquida: Math.round(cartaLiquida),
+    parcelaReduzida: Math.round(parcelaReduzida),
+    totalParcelasPagas: Math.round(totalParcelasPagas),
+    valorRecebido: Math.round(valorRecebido),
+    lucroLiquido: Math.round(lucroLiquido),
+    retornoPercent: Math.round((lucroLiquido / totalParcelasPagas) * 100),
   }
 }
 
