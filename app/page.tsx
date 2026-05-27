@@ -357,15 +357,38 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-black py-8 px-6">
-        <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <AdemIconLogo size="sm" />
-          <p className="text-gray-500 text-xs text-center">
-            © 2025 Ademicon Administradora de Consórcios. Regulada pelo Banco Central do Brasil.
-          </p>
-          <div className="flex items-center gap-1 text-xs text-gray-500">
-            <Shield className="w-3.5 h-3.5" />
-            <span>BACEN autorizado</span>
+      <footer className="bg-gray-950 py-10 px-6 border-t border-gray-800">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
+            <div>
+              <AdemIconLogo size="sm" />
+              <p className="text-gray-500 text-xs mt-3 max-w-xs leading-relaxed">
+                Maior administradora de consórcios do Brasil. Regulada e fiscalizada pelo Banco Central do Brasil.
+              </p>
+            </div>
+            <div className="text-xs text-gray-500 space-y-1.5">
+              <p className="font-semibold text-gray-400 uppercase tracking-wide text-xs mb-2">Informações legais</p>
+              <p>Ademicon Administradora de Consórcios S/A</p>
+              <p>CNPJ: 84.911.098/0001-29</p>
+              <p>Rua Pinheiro Guimarães, 400 — Rio de Janeiro, RJ</p>
+              <p>Autorizada pelo Banco Central do Brasil</p>
+            </div>
+            <div className="text-xs text-gray-500 space-y-1.5">
+              <p className="font-semibold text-gray-400 uppercase tracking-wide text-xs mb-2">Contato</p>
+              <p>Simulação e atendimento via WhatsApp</p>
+              <p>Resposta em até 2 horas úteis</p>
+              <p className="mt-3">
+                <a href="#simulador" className="text-red-500 hover:text-red-400 font-semibold">
+                  Fazer simulação gratuita →
+                </a>
+              </p>
+            </div>
+          </div>
+          <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-600">
+            <p>© {new Date().getFullYear()} Ademicon Administradora de Consórcios S/A. Todos os direitos reservados.</p>
+            <p className="text-center">
+              As simulações apresentadas são estimativas com base em taxas médias de mercado e não constituem proposta formal de contrato.
+            </p>
           </div>
         </div>
       </footer>
