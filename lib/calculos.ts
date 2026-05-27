@@ -128,6 +128,7 @@ export interface ResultadoInvestidor {
   valorRecebido: number
   lucroLiquido: number
   retornoPercent: number
+  valorizacaoGanha: number
 }
 
 export function calcularInvestidor(carta: number, mesesEstimados: number): ResultadoInvestidor {
@@ -135,7 +136,10 @@ export function calcularInvestidor(carta: number, mesesEstimados: number): Resul
   const cartaLiquida = carta * 0.75
   const parcelaReduzida = carta * 0.00337
   const totalParcelasPagas = parcelaReduzida * mesesEstimados
-  const valorRecebido = cartaLiquida * 0.40
+  // Carta valoriza 6% a.a. = 0,5% ao mês
+  const cartaLiquidaValorizada = cartaLiquida * Math.pow(1.005, mesesEstimados)
+  const valorizacaoGanha = cartaLiquidaValorizada - cartaLiquida
+  const valorRecebido = cartaLiquidaValorizada * 0.40
   const lucroLiquido = valorRecebido - totalParcelasPagas
 
   return {
@@ -148,6 +152,7 @@ export function calcularInvestidor(carta: number, mesesEstimados: number): Resul
     valorRecebido: Math.round(valorRecebido),
     lucroLiquido: Math.round(lucroLiquido),
     retornoPercent: Math.round((lucroLiquido / totalParcelasPagas) * 100),
+    valorizacaoGanha: Math.round(valorizacaoGanha),
   }
 }
 
