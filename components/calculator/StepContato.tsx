@@ -3,10 +3,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Phone, User, Lock, ChevronRight, Loader2 } from 'lucide-react'
-import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
+import { ResultadoCalculo, ResultadoInvestidor, formatCurrency } from '@/lib/calculos'
 
 interface Props {
-  resultado: ResultadoCalculo
+  resultado: ResultadoCalculo | null
+  resultadoInvestidor?: ResultadoInvestidor | null
   jaTentouFinanciar: string
   onSubmit: (nome: string, whatsapp: string) => Promise<void>
   onBack: () => void
@@ -19,7 +20,8 @@ function formatPhone(value: string): string {
   return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`
 }
 
-export default function StepContato({ resultado, jaTentouFinanciar, onSubmit, onBack }: Props) {
+export default function StepContato({ resultado, resultadoInvestidor, jaTentouFinanciar, onSubmit, onBack }: Props) {
+  const isInvestidor = !!resultadoInvestidor
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,8 +52,10 @@ export default function StepContato({ resultado, jaTentouFinanciar, onSubmit, on
           Último passo 🎯
         </h2>
         <p className="text-gray-500">
-          Um especialista vai apresentar a melhor estratégia para você economizar{' '}
-          <strong className="text-green-600">{formatCurrency(resultado.economiaTotal)}</strong>
+          {isInvestidor
+            ? <>Um especialista vai te apresentar a estratégia completa para lucrar <strong className="text-amber-600">{formatCurrency(resultadoInvestidor!.lucroLiquido)}</strong></>
+            : <>Um especialista vai apresentar a melhor estratégia para você economizar <strong className="text-green-600">{formatCurrency(resultado!.economiaTotal)}</strong></>
+          }
         </p>
       </motion.div>
 
@@ -62,18 +66,37 @@ export default function StepContato({ resultado, jaTentouFinanciar, onSubmit, on
         transition={{ delay: 0.1 }}
         className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 flex justify-between text-sm"
       >
-        <div className="text-center">
-          <p className="text-gray-500 text-xs">Parcela consórcio</p>
-          <p className="font-bold text-green-600">{formatCurrency(resultado.parcelaConsorcio)}/mês</p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-500 text-xs">Economia total</p>
-          <p className="font-bold text-blue-600">{formatCurrency(resultado.economiaTotal)}</p>
-        </div>
-        <div className="text-center">
-          <p className="text-gray-500 text-xs">Contemplação</p>
-          <p className="font-bold text-gray-800">{resultado.tempoMedioContemplacao.split(' ')[0]}</p>
-        </div>
+        {isInvestidor ? (
+          <>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Você investe</p>
+              <p className="font-bold text-gray-800">{formatCurrency(resultadoInvestidor!.totalParcelasPagas)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Você recebe</p>
+              <p className="font-bold text-amber-600">{formatCurrency(resultadoInvestidor!.valorRecebido)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Lucro estimado</p>
+              <p className="font-bold text-green-600">{formatCurrency(resultadoInvestidor!.lucroLiquido)}</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Parcela consórcio</p>
+              <p className="font-bold text-green-600">{formatCurrency(resultado!.parcelaConsorcio)}/mês</p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Economia total</p>
+              <p className="font-bold text-blue-600">{formatCurrency(resultado!.economiaTotal)}</p>
+            </div>
+            <div className="text-center">
+              <p className="text-gray-500 text-xs">Contemplação</p>
+              <p className="font-bold text-gray-800">{resultado!.tempoMedioContemplacao.split(' ')[0]}</p>
+            </div>
+          </>
+        )}
       </motion.div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">

@@ -195,7 +195,8 @@ export default function Calculadora() {
             )}
             {step === 'contato' && (resultado || resultadoInvestidor) && (
               <StepContato
-                resultado={resultado ?? { valor: valor ?? 0, parcelaConsorcio: resultadoInvestidor?.parcelaReduzida ?? 0 } as ResultadoCalculo}
+                resultado={resultado}
+                resultadoInvestidor={resultadoInvestidor}
                 jaTentouFinanciar={jaTentouFinanciar}
                 onSubmit={handleContato}
                 onBack={() => goBack(bem === 'investidor' ? 'resultado_investidor' : 'resultado')}
