@@ -5,7 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-export type BemType = 'imovel' | 'carro' | 'negocio' | 'reforma'
+export type BemType = 'imovel' | 'carro' | 'negocio' | 'reforma' | 'investidor'
 export type StatusLead = 'novo' | 'contatado' | 'reuniao_agendada' | 'fechado' | 'perdido'
 
 export interface Simulacao {
