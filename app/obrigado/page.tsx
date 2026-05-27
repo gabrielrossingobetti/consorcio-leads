@@ -13,11 +13,20 @@ const BEM_LABELS: Record<string, string> = {
   reforma: 'reforma',
 }
 
+const PRAZO_LABELS: Record<string, string> = {
+  agora: 'Quer iniciar agora',
+  ate_6_meses: 'Planeja iniciar em até 6 meses',
+  pesquisando: 'Ainda pesquisando opções',
+}
+
 function ObrigadoContent() {
   const params = useSearchParams()
   const nome = params.get('nome') || 'você'
   const economia = Number(params.get('economia') || 0)
   const bem = params.get('bem') || 'imovel'
+  const valor = Number(params.get('valor') || 0)
+  const parcela = Number(params.get('parcela') || 0)
+  const prazo = params.get('prazo') || ''
   const primeiroNome = nome.split(' ')[0]
 
   const compartilhar = () => {
@@ -27,7 +36,15 @@ function ObrigadoContent() {
   }
 
   const falarEspecialista = () => {
-    const texto = `Olá! Acabei de fazer uma simulação e vi que posso economizar ${formatCurrency(economia)} no consórcio. Quero saber mais!`
+    const prazoTexto = PRAZO_LABELS[prazo] ? `\n⏱ Prazo: ${PRAZO_LABELS[prazo]}` : ''
+    const texto =
+      `Olá! Sou *${nome}* e acabei de fazer a simulação no site da Ademicon. Seguem meus dados:\n\n` +
+      `🏠 *Bem desejado:* ${BEM_LABELS[bem] || bem}\n` +
+      `💰 *Valor do bem:* ${formatCurrency(valor)}\n` +
+      `📉 *Parcela estimada:* ${formatCurrency(parcela)}/mês\n` +
+      `✅ *Economia vs financiamento:* ${formatCurrency(economia)}` +
+      prazoTexto +
+      `\n\nGostaria de saber mais sobre como funciona!`
     const url = `https://wa.me/5511993929660?text=${encodeURIComponent(texto)}`
     window.open(url, '_blank')
   }

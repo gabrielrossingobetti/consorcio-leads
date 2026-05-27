@@ -78,7 +78,14 @@ export default function Calculadora() {
         ...utms,
       }),
     })
-    router.push(`/obrigado?nome=${encodeURIComponent(nome)}&economia=${resultado?.economiaTotal || 0}&bem=${bem}`)
+    router.push(
+      `/obrigado?nome=${encodeURIComponent(nome)}` +
+      `&economia=${resultado?.economiaTotal || 0}` +
+      `&bem=${bem}` +
+      `&valor=${resultado?.valor || 0}` +
+      `&parcela=${resultado?.parcelaConsorcio || 0}` +
+      `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
+    )
   }
 
   const variants = {

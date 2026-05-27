@@ -10,28 +10,28 @@ interface Props {
 
 const OPCOES = [
   {
-    valor: 'sim_vi_parcelas',
-    icon: XCircle,
-    titulo: 'Sim, vi as parcelas...',
-    descricao: 'Achei muito caro e desisti',
-    cor: 'from-red-500 to-red-600',
-    bg: 'bg-red-50',
-    border: 'hover:border-red-400',
+    valor: 'agora',
+    icon: CheckCircle,
+    titulo: 'Quero iniciar agora',
+    descricao: 'Já decidi e quero começar logo',
+    cor: 'from-green-500 to-green-600',
+    bg: 'bg-green-50',
+    border: 'hover:border-green-400',
   },
   {
-    valor: 'nao_ainda',
+    valor: 'ate_6_meses',
     icon: HelpCircle,
-    titulo: 'Ainda não pesquisei',
-    descricao: 'Quero entender melhor as opções',
+    titulo: 'Nos próximos 6 meses',
+    descricao: 'Estou me planejando para em breve',
     cor: 'from-blue-500 to-blue-600',
     bg: 'bg-blue-50',
     border: 'hover:border-blue-400',
   },
   {
-    valor: 'tenho_financiamento_ativo',
-    icon: CheckCircle,
-    titulo: 'Tenho financiamento ativo',
-    descricao: 'E estou pagando muito juros',
+    valor: 'pesquisando',
+    icon: XCircle,
+    titulo: 'Ainda estou pesquisando',
+    descricao: 'Quero entender melhor antes de decidir',
     cor: 'from-orange-500 to-orange-600',
     bg: 'bg-orange-50',
     border: 'hover:border-orange-400',
@@ -47,7 +47,7 @@ export default function StepPerfil({ onSelect, onBack }: Props) {
         className="text-center mb-8"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          Você já tentou financiar?
+          Quando pretende iniciar seu planejamento com o consórcio?
         </h2>
         <p className="text-gray-500 text-base">
           Isso nos ajuda a preparar a melhor proposta para você
