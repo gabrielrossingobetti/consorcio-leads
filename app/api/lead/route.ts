@@ -1,5 +1,51 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
+import { Resend } from 'resend'
+
+function formatValor(v: number) {
+  return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+}
+
+async function notificarEmail(body: {
+  nome: string
+  whatsapp: string
+  bem: string
+  valor: number
+  ja_tentou_financiar?: string
+}) {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) return
+
+  const resend = new Resend(apiKey)
+  const bemLabel: Record<string, string> = {
+    imovel: 'Imóvel', carro: 'Carro', negocio: 'Negócio',
+    reforma: 'Reforma', investidor: 'Investidor',
+  }
+  const bem = bemLabel[body.bem] || body.bem
+  const valor = formatValor(body.valor)
+  const perfil = body.ja_tentou_financiar || '—'
+
+  await resend.emails.send({
+    from: 'Simulador Consórcio <onboarding@resend.dev>',
+    to: 'gabrielrossingobetti@gmail.com',
+    subject: `🔔 Novo lead — ${body.nome} (${bem} ${valor})`,
+    html: `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#f9fafb;border-radius:12px">
+        <h2 style="color:#1e40af;margin-top:0">🔔 Novo lead no simulador!</h2>
+        <table style="width:100%;border-collapse:collapse">
+          <tr><td style="padding:8px 0;color:#6b7280;width:120px">👤 Nome</td><td style="padding:8px 0;font-weight:bold;color:#111">${body.nome}</td></tr>
+          <tr><td style="padding:8px 0;color:#6b7280">📱 WhatsApp</td><td style="padding:8px 0;font-weight:bold;color:#111">${body.whatsapp}</td></tr>
+          <tr><td style="padding:8px 0;color:#6b7280">🏷️ Bem</td><td style="padding:8px 0;font-weight:bold;color:#111">${bem}</td></tr>
+          <tr><td style="padding:8px 0;color:#6b7280">💰 Valor</td><td style="padding:8px 0;font-weight:bold;color:#111">${valor}</td></tr>
+          <tr><td style="padding:8px 0;color:#6b7280">📋 Perfil</td><td style="padding:8px 0;font-weight:bold;color:#111">${perfil}</td></tr>
+        </table>
+        <a href="https://wa.me/55${body.whatsapp}" style="display:inline-block;margin-top:16px;padding:12px 24px;background:#25d366;color:white;border-radius:8px;text-decoration:none;font-weight:bold">
+          Chamar no WhatsApp
+        </a>
+      </div>
+    `,
+  })
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +80,9 @@ export async function POST(req: NextRequest) {
         .update({ converteu_lead: true })
         .eq('id', body.simulacao_id)
     }
+
+    // Notifica por email (não bloqueia a resposta)
+    notificarEmail(body).catch(() => {})
 
     return NextResponse.json({ id: lead.id, success: true })
   } catch (err) {
