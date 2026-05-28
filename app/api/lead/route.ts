@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdminAdmin } from '@/lib/supabaseAdmin'
 import { Resend } from 'resend'
 
 function formatValor(v: number) {
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
 
     // Salva o lead
-    const { data: lead, error: leadError } = await supabase
+    const { data: lead, error: leadError } = await supabaseAdmin
       .from('leads_captacao')
       .insert({
         nome: body.nome,
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
 
     // Marca a simulação como convertida
     if (body.simulacao_id) {
-      await supabase
+      await supabaseAdmin
         .from('simulacoes')
         .update({ converteu_lead: true })
         .eq('id', body.simulacao_id)
