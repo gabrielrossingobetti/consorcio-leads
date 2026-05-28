@@ -27,7 +27,7 @@ async function notificarEmail(body: {
 
   await resend.emails.send({
     from: 'Simulador Consórcio <onboarding@resend.dev>',
-    to: 'gabrielrossingobetti@gmail.com',
+    to: ['gabrielrossingobetti@gmail.com'],
     subject: `🔔 Novo lead — ${body.nome} (${bem} ${valor})`,
     html: `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#f9fafb;border-radius:12px">
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Notifica por email (não bloqueia a resposta)
-    notificarEmail(body).catch(() => {})
+    notificarEmail(body).catch((e) => console.error('Erro notificação email:', e))
 
     return NextResponse.json({ id: lead.id, success: true })
   } catch (err) {
