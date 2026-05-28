@@ -81,8 +81,8 @@ export async function POST(req: NextRequest) {
         .eq('id', body.simulacao_id)
     }
 
-    // Notifica por email (não bloqueia a resposta)
-    notificarEmail(body).catch((e) => console.error('Erro notificação email:', e))
+    // Notifica por email
+    await notificarEmail(body).catch((e) => console.error('Erro notificação email:', e))
 
     return NextResponse.json({ id: lead.id, success: true })
   } catch (err) {
