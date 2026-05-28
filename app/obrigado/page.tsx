@@ -19,6 +19,20 @@ const PRAZO_LABELS: Record<string, string> = {
   pesquisando: 'Ainda pesquisando opções',
 }
 
+function getContactMessage() {
+  // Brasília time (UTC-3)
+  const now = new Date()
+  const brtOffset = -3 * 60
+  const brtTime = new Date(now.getTime() + (now.getTimezoneOffset() + brtOffset) * 60000)
+  const hour = brtTime.getHours()
+  const day = brtTime.getDay() // 0=Sun, 6=Sat
+  const isBusinessHours = day >= 1 && day <= 5 && hour >= 8 && hour < 18
+  if (isBusinessHours) {
+    return <>Um especialista entrará em contato pelo WhatsApp <strong>em até 2 horas</strong>.</>
+  }
+  return <>Um especialista entrará em contato pelo WhatsApp <strong>em horário comercial</strong> (seg–sex, 8h às 18h).</>
+}
+
 function ObrigadoContent() {
   const params = useSearchParams()
   const nome = params.get('nome') || 'você'
@@ -72,7 +86,7 @@ function ObrigadoContent() {
             Recebemos, {primeiroNome}! 🎉
           </h1>
           <p className="text-gray-500 mb-8 text-lg">
-            Um especialista entrará em contato pelo WhatsApp <strong>em até 2 horas</strong>.
+            {getContactMessage()}
           </p>
         </motion.div>
 
