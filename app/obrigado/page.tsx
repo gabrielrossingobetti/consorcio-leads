@@ -1,7 +1,7 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { CheckCircle, Share2, MessageCircle } from 'lucide-react'
 import { formatCurrency } from '@/lib/calculos'
@@ -42,6 +42,16 @@ function ObrigadoContent() {
   const parcela = Number(params.get('parcela') || 0)
   const prazo = params.get('prazo') || ''
   const primeiroNome = nome.split(' ')[0]
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+      ;(window as any).gtag('event', 'qualify_lead', {
+        bem,
+        valor,
+        economia,
+      })
+    }
+  }, [])
 
   const compartilhar = () => {
     const texto = `🏆 Acabei de descobrir que vou economizar *${formatCurrency(economia)}* usando consórcio em vez de financiamento para comprar meu ${BEM_LABELS[bem] || 'bem'}!\n\nFaça você também a simulação gratuita:`
