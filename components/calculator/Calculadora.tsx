@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
@@ -10,9 +10,9 @@ import StepPerfil from './StepPerfil'
 import StepResultado from './StepResultado'
 import StepResultadoInvestidor from './StepResultadoInvestidor'
 import StepMesesInvestidor from './StepMesesInvestidor'
-import StepContato from './StepContato'
+import StepContatoSimples from './StepContatoSimples'
 
-type Step = 'bem' | 'valor' | 'perfil' | 'resultado' | 'contato' | 'meses_investidor' | 'resultado_investidor'
+type Step = 'bem' | 'contato' | 'valor' | 'perfil' | 'resultado' | 'meses_investidor' | 'resultado_investidor'
 
 function getUTMs() {
   if (typeof window === 'undefined') return {}
@@ -25,13 +25,15 @@ function getUTMs() {
   }
 }
 
-const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
-const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'resultado_investidor', 'contato']
+const STEPS_NORMAL: Step[] = ['bem', 'contato', 'valor', 'perfil', 'resultado']
+const STEPS_INVESTIDOR: Step[] = ['bem', 'contato', 'valor', 'meses_investidor', 'resultado_investidor']
 
 export default function Calculadora() {
   const router = useRouter()
   const [step, setStep] = useState<Step>('bem')
   const [bem, setBem] = useState<BemType | null>(null)
+  const [nome, setNome] = useState('')
+  const [whatsapp, setWhatsapp] = useState('')
   const [valor, setValor] = useState<number | null>(null)
   const [jaTentouFinanciar, setJaTentouFinanciar] = useState('')
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null)
@@ -54,55 +56,55 @@ export default function Calculadora() {
     setStep(prevStep)
   }
 
+  async function salvarLead(n: string, w: string, b: BemType) {
+    const utms = getUTMs()
+    try {
+      await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: n, whatsapp: w, bem: b, ...utms }),
+      })
+    } catch {
+      // silencioso
+    }
+  }
+
   async function salvarSimulacao(r: ResultadoCalculo) {
     const utms = getUTMs()
     try {
       const res = await fetch('/api/simulacao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...r, ...utms }),
+        body: JSON.stringify({ ...r, nome, whatsapp, ...utms }),
       })
       const data = await res.json()
       if (data.id) setSimulacaoId(data.id)
     } catch {
-      // silencioso — não bloqueia o fluxo
+      // silencioso
     }
   }
 
-  async function handleContato(nome: string, whatsapp: string) {
-    const utms = getUTMs()
-    await fetch('/api/lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        nome,
-        whatsapp,
-        bem,
-        valor,
-        simulacao_id: simulacaoId,
-        ja_tentou_financiar: jaTentouFinanciar,
-        ...utms,
-      }),
-    })
-    if (bem === 'investidor' && resultadoInvestidor) {
-      router.push(
-        `/obrigado?nome=${encodeURIComponent(nome)}` +
-        `&economia=${resultadoInvestidor.lucroLiquido}` +
-        `&bem=${bem}` +
-        `&valor=${resultadoInvestidor.carta}` +
-        `&parcela=${resultadoInvestidor.parcelaReduzida}` +
-        `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
-      )
-    } else {
-      router.push(
-        `/obrigado?nome=${encodeURIComponent(nome)}` +
-        `&economia=${resultado?.economiaTotal || 0}` +
-        `&bem=${bem}` +
-        `&valor=${resultado?.valor || 0}` +
-        `&parcela=${resultado?.parcelaConsorcio || 0}` +
-        `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
-      )
-    }
+  async function handleResultadoFinal(r: ResultadoCalculo) {
+    await salvarSimulacao(r)
+    router.push(
+      `/obrigado?nome=${encodeURIComponent(nome)}` +
+      `&economia=${r.economiaTotal}` +
+      `&bem=${bem}` +
+      `&valor=${r.valor}` +
+      `&parcela=${r.parcelaConsorcio}` +
+      `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
+    )
+  }
+
+  async function handleResultadoInvestidorFinal(r: ResultadoInvestidor) {
+    router.push(
+      `/obrigado?nome=${encodeURIComponent(nome)}` +
+      `&economia=${r.lucroLiquido}` +
+      `&bem=investidor` +
+      `&valor=${r.carta}` +
+      `&parcela=${r.parcelaReduzida}` +
+      `&prazo=`
+    )
   }
 
   const variants = {
@@ -113,17 +115,15 @@ export default function Calculadora() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Progress bar */}
+      {/* Progress */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs text-gray-400 font-medium">
-            Etapa {stepIndex + 1} de {STEPS.length}
-          </span>
-          <span className="text-xs text-blue-600 font-bold">{Math.round(progress)}%</span>
+          <span className="text-xs text-gray-400 font-medium">Etapa {stepIndex + 1} de {STEPS.length}</span>
+          <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
         </div>
-        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"
+            className="h-full bg-red-600 rounded-full"
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
           />
@@ -142,10 +142,21 @@ export default function Calculadora() {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
             {step === 'bem' && (
-              <StepBem
-                onSelect={(b) => { setBem(b); goNext('valor') }}
+              <StepBem onSelect={(b) => { setBem(b); goNext('contato') }} />
+            )}
+
+            {step === 'contato' && (
+              <StepContatoSimples
+                onSubmit={(n, w) => {
+                  setNome(n)
+                  setWhatsapp(w)
+                  if (bem) salvarLead(n, w, bem)
+                  goNext('valor')
+                }}
+                onBack={() => goBack('bem')}
               />
             )}
+
             {step === 'valor' && bem && (
               <StepValor
                 bem={bem}
@@ -153,9 +164,10 @@ export default function Calculadora() {
                   setValor(v)
                   goNext(bem === 'investidor' ? 'meses_investidor' : 'perfil')
                 }}
-                onBack={() => goBack('bem')}
+                onBack={() => goBack('contato')}
               />
             )}
+
             {step === 'meses_investidor' && bem === 'investidor' && valor && (
               <StepMesesInvestidor
                 onConfirm={(meses) => {
@@ -167,39 +179,32 @@ export default function Calculadora() {
                 onBack={() => goBack('valor')}
               />
             )}
+
             {step === 'resultado_investidor' && resultadoInvestidor && (
               <StepResultadoInvestidor
                 resultado={resultadoInvestidor}
-                onContinuar={() => goNext('contato')}
+                onContinuar={() => handleResultadoInvestidorFinal(resultadoInvestidor)}
                 onBack={() => goBack('meses_investidor')}
               />
             )}
+
             {step === 'perfil' && bem && valor && (
               <StepPerfil
                 onSelect={(r) => {
                   setJaTentouFinanciar(r)
                   const calc = calcular(bem, valor)
                   setResultado(calc)
-                  salvarSimulacao(calc)
                   goNext('resultado')
                 }}
                 onBack={() => goBack('valor')}
               />
             )}
+
             {step === 'resultado' && resultado && (
               <StepResultado
                 resultado={resultado}
-                onContinuar={() => goNext('contato')}
+                onContinuar={() => handleResultadoFinal(resultado)}
                 onBack={() => goBack('bem')}
-              />
-            )}
-            {step === 'contato' && (resultado || resultadoInvestidor) && (
-              <StepContato
-                resultado={resultado}
-                resultadoInvestidor={resultadoInvestidor}
-                jaTentouFinanciar={jaTentouFinanciar}
-                onSubmit={handleContato}
-                onBack={() => goBack(bem === 'investidor' ? 'resultado_investidor' : 'resultado')}
               />
             )}
           </motion.div>
