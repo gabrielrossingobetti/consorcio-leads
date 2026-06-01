@@ -246,21 +246,72 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── STATS ───────────────────────────────────────────────────── */}
-      <section className="bg-white py-12 border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            {[
-              { num: '#1', label: 'Maior administradora do Brasil' },
-              { num: '+250mil', label: 'Clientes ativos' },
-              { num: '+30anos', label: 'De experiência no mercado' },
-              { num: '4.9★', label: 'Avaliação no Google' },
-            ].map((s) => (
-              <div key={s.num}>
-                <p className="text-3xl font-black text-red-600 mb-1">{s.num}</p>
-                <p className="text-gray-500 text-sm">{s.label}</p>
-              </div>
-            ))}
+      {/* ── STATS CARDS ─────────────────────────────────────────────── */}
+      <section className="bg-gray-50 py-16 px-6">
+        <div className="max-w-6xl mx-auto">
+          <p className="text-center text-gray-400 text-sm uppercase tracking-widest font-semibold mb-10">A maior administradora independente de consórcios do Brasil</p>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+
+            {/* Card grande — filiais */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
+            >
+              <Building2 className="w-8 h-8 text-red-500 mb-3" />
+              <p className="text-4xl font-black text-gray-900">+292</p>
+              <p className="text-gray-500 text-sm mt-1">lojas no Brasil e no exterior</p>
+            </motion.div>
+
+            {/* Card — créditos */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.05 }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
+            >
+              <TrendingUp className="w-8 h-8 text-red-500 mb-3" />
+              <p className="text-4xl font-black text-gray-900">R$140bi</p>
+              <p className="text-gray-500 text-sm mt-1">em créditos comercializados</p>
+            </motion.div>
+
+            {/* Card — clientes */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-red-600 rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[160px]"
+            >
+              <Users className="w-8 h-8 text-red-200 mb-3" />
+              <p className="text-4xl font-black text-white">+641mil</p>
+              <p className="text-red-200 text-sm mt-1">clientes atendidos</p>
+            </motion.div>
+
+            {/* Card — cotas */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
+            >
+              <Award className="w-8 h-8 text-red-500 mb-3" />
+              <p className="text-4xl font-black text-gray-900">+906mil</p>
+              <p className="text-gray-500 text-sm mt-1">cotas comercializadas</p>
+            </motion.div>
+
+            {/* Card — anos */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
+            >
+              <Shield className="w-8 h-8 text-red-500 mb-3" />
+              <p className="text-4xl font-black text-gray-900">+35 anos</p>
+              <p className="text-gray-500 text-sm mt-1">de experiência no mercado</p>
+            </motion.div>
+
+            {/* Card — regulada */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }}
+              className="col-span-2 md:col-span-1 lg:col-span-2 bg-gray-900 rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[160px]"
+            >
+              <Star className="w-8 h-8 text-yellow-400 mb-3" />
+              <p className="text-lg font-black text-white leading-tight">Regulada pelo<br/>Banco Central</p>
+              <p className="text-gray-400 text-sm mt-1">100% segura e confiável</p>
+            </motion.div>
+
           </div>
         </div>
       </section>
@@ -372,21 +423,23 @@ export default function LandingPage() {
           {/* Cards comparativo */}
           <div className="grid md:grid-cols-4 gap-4">
             {[
-              { titulo: 'Juros', consorcio: 'Não tem juros', financiamento: 'Juros altos (12-18% ao ano)', melhor: 'consorcio' },
-              { titulo: 'Taxas', consorcio: 'Taxa de administração baixa', financiamento: 'IOF + seguro + tarifas', melhor: 'consorcio' },
-              { titulo: 'Garantia e confiança', consorcio: '+ Seguro. Regulado pelo Banco Central', financiamento: 'Banco pode rever condições', melhor: 'consorcio' },
-              { titulo: 'Aprovação de crédito', consorcio: '+ Tranquilo. Sem análise de crédito rígida', financiamento: 'Score alto exigido', melhor: 'consorcio' },
+              { titulo: 'Juros', consorcio: 'Sem juros. Você paga só a taxa administrativa.', financiamento: 'Juros altos de 12% a 18% ao ano no total.', img: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&q=80&auto=format&fit=crop' },
+              { titulo: 'Taxas', consorcio: 'Taxa de administração baixa e transparente.', financiamento: 'IOF, seguro, tarifas e custos escondidos.', img: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80&auto=format&fit=crop' },
+              { titulo: 'Garantia e confiança', consorcio: 'Regulado pelo Banco Central. 100% seguro.', financiamento: 'Banco pode rever condições a qualquer momento.', img: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80&auto=format&fit=crop' },
+              { titulo: 'Aprovação de crédito', consorcio: 'Sem análise de crédito rígida. Mais acessível.', financiamento: 'Score alto exigido. Muitas reprovações.', img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&q=80&auto=format&fit=crop' },
             ].map((item) => (
               <motion.div
                 key={item.titulo}
                 whileInView={{ opacity: 1, y: 0 }}
                 initial={{ opacity: 0, y: 20 }}
                 viewport={{ once: true }}
-                className="relative rounded-2xl overflow-hidden h-64 bg-gray-200"
+                className="relative rounded-2xl overflow-hidden h-72 group"
               >
-                <div className={`absolute inset-0 flex flex-col justify-end p-5 ${activeTab === 'consorcio' ? 'bg-gradient-to-t from-green-900/90 to-green-700/60' : 'bg-gradient-to-t from-red-900/90 to-red-700/60'}`}>
-                  <p className="text-white/70 text-xs uppercase tracking-wide mb-1">{item.titulo}</p>
-                  <p className="text-white font-bold text-sm">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={item.img} alt={item.titulo} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div className={`absolute inset-0 flex flex-col justify-end p-5 transition-all duration-300 ${activeTab === 'consorcio' ? 'bg-gradient-to-t from-green-950/95 via-green-900/70 to-transparent' : 'bg-gradient-to-t from-red-950/95 via-red-900/70 to-transparent'}`}>
+                  <p className="text-white/60 text-xs uppercase tracking-widest mb-2 font-semibold">{item.titulo}</p>
+                  <p className="text-white font-bold text-sm leading-snug">
                     {activeTab === 'consorcio' ? item.consorcio : item.financiamento}
                   </p>
                 </div>
