@@ -148,7 +148,7 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
           onClick={onContinuar}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-lg"
         >
-          Quero economizar {formatCurrency(resultado.economiaTotal)}
+          Quero receber minha proposta
           <ChevronRight className="w-5 h-5" />
         </motion.button>
 
