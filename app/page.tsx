@@ -619,14 +619,20 @@ export default function LandingPage() {
               transition={{ duration: 0.25, ease: 'easeOut' }}
               className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg mx-4"
             >
-              <div className="bg-white rounded-3xl shadow-2xl p-8 relative max-h-[90vh] overflow-y-auto">
-                <button
-                  onClick={() => setModalOpen(false)}
-                  className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-500"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-                <Calculadora />
+              <div className="bg-white rounded-3xl shadow-2xl relative max-h-[90vh] flex flex-col overflow-hidden">
+                {/* Barra do X — fora do scroll */}
+                <div className="flex justify-end px-4 pt-4 flex-shrink-0">
+                  <button
+                    onClick={() => setModalOpen(false)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-500"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                {/* Conteúdo scrollável */}
+                <div className="overflow-y-auto px-8 pb-8 pt-2">
+                  <Calculadora />
+                </div>
               </div>
             </motion.div>
           </>
