@@ -26,6 +26,14 @@ function getUTMs() {
   }
 }
 
+function fireConversionEvents(bem: BemType) {
+  if (typeof window === 'undefined') return
+  const w = window as any
+  if (typeof w.gtag !== 'function') return
+  w.gtag('event', 'SUBMIT_LEAD_FORM', { bem })
+  w.gtag('event', 'qualify_lead', { bem })
+}
+
 const STEPS_NORMAL: Step[] = ['bem', 'contato', 'valor', 'perfil', 'resultado']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'contato', 'valor', 'meses_investidor', 'resultado_investidor']
 
@@ -65,6 +73,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome: n, whatsapp: w, bem: b, ...utms }),
       })
+      fireConversionEvents(b)
     } catch {
       // silencioso
     }
