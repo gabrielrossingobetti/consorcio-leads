@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Simulador de Consórcio Ademicon",
+  title: "Simulador de Consórcio | Indica Consórcio",
   description: "Compare consórcio vs financiamento e descubra quanto você economiza.",
 };
 
