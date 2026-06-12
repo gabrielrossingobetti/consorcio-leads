@@ -9,13 +9,12 @@ import {
   Home, Car, Briefcase, Wrench, TrendingUp, Building2
 } from 'lucide-react'
 
-// ─── Produtos do slider hero ─────────────────────────────────────────────────
 const PRODUTOS = [
   {
     id: 'imovel',
     titulo: 'Conquiste seu imóvel',
     subtitulo: 'sem juros,',
-    descricao: 'com a Ademicon.',
+    descricao: 'sem burocracia.',
     cta: 'Simular Consórcio de Imóveis',
     img: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1920&q=80&auto=format&fit=crop',
     icon: Home,
@@ -24,7 +23,7 @@ const PRODUTOS = [
     id: 'veiculo',
     titulo: 'Seu carro novo,',
     subtitulo: 'sem juros,',
-    descricao: 'com a Ademicon.',
+    descricao: 'sem burocracia.',
     cta: 'Simular Consórcio de Veículos',
     img: 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1920&q=80&auto=format&fit=crop',
     icon: Car,
@@ -33,7 +32,7 @@ const PRODUTOS = [
     id: 'negocio',
     titulo: 'Expanda seu negócio,',
     subtitulo: 'sem juros,',
-    descricao: 'com a Ademicon.',
+    descricao: 'sem burocracia.',
     cta: 'Simular Consórcio de Negócios',
     img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1920&q=80&auto=format&fit=crop',
     icon: Briefcase,
@@ -42,7 +41,7 @@ const PRODUTOS = [
     id: 'reforma',
     titulo: 'Transforme seu espaço,',
     subtitulo: 'sem juros,',
-    descricao: 'com a Ademicon.',
+    descricao: 'sem burocracia.',
     cta: 'Simular Consórcio de Reforma',
     img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&q=80&auto=format&fit=crop',
     icon: Wrench,
@@ -51,14 +50,13 @@ const PRODUTOS = [
     id: 'investimento',
     titulo: 'Invista com inteligência,',
     subtitulo: 'sem juros,',
-    descricao: 'com a Ademicon.',
+    descricao: 'sem burocracia.',
     cta: 'Simular Carta de Investimento',
     img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1920&q=80&auto=format&fit=crop',
     icon: TrendingUp,
   },
 ]
 
-// ─── Cards de produtos ────────────────────────────────────────────────────────
 const CARDS_PRODUTOS = [
   {
     titulo: 'Consórcio de Imóveis',
@@ -106,7 +104,7 @@ const DEPOIMENTOS = [
 const FAQ = [
   { pergunta: 'Quanto tempo leva para ser contemplado?', resposta: 'O tempo médio de contemplação varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode antecipar oferecendo um lance — quanto maior o lance, maior a chance de ser contemplado mais rápido.' },
   { pergunta: 'E se eu precisar do bem com urgência?', resposta: 'Se a necessidade for imediata, o consórcio pode não ser a melhor escolha. Mas para quem planeja, é o instrumento mais inteligente: você paga até 50% menos no total.' },
-  { pergunta: 'A Ademicon é regulamentada?', resposta: 'Sim. A Ademicon é regulamentada e fiscalizada pelo Banco Central do Brasil, garantindo total segurança para os consorciados.' },
+  { pergunta: 'O consórcio é regulamentado pelo governo?', resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil, garantindo total segurança para os consorciados.' },
   { pergunta: 'Posso usar o FGTS no consórcio?', resposta: 'Sim! Para consórcios de imóveis, você pode usar o FGTS tanto para dar um lance quanto para reduzir o saldo devedor após ser contemplado.' },
   { pergunta: 'O que acontece se eu não conseguir pagar uma parcela?', resposta: 'O consorciado inadimplente fica suspenso das assembleias, mas o grupo continua. É possível regularizar a situação e voltar a participar normalmente.' },
 ]
@@ -129,7 +127,6 @@ export default function LandingPage() {
   const [activeTab, setActiveTab] = useState<'consorcio' | 'financiamento'>('consorcio')
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  // Auto-avança slider
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       setProdutoAtivo((prev) => (prev + 1) % PRODUTOS.length)
@@ -137,13 +134,11 @@ export default function LandingPage() {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [])
 
-  // Texto animado
   useEffect(() => {
     const t = setInterval(() => setTextoAtivo((p) => (p + 1) % TEXTOS_ANIMADOS.length), 2500)
     return () => clearInterval(t)
   }, [])
 
-  // Bloqueia scroll quando modal está aberto
   useEffect(() => {
     document.body.style.overflow = modalOpen ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
@@ -179,7 +174,6 @@ export default function LandingPage() {
 
       {/* ── HERO SLIDER ─────────────────────────────────────────────── */}
       <section className="relative h-[90vh] min-h-[600px] overflow-hidden bg-gray-900">
-        {/* Imagens */}
         {PRODUTOS.map((p, i) => (
           <AnimatePresence key={p.id}>
             {i === produtoAtivo && (
@@ -198,7 +192,6 @@ export default function LandingPage() {
           </AnimatePresence>
         ))}
 
-        {/* Conteúdo */}
         <div className="relative z-10 h-full flex items-center">
           <div className="max-w-7xl mx-auto px-6 w-full">
             <AnimatePresence mode="wait">
@@ -211,7 +204,7 @@ export default function LandingPage() {
                 className="max-w-2xl"
               >
                 <p className="text-red-400 font-semibold text-sm uppercase tracking-widest mb-4">
-                  Consórcio Ademicon
+                  Indica Consórcio
                 </p>
                 <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-2">
                   {PRODUTOS[produtoAtivo].titulo}
@@ -234,7 +227,6 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Dots */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
           {PRODUTOS.map((_, i) => (
             <button
@@ -249,10 +241,9 @@ export default function LandingPage() {
       {/* ── STATS CARDS ─────────────────────────────────────────────── */}
       <section className="bg-gray-50 py-16 px-6">
         <div className="max-w-6xl mx-auto">
-          <p className="text-center text-gray-400 text-sm uppercase tracking-widest font-semibold mb-10">A maior administradora independente de consórcios do Brasil</p>
+          <p className="text-center text-gray-400 text-sm uppercase tracking-widest font-semibold mb-10">Nossa administradora parceira tem décadas de experiência e solidez no mercado</p>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
 
-            {/* Card grande — filiais */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
@@ -262,7 +253,6 @@ export default function LandingPage() {
               <p className="text-gray-500 text-sm mt-1">lojas no Brasil e no exterior</p>
             </motion.div>
 
-            {/* Card — créditos */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.05 }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
@@ -272,7 +262,6 @@ export default function LandingPage() {
               <p className="text-gray-500 text-sm mt-1">em créditos comercializados</p>
             </motion.div>
 
-            {/* Card — clientes */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-red-600 rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[160px]"
@@ -282,7 +271,6 @@ export default function LandingPage() {
               <p className="text-red-200 text-sm mt-1">clientes atendidos</p>
             </motion.div>
 
-            {/* Card — cotas */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.15 }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
@@ -292,7 +280,6 @@ export default function LandingPage() {
               <p className="text-gray-500 text-sm mt-1">cotas comercializadas</p>
             </motion.div>
 
-            {/* Card — anos */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-white rounded-2xl p-8 flex flex-col items-center justify-center text-center shadow-sm border border-gray-100 min-h-[160px]"
@@ -302,7 +289,6 @@ export default function LandingPage() {
               <p className="text-gray-500 text-sm mt-1">de experiência no mercado</p>
             </motion.div>
 
-            {/* Card — regulada */}
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.25 }}
               className="col-span-2 md:col-span-1 lg:col-span-2 bg-gray-900 rounded-2xl p-8 flex flex-col items-center justify-center text-center min-h-[160px]"
@@ -324,7 +310,7 @@ export default function LandingPage() {
               A melhor escolha para <br />administração do seu consórcio
             </h2>
             <p className="text-gray-500 text-lg max-w-xl mx-auto">
-              A Ademicon oferece diversas opções de consórcios para todos os objetivos
+              Diversas opções de consórcios para todos os seus objetivos
             </p>
           </div>
 
@@ -372,11 +358,11 @@ export default function LandingPage() {
             <div>
               <h2 className="text-4xl font-black text-white mb-4">
                 (Re)Descubra o<br />
-                <span className="text-red-300">Consórcio Ademicon</span>
+                <span className="text-red-300">Consórcio</span>
               </h2>
               <p className="text-red-200 text-lg leading-relaxed">
                 Consórcio continua uma das opções mais seguras e vantajosas para compra de bens e serviços.
-                E a Ademicon permanece a administradora mais sólida, confiável e transparente do setor.
+                Uma modalidade sólida, confiável e transparente — regulada pelo Banco Central do Brasil.
               </p>
             </div>
             <div className="relative">
@@ -407,7 +393,6 @@ export default function LandingPage() {
             <p className="text-gray-500 text-lg">Veja como as opções se comparam</p>
           </div>
 
-          {/* Tabs */}
           <div className="flex justify-center gap-3 mb-10">
             {(['consorcio', 'financiamento'] as const).map((tab) => (
               <button
@@ -420,7 +405,6 @@ export default function LandingPage() {
             ))}
           </div>
 
-          {/* Cards comparativo */}
           <div className="grid md:grid-cols-4 gap-4">
             {[
               { titulo: 'Juros', consorcio: 'Sem juros. Você paga só a taxa administrativa.', financiamento: 'Juros altos de 12% a 18% ao ano no total.', img: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=600&q=80&auto=format&fit=crop' },
@@ -495,7 +479,7 @@ export default function LandingPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-white mb-3">Histórias de quem sonhou e realizou</h2>
-            <p className="text-red-100 text-lg">Clientes reais da Ademicon</p>
+            <p className="text-red-100 text-lg">Histórias reais de quem realizou o sonho</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {DEPOIMENTOS.map((d) => (
@@ -509,7 +493,7 @@ export default function LandingPage() {
                 <div className="flex gap-0.5 mb-3">
                   {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
                 </div>
-                <p className="text-gray-700 text-sm leading-relaxed mb-4">"{d.texto}"</p>
+                <p className="text-gray-700 text-sm leading-relaxed mb-4">&quot;{d.texto}&quot;</p>
                 <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
                   <div>
                     <p className="font-bold text-gray-900 text-sm">{d.nome}</p>
@@ -587,15 +571,13 @@ export default function LandingPage() {
             <div>
               <AdemIconLogo size="sm" />
               <p className="text-gray-500 text-xs mt-3 max-w-xs leading-relaxed">
-                Maior administradora de consórcios do Brasil. Regulada e fiscalizada pelo Banco Central do Brasil.
+                Indicação de consórcio com as melhores condições do mercado. Atendimento personalizado e sem burocracia.
               </p>
             </div>
             <div className="text-xs text-gray-500 space-y-1.5">
               <p className="font-semibold text-gray-400 uppercase tracking-wide text-xs mb-2">Informações legais</p>
-              <p>Ademicon Administradora de Consórcios S/A</p>
-              <p>CNPJ: 84.911.098/0001-29</p>
-              <p>Rua Pinheiro Guimarães, 400 — Rio de Janeiro, RJ</p>
-              <p>Autorizada pelo Banco Central do Brasil</p>
+              <p>Serviço de indicação de consórcio</p>
+              <p>Regulado pelo Banco Central do Brasil</p>
             </div>
             <div className="text-xs text-gray-500 space-y-1.5">
               <p className="font-semibold text-gray-400 uppercase tracking-wide text-xs mb-2">Produtos</p>
@@ -613,7 +595,7 @@ export default function LandingPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-600">
-            <p>© {new Date().getFullYear()} Ademicon Administradora de Consórcios S/A. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} Indica Consórcio. Todos os direitos reservados.</p>
             <p className="text-center">As simulações são estimativas com base em taxas médias de mercado e não constituem proposta formal de contrato.</p>
           </div>
         </div>
