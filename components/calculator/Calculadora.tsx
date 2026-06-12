@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { X } from 'lucide-react'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
 import StepBem from './StepBem'
 import StepValor from './StepValor'
@@ -28,7 +29,7 @@ function getUTMs() {
 const STEPS_NORMAL: Step[] = ['bem', 'contato', 'valor', 'perfil', 'resultado']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'contato', 'valor', 'meses_investidor', 'resultado_investidor']
 
-export default function Calculadora() {
+export default function Calculadora({ onClose }: { onClose?: () => void }) {
   const router = useRouter()
   const [step, setStep] = useState<Step>('bem')
   const [bem, setBem] = useState<BemType | null>(null)
@@ -119,7 +120,17 @@ export default function Calculadora() {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs text-gray-400 font-medium">Etapa {stepIndex + 1} de {STEPS.length}</span>
-          <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-500"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <motion.div
