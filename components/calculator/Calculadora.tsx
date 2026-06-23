@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
-import { X } from 'lucide-react'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
 import StepBem from './StepBem'
 import StepValor from './StepValor'
@@ -26,18 +25,10 @@ function getUTMs() {
   }
 }
 
-function fireConversionEvents(bem: BemType) {
-  if (typeof window === 'undefined') return
-  const w = window as any
-  if (typeof w.gtag !== 'function') return
-  w.gtag('event', 'SUBMIT_LEAD_FORM', { bem })
-  w.gtag('event', 'qualify_lead', { bem })
-}
+const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
+const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'resultado_investidor', 'contato']
 
-const STEPS_NORMAL: Step[] = ['bem', 'contato', 'valor', 'perfil', 'resultado']
-const STEPS_INVESTIDOR: Step[] = ['bem', 'contato', 'valor', 'meses_investidor', 'resultado_investidor']
-
-export default function Calculadora({ onClose }: { onClose?: () => void }) {
+export default function Calculadora() {
   const router = useRouter()
   const [step, setStep] = useState<Step>('bem')
   const [bem, setBem] = useState<BemType | null>(null)
@@ -49,6 +40,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
   const [resultadoInvestidor, setResultadoInvestidor] = useState<ResultadoInvestidor | null>(null)
   const [mesesInvestidor, setMesesInvestidor] = useState<number>(12)
   const [simulacaoId, setSimulacaoId] = useState<string | null>(null)
+  const [leadId, setLeadId] = useState<string | null>(null)
   const [direction, setDirection] = useState(1)
 
   const STEPS = bem === 'investidor' ? STEPS_INVESTIDOR : STEPS_NORMAL
@@ -68,12 +60,26 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
   async function salvarLead(n: string, w: string, b: BemType) {
     const utms = getUTMs()
     try {
-      await fetch('/api/lead', {
+      const res = await fetch('/api/lead', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nome: n, whatsapp: w, bem: b, ...utms }),
       })
-      fireConversionEvents(b)
+      const data = await res.json()
+      if (data.id) setLeadId(data.id)
+    } catch {
+      // silencioso
+    }
+  }
+
+  async function atualizarLeadComValor(v: number, perfil: string) {
+    if (!leadId) return
+    try {
+      await fetch('/api/lead', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: leadId, valor: v, ja_tentou_financiar: perfil }),
+      })
     } catch {
       // silencioso
     }
@@ -95,7 +101,10 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
   }
 
   async function handleResultadoFinal(r: ResultadoCalculo) {
-    await salvarSimulacao(r)
+    await Promise.all([
+      salvarSimulacao(r),
+      atualizarLeadComValor(r.valor, jaTentouFinanciar),
+    ])
     router.push(
       `/obrigado?nome=${encodeURIComponent(nome)}` +
       `&economia=${r.economiaTotal}` +
@@ -107,6 +116,10 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
   }
 
   async function handleResultadoInvestidorFinal(r: ResultadoInvestidor) {
+    await Promise.all([
+      salvarSimulacao({ ...r, bem: 'investidor', nome, whatsapp } as never),
+      atualizarLeadComValor(r.carta, ''),
+    ])
     router.push(
       `/obrigado?nome=${encodeURIComponent(nome)}` +
       `&economia=${r.lucroLiquido}` +
@@ -129,17 +142,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs text-gray-400 font-medium">Etapa {stepIndex + 1} de {STEPS.length}</span>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
-            {onClose && (
-              <button
-                onClick={onClose}
-                className="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-gray-500"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            )}
-          </div>
+          <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
         </div>
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <motion.div
@@ -162,19 +165,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
             transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
             {step === 'bem' && (
-              <StepBem onSelect={(b) => { setBem(b); goNext('contato') }} />
-            )}
-
-            {step === 'contato' && (
-              <StepContatoSimples
-                onSubmit={(n, w) => {
-                  setNome(n)
-                  setWhatsapp(w)
-                  if (bem) salvarLead(n, w, bem)
-                  goNext('valor')
-                }}
-                onBack={() => goBack('bem')}
-              />
+              <StepBem onSelect={(b) => { setBem(b); goNext('valor') }} />
             )}
 
             {step === 'valor' && bem && (
@@ -184,7 +175,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
                   setValor(v)
                   goNext(bem === 'investidor' ? 'meses_investidor' : 'perfil')
                 }}
-                onBack={() => goBack('contato')}
+                onBack={() => goBack('bem')}
               />
             )}
 
@@ -203,7 +194,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
             {step === 'resultado_investidor' && resultadoInvestidor && (
               <StepResultadoInvestidor
                 resultado={resultadoInvestidor}
-                onContinuar={() => handleResultadoInvestidorFinal(resultadoInvestidor)}
+                onContinuar={() => goNext('contato')}
                 onBack={() => goBack('meses_investidor')}
               />
             )}
@@ -223,8 +214,21 @@ export default function Calculadora({ onClose }: { onClose?: () => void }) {
             {step === 'resultado' && resultado && (
               <StepResultado
                 resultado={resultado}
-                onContinuar={() => handleResultadoFinal(resultado)}
+                onContinuar={() => goNext('contato')}
                 onBack={() => goBack('bem')}
+              />
+            )}
+
+            {step === 'contato' && (
+              <StepContatoSimples
+                onSubmit={async (n, w) => {
+                  setNome(n)
+                  setWhatsapp(w)
+                  if (bem) await salvarLead(n, w, bem)
+                  if (resultado) await handleResultadoFinal(resultado)
+                  else if (resultadoInvestidor) await handleResultadoInvestidorFinal(resultadoInvestidor)
+                }}
+                onBack={() => goBack(resultado ? 'resultado' : 'resultado_investidor')}
               />
             )}
           </motion.div>

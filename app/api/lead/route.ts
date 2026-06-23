@@ -47,6 +47,25 @@ async function notificarEmail(body: {
   })
 }
 
+export async function PATCH(req: NextRequest) {
+  try {
+    const body = await req.json()
+    const { id, valor, ja_tentou_financiar } = body
+    if (!id) return NextResponse.json({ error: 'id obrigatório' }, { status: 400 })
+
+    const { error } = await supabaseAdmin
+      .from('leads_captacao')
+      .update({ valor: valor ?? null, ja_tentou_financiar: ja_tentou_financiar || null })
+      .eq('id', id)
+
+    if (error) throw error
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error('Erro ao atualizar lead:', err)
+    return NextResponse.json({ error: 'Erro interno' }, { status: 500 })
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
