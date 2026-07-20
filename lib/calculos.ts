@@ -19,9 +19,9 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
   carro: {
     label: 'Veículo',
     taxaFinanciamentoAnual: 18,
-    taxaAdminConsorcio: 16,
-    prazoMeses: 60,
-    prazoLabel: '60 meses (5 anos)',
+    taxaAdminConsorcio: 16.1,
+    prazoMeses: 90,
+    prazoLabel: '90 meses (7,5 anos)',
   },
   negocio: {
     label: 'Negócio/Empresa',
