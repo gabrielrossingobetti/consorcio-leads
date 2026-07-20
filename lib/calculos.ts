@@ -12,7 +12,7 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
   imovel: {
     label: 'Imóvel',
     taxaFinanciamentoAnual: 10.5,
-    taxaAdminConsorcio: 24,
+    taxaAdminConsorcio: 12,
     prazoMeses: 200,
     prazoLabel: '200 meses (~16 anos)',
   },
