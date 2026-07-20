@@ -62,7 +62,7 @@ function ObrigadoContent() {
   const falarEspecialista = () => {
     const prazoTexto = PRAZO_LABELS[prazo] ? `\n⏱ Prazo: ${PRAZO_LABELS[prazo]}` : ''
     const texto =
-      `Olá! Sou *${nome}* e acabei de fazer a simulação no site da Ademicon. Seguem meus dados:\n\n` +
+      `Olá! Sou *${nome}* e acabei de fazer a simulação no Indica Consórcio. Seguem meus dados:\n\n` +
       `🏠 *Bem desejado:* ${BEM_LABELS[bem] || bem}\n` +
       `💰 *Valor do bem:* ${formatCurrency(valor)}\n` +
       `📉 *Parcela estimada:* ${formatCurrency(parcela)}/mês\n` +

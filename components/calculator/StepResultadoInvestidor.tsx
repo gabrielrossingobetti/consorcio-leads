@@ -139,7 +139,7 @@ export default function StepResultadoInvestidor({ resultado, onContinuar, onBack
           <span className="font-bold text-red-500">− {formatCurrency(resultado.totalParcelasPagas)}</span>
         </div>
         <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-600">Ademicon compra sua carta (40%)</span>
+          <span className="text-sm text-gray-600">Indica Consórcio compra sua carta (40%)</span>
           <span className="font-bold text-green-600">+ {formatCurrency(resultado.valorRecebido)}</span>
         </div>
         <div className="border-t border-gray-200 pt-2.5 flex justify-between items-center">
