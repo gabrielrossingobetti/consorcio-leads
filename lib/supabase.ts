@@ -8,7 +8,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // Cliente server-side com permissão total (usado nas API routes)
 export const supabaseAdmin = createClient(
   supabaseUrl,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'build-placeholder'
 )
 
 export type BemType = 'imovel' | 'carro' | 'negocio' | 'reforma' | 'investidor'

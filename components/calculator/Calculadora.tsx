@@ -28,7 +28,7 @@ function getUTMs() {
 const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'resultado_investidor', 'contato']
 
-export default function Calculadora() {
+export default function Calculadora({ onClose }: { onClose?: () => void } = {}) {
   const router = useRouter()
   const [step, setStep] = useState<Step>('bem')
   const [bem, setBem] = useState<BemType | null>(null)
