@@ -136,7 +136,7 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
       >
         <Clock className="w-5 h-5 text-blue-500 flex-shrink-0" />
         <p className="text-sm text-blue-800">
-          <strong>Tempo médio de contemplação:</strong> {resultado.tempoMedioContemplacao} — podendo ser antes com lance
+          <strong>Tempo de contemplação:</strong> entre 1 e 36 meses — por sorteio ou lance
         </p>
       </motion.div>
 
