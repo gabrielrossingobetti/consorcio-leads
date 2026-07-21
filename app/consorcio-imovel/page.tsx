@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Calculadora from '@/components/calculator/Calculadora'
 import AdemIconLogo from '@/components/AdemIconLogo'
-import { ChevronRight, Home, Shield, TrendingUp, Users, Star, CheckCircle2, XCircle, Building2, Award } from 'lucide-react'
+import { ChevronRight, Home, Shield, Users, Star, CheckCircle2, XCircle, Building2, Award } from 'lucide-react'
 
 const FAQ = [
   { pergunta: 'Posso usar o FGTS no consórcio de imóvel?', resposta: 'Sim! Você pode usar o FGTS para dar um lance e antecipar sua contemplação, ou para abater o saldo devedor após ser contemplado. É uma das grandes vantagens do consórcio de imóveis.' },
@@ -24,17 +24,47 @@ const VANTAGENS_CONSORCIO = [
 ]
 
 const DESVANTAGENS_FINANCIAMENTO = [
-  'Juros de 10% a 14% ao ano',
+  'Juros de ~12% ao ano (1% ao mês)',
   'Entrada mínima de 20% exigida',
   'Análise de crédito rígida',
   'Score alto obrigatório',
   'Você paga juros sobre juros',
-  'Valor total pode dobrar ao final',
+  'Valor total pode triplicar ao final',
 ]
+
+function fmt(n: number) {
+  return n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+}
+
+function calcFinanciamento(valor: number, meses: number) {
+  const entradaPct = 0.20
+  const r = 0.01
+  const entrada = valor * entradaPct
+  const financiado = valor * (1 - entradaPct)
+  // Tabela Price
+  const parcela = financiado * r / (1 - Math.pow(1 + r, -meses))
+  const totalJuros = parcela * meses + entrada
+  return { entrada, financiado, parcela, totalJuros }
+}
+
+function calcConsorcio(valor: number) {
+  const taxa = 0.24
+  const meses = 200
+  const total = valor * (1 + taxa)
+  const parcela = total / meses
+  const economia = 0 // calculated against financiamento
+  return { total, parcela, taxa, meses, economia }
+}
 
 export default function ConsorcioImovelPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [faqAberto, setFaqAberto] = useState<number | null>(null)
+  const [valorImovel, setValorImovel] = useState(400000)
+  const [mesesFin, setMesesFin] = useState(360)
+
+  const fin = useMemo(() => calcFinanciamento(valorImovel, mesesFin), [valorImovel, mesesFin])
+  const con = useMemo(() => calcConsorcio(valorImovel), [valorImovel])
+  const economia = fin.totalJuros - con.total
 
   return (
     <div className="min-h-screen bg-white font-sans">
@@ -86,9 +116,9 @@ export default function ConsorcioImovelPage() {
               </h1>
 
               <p className="text-xl text-white/80 leading-relaxed mb-8">
-                No financiamento, um imóvel de <strong className="text-white">R$ 400.000</strong> pode custar até{' '}
-                <strong className="text-red-400">R$ 720.000</strong> no total. No consórcio, você paga{' '}
-                <strong className="text-white">só R$ 448.000</strong>. São <strong className="text-green-400">R$ 272.000 de diferença.</strong>
+                No financiamento de 30 anos, um imóvel de <strong className="text-white">R$ 400.000</strong> pode custar mais de{' '}
+                <strong className="text-red-400">R$ 1.200.000</strong> no total. No consórcio, você paga{' '}
+                <strong className="text-white">só R$ 496.000</strong> — sem juros, sem entrada obrigatória.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
@@ -117,8 +147,8 @@ export default function ConsorcioImovelPage() {
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { numero: 'R$ 272mil', label: 'economia média no consórcio vs financiamento de R$ 400k', bg: 'bg-green-600', text: 'text-white', sub: 'text-green-100' },
-              { numero: '12%', label: 'taxa administrativa total — contra 10–14% de juros ao ano no financiamento', bg: 'bg-white', text: 'text-gray-900', sub: 'text-gray-500', border: true },
+              { numero: 'R$ 700mil+', label: 'economia no consórcio vs financiamento de 30 anos em R$ 400k', bg: 'bg-green-600', text: 'text-white', sub: 'text-green-100' },
+              { numero: '24%', label: 'taxa administrativa total — sem juros, sem IOF, sem correção de banco', bg: 'bg-white', text: 'text-gray-900', sub: 'text-gray-500', border: true },
               { numero: 'FGTS', label: 'pode ser usado como lance para antecipar sua contemplação', bg: 'bg-white', text: 'text-gray-900', sub: 'text-gray-500', border: true },
               { numero: '200x', label: 'parcelas — plano de 200 meses com parcelas que cabem no bolso', bg: 'bg-red-600', text: 'text-white', sub: 'text-red-100' },
             ].map((item, i) => (
@@ -138,23 +168,72 @@ export default function ConsorcioImovelPage() {
         </div>
       </section>
 
-      {/* COMPARATIVO VISUAL */}
+      {/* COMPARATIVO INTERATIVO */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <h2 className="text-4xl font-black text-gray-900 mb-3">
               Consórcio ou Financiamento?<br />
-              <span className="text-red-600">Os números não mentem.</span>
+              <span className="text-red-600">Simule você mesmo e veja o absurdo.</span>
             </h2>
-            <p className="text-gray-500 text-lg">Para um imóvel de R$ 400.000 em 200 meses</p>
+            <p className="text-gray-500 text-lg">Ajuste o valor e os meses — os cálculos atualizam na hora</p>
           </div>
 
+          {/* INPUTS */}
+          <div className="bg-gray-50 border border-gray-200 rounded-3xl p-6 mb-8 grid md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Valor do imóvel</label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={100000}
+                  max={2000000}
+                  step={10000}
+                  value={valorImovel}
+                  onChange={e => setValorImovel(Number(e.target.value))}
+                  className="flex-1 accent-red-600"
+                />
+                <span className="font-black text-gray-900 text-lg min-w-[120px] text-right">{fmt(valorImovel)}</span>
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>R$ 100k</span><span>R$ 2M</span>
+              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Prazo do financiamento
+                <span className="text-gray-400 font-normal ml-2">(meses)</span>
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="range"
+                  min={60}
+                  max={420}
+                  step={12}
+                  value={mesesFin}
+                  onChange={e => setMesesFin(Number(e.target.value))}
+                  className="flex-1 accent-red-600"
+                />
+                <input
+                  type="number"
+                  min={12}
+                  max={420}
+                  value={mesesFin}
+                  onChange={e => setMesesFin(Math.max(12, Math.min(420, Number(e.target.value))))}
+                  className="w-20 border border-gray-300 rounded-xl px-3 py-1.5 text-center font-bold text-gray-900 text-sm"
+                />
+              </div>
+              <div className="flex justify-between text-xs text-gray-400 mt-1">
+                <span>60 meses</span><span>420 meses (35 anos)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* CARDS COMPARATIVO */}
           <div className="grid md:grid-cols-2 gap-6">
             {/* CONSÓRCIO */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              layout
               className="bg-gray-900 rounded-3xl p-8 relative overflow-hidden"
             >
               <div className="absolute top-4 right-4 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
@@ -169,19 +248,23 @@ export default function ConsorcioImovelPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
                   <span className="text-gray-400 text-sm">Valor do imóvel</span>
-                  <span className="text-white font-bold">R$ 400.000</span>
+                  <span className="text-white font-bold">{fmt(valorImovel)}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
                   <span className="text-gray-400 text-sm">Taxa administrativa</span>
-                  <span className="text-white font-bold">12% total</span>
+                  <span className="text-white font-bold">24% total</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <span className="text-gray-400 text-sm">Parcela estimada</span>
-                  <span className="text-white font-bold">~R$ 2.240/mês</span>
+                  <span className="text-gray-400 text-sm">Entrada obrigatória</span>
+                  <span className="text-green-400 font-bold">Não tem ✓</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <span className="text-gray-400 text-sm">Parcela estimada (200x)</span>
+                  <span className="text-white font-bold">{fmt(con.parcela)}/mês</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm">Total pago</span>
-                  <span className="text-green-400 font-black text-xl">R$ 448.000</span>
+                  <span className="text-green-400 font-black text-xl">{fmt(con.total)}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -196,9 +279,7 @@ export default function ConsorcioImovelPage() {
 
             {/* FINANCIAMENTO */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              layout
               className="bg-gray-50 border border-gray-200 rounded-3xl p-8 relative overflow-hidden"
             >
               <div className="flex items-center gap-3 mb-6">
@@ -210,19 +291,23 @@ export default function ConsorcioImovelPage() {
               <div className="space-y-4 mb-8">
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3">
                   <span className="text-gray-500 text-sm">Valor do imóvel</span>
-                  <span className="text-gray-700 font-bold">R$ 400.000</span>
+                  <span className="text-gray-700 font-bold">{fmt(valorImovel)}</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3">
-                  <span className="text-gray-500 text-sm">Juros anuais</span>
-                  <span className="text-red-600 font-bold">~12% ao ano</span>
+                  <span className="text-gray-500 text-sm">Juros mensais</span>
+                  <span className="text-red-600 font-bold">1% ao mês (~12,7% a.a.)</span>
                 </div>
                 <div className="flex justify-between items-center border-b border-gray-200 pb-3">
-                  <span className="text-gray-500 text-sm">Parcela estimada</span>
-                  <span className="text-gray-700 font-bold">~R$ 4.640/mês</span>
+                  <span className="text-gray-500 text-sm">Entrada (20%)</span>
+                  <span className="text-red-600 font-bold">{fmt(fin.entrada)}</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-gray-200 pb-3">
+                  <span className="text-gray-500 text-sm">Parcela em {mesesFin}x</span>
+                  <span className="text-gray-700 font-bold">{fmt(fin.parcela)}/mês</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-500 text-sm">Total pago</span>
-                  <span className="text-red-600 font-black text-xl">R$ 720.000+</span>
+                  <span className="text-red-600 font-black text-xl">{fmt(fin.totalJuros)}</span>
                 </div>
               </div>
               <div className="space-y-2">
@@ -236,16 +321,19 @@ export default function ConsorcioImovelPage() {
             </motion.div>
           </div>
 
+          {/* ECONOMIA */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            layout
             className="mt-8 bg-green-50 border border-green-200 rounded-2xl p-6 text-center"
           >
             <p className="text-2xl font-black text-green-800">
-              Você economiza <span className="text-green-600">R$ 272.000</span> escolhendo o consórcio
+              Você economiza{' '}
+              <span className="text-green-600">{fmt(Math.max(0, economia))}</span>{' '}
+              escolhendo o consórcio
             </p>
-            <p className="text-green-700 text-sm mt-1">Equivalente a 12+ anos de aluguel médio em São Paulo</p>
+            <p className="text-green-700 text-sm mt-1">
+              Diferença entre o total pago no financiamento ({fmt(fin.totalJuros)}) e no consórcio ({fmt(con.total)})
+            </p>
           </motion.div>
 
           <div className="text-center mt-8">
