@@ -64,6 +64,7 @@ const CARDS_PRODUTOS = [
     descricao: 'Comece agora a jornada para o lar dos seus sonhos',
     img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80&auto=format&fit=crop',
     icon: Home,
+    href: '/consorcio-imovel',
   },
   {
     titulo: 'Consórcio de Veículos',
@@ -71,6 +72,7 @@ const CARDS_PRODUTOS = [
     descricao: 'O melhor investimento para o carro da sua vida',
     img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80&auto=format&fit=crop',
     icon: Car,
+    href: '/consorcio-veiculo',
   },
   {
     titulo: 'Consórcio de Negócios',
@@ -78,6 +80,7 @@ const CARDS_PRODUTOS = [
     descricao: 'Invista no futuro do seu negócio',
     img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80&auto=format&fit=crop',
     icon: Building2,
+    href: null,
   },
   {
     titulo: 'Consórcio de Reforma',
@@ -85,6 +88,7 @@ const CARDS_PRODUTOS = [
     descricao: 'Construção ou reforma sem comprometer seu orçamento',
     img: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80&auto=format&fit=crop',
     icon: Wrench,
+    href: null,
   },
   {
     titulo: 'Carta de Investimento',
@@ -92,6 +96,7 @@ const CARDS_PRODUTOS = [
     descricao: 'Use o consórcio como instrumento de investimento',
     img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&q=80&auto=format&fit=crop',
     icon: TrendingUp,
+    href: '/consorcio-investimento',
   },
 ]
 
@@ -323,7 +328,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="relative rounded-3xl overflow-hidden h-80 group cursor-pointer"
-                onClick={() => setModalOpen(true)}
+                onClick={() => card.href ? router.push(card.href) : setModalOpen(true)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -340,7 +345,7 @@ export default function LandingPage() {
                       <p className="text-white/70 text-sm">{card.descricao}</p>
                     </div>
                     <button className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-full text-sm transition-all whitespace-nowrap">
-                      Simular
+                      {card.href ? 'Ver mais' : 'Simular'}
                       <ChevronRight className="w-4 h-4" />
                     </button>
                   </div>
