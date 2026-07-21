@@ -163,7 +163,35 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <AdemIconLogo size="md" />
           <div className="hidden md:flex items-center gap-8 text-sm text-gray-600 font-medium">
-            <a href="#produtos" className="hover:text-red-600 transition-colors">Produtos</a>
+            <div className="relative group">
+              <button className="hover:text-red-600 transition-colors flex items-center gap-1">
+                Produtos
+                <ChevronRight className="w-3 h-3 rotate-90 group-hover:rotate-[270deg] transition-transform duration-200" />
+              </button>
+              <div className="absolute top-full left-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <a href="/consorcio-imovel" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <Home className="w-4 h-4 text-red-500" />
+                  <span className="text-gray-700 font-medium">Consórcio de Imóvel</span>
+                </a>
+                <a href="/consorcio-veiculo" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <Car className="w-4 h-4 text-red-500" />
+                  <span className="text-gray-700 font-medium">Consórcio de Veículo</span>
+                </a>
+                <a href="/consorcio-investimento" className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                  <TrendingUp className="w-4 h-4 text-red-500" />
+                  <span className="text-gray-700 font-medium">Carta de Investimento</span>
+                </a>
+                <div className="border-t border-gray-100 my-1" />
+                <button onClick={() => setModalOpen(true)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
+                  <Briefcase className="w-4 h-4 text-red-500" />
+                  <span className="text-gray-700 font-medium">Consórcio de Negócio</span>
+                </button>
+                <button onClick={() => setModalOpen(true)} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors w-full text-left">
+                  <Wrench className="w-4 h-4 text-red-500" />
+                  <span className="text-gray-700 font-medium">Consórcio de Reforma</span>
+                </button>
+              </div>
+            </div>
             <a href="#como-funciona" className="hover:text-red-600 transition-colors">Como funciona</a>
             <a href="#comparativo" className="hover:text-red-600 transition-colors">Por que consórcio?</a>
             <a href="#faq" className="hover:text-red-600 transition-colors">Dúvidas</a>
