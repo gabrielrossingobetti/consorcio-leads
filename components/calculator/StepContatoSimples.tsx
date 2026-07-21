@@ -39,10 +39,10 @@ export default function StepContatoSimples({ onSubmit, onBack }: Props) {
         className="text-center mb-6"
       >
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Descubra algo incrível
+          Quase lá! Veja sua simulação
         </h2>
         <p className="text-gray-500 text-sm">
-          Insira seus dados e simule seu consórcio de forma rápida, prática e totalmente online.
+          Informe seus dados para liberar o resultado e receber sua proposta personalizada.
         </p>
       </motion.div>
 
@@ -101,7 +101,7 @@ export default function StepContatoSimples({ onSubmit, onBack }: Props) {
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <>
-              Continuar
+              Ver minha simulação
               <ChevronRight className="w-5 h-5" />
             </>
           )}

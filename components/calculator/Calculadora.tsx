@@ -25,8 +25,8 @@ function getUTMs() {
   }
 }
 
-const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'resultado', 'contato']
-const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'resultado_investidor', 'contato']
+const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'contato', 'resultado']
+const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'contato', 'resultado_investidor']
 
 export default function Calculadora({ onClose }: { onClose?: () => void } = {}) {
   const router = useRouter()
@@ -90,13 +90,13 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
     }
   }
 
-  async function salvarSimulacao(r: ResultadoCalculo) {
+  async function salvarSimulacao(r: ResultadoCalculo, nomeOverride?: string, wpOverride?: string) {
     const utms = getUTMs()
     try {
       const res = await fetch('/api/simulacao', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...r, nome, whatsapp, ...utms }),
+        body: JSON.stringify({ ...r, nome: nomeOverride ?? nome, whatsapp: wpOverride ?? whatsapp, ...utms }),
       })
       const data = await res.json()
       if (data.id) setSimulacaoId(data.id)
@@ -105,11 +105,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
     }
   }
 
-  async function handleResultadoFinal(r: ResultadoCalculo) {
-    await Promise.all([
-      salvarSimulacao(r),
-      atualizarLeadComValor(r.valor, jaTentouFinanciar),
-    ])
+  function redirectObrigado(r: ResultadoCalculo) {
     router.push(
       `/obrigado?nome=${encodeURIComponent(nome)}` +
       `&economia=${r.economiaTotal}` +
@@ -120,11 +116,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
     )
   }
 
-  async function handleResultadoInvestidorFinal(r: ResultadoInvestidor) {
-    await Promise.all([
-      salvarSimulacao({ ...r, bem: 'investidor', nome, whatsapp } as never),
-      atualizarLeadComValor(r.carta, ''),
-    ])
+  function redirectObrigadoInvestidor(r: ResultadoInvestidor) {
     router.push(
       `/obrigado?nome=${encodeURIComponent(nome)}` +
       `&economia=${r.lucroLiquido}` +
@@ -190,7 +182,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                   setMesesInvestidor(meses)
                   const calc = calcularInvestidor(valor, meses)
                   setResultadoInvestidor(calc)
-                  goNext('resultado_investidor')
+                  goNext('contato')
                 }}
                 onBack={() => goBack('valor')}
               />
@@ -199,8 +191,8 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
             {step === 'resultado_investidor' && resultadoInvestidor && (
               <StepResultadoInvestidor
                 resultado={resultadoInvestidor}
-                onContinuar={() => goNext('contato')}
-                onBack={() => goBack('meses_investidor')}
+                onContinuar={() => redirectObrigadoInvestidor(resultadoInvestidor)}
+                onBack={() => goBack('contato')}
               />
             )}
 
@@ -210,17 +202,9 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                   setJaTentouFinanciar(r)
                   const calc = calcular(bem, valor)
                   setResultado(calc)
-                  goNext('resultado')
+                  goNext('contato')
                 }}
                 onBack={() => goBack('valor')}
-              />
-            )}
-
-            {step === 'resultado' && resultado && (
-              <StepResultado
-                resultado={resultado}
-                onContinuar={() => goNext('contato')}
-                onBack={() => goBack('bem')}
               />
             )}
 
@@ -230,10 +214,29 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                   setNome(n)
                   setWhatsapp(w)
                   if (bem) await salvarLead(n, w, bem)
-                  if (resultado) await handleResultadoFinal(resultado)
-                  else if (resultadoInvestidor) await handleResultadoInvestidorFinal(resultadoInvestidor)
+                  if (resultado) {
+                    await Promise.all([
+                      salvarSimulacao(resultado, n, w),
+                      atualizarLeadComValor(resultado.valor, jaTentouFinanciar),
+                    ])
+                    goNext('resultado')
+                  } else if (resultadoInvestidor) {
+                    await Promise.all([
+                      salvarSimulacao({ ...resultadoInvestidor, bem: 'investidor', nome: n, whatsapp: w } as never, n, w),
+                      atualizarLeadComValor(resultadoInvestidor.carta, ''),
+                    ])
+                    goNext('resultado_investidor')
+                  }
                 }}
-                onBack={() => goBack(resultado ? 'resultado' : 'resultado_investidor')}
+                onBack={() => goBack(resultado ? 'perfil' : 'meses_investidor')}
+              />
+            )}
+
+            {step === 'resultado' && resultado && (
+              <StepResultado
+                resultado={resultado}
+                onContinuar={() => redirectObrigado(resultado)}
+                onBack={() => goBack('contato')}
               />
             )}
           </motion.div>
