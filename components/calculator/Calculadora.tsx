@@ -66,7 +66,12 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
         body: JSON.stringify({ nome: n, whatsapp: w, bem: b, ...utms }),
       })
       const data = await res.json()
-      if (data.id) setLeadId(data.id)
+      if (data.id) {
+        setLeadId(data.id)
+        if (typeof window !== 'undefined' && (window as unknown as { gtag?: Function }).gtag) {
+          (window as unknown as { gtag: Function }).gtag('event', 'generate_lead', { bem: b })
+        }
+      }
     } catch {
       // silencioso
     }

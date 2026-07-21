@@ -328,7 +328,7 @@ export default function LandingPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.1 }}
                 className="relative rounded-3xl overflow-hidden h-80 group cursor-pointer"
-                onClick={() => card.href ? router.push(card.href) : setModalOpen(true)}
+                onClick={() => card.href ? (window.location.href = card.href) : setModalOpen(true)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
