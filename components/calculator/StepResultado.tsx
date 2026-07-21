@@ -48,7 +48,8 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
           ✅ Cálculo concluído
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-          Veja o que o banco <span className="text-red-500">não quer</span> que você saiba
+          Sua simulação está pronta.<br />
+          <span className="text-red-500">Veja a diferença.</span>
         </h2>
       </motion.div>
 
