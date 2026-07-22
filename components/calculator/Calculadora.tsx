@@ -69,7 +69,9 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
       if (data.id) {
         setLeadId(data.id)
         if (typeof window !== 'undefined' && (window as unknown as { gtag?: Function }).gtag) {
-          (window as unknown as { gtag: Function }).gtag('event', 'generate_lead', { bem: b })
+          const g = (window as unknown as { gtag: Function }).gtag
+          g('event', 'generate_lead', { bem: b })
+          g('event', 'SUBMIT_LEAD_FORM', { bem: b })
         }
         return data.id
       }

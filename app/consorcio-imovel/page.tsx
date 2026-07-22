@@ -190,7 +190,7 @@ export default function ConsorcioImovelPage() {
           <div className="text-center mb-10">
             <h2 className="text-4xl font-black text-gray-900 mb-3">
               Consórcio ou Financiamento?<br />
-              <span className="text-red-600">Simule você mesmo e veja o absurdo.</span>
+              <span className="text-red-600">Veja a diferença na prática.</span>
             </h2>
             <p className="text-gray-500 text-lg">Ajuste o valor e os meses — os cálculos atualizam na hora</p>
           </div>
