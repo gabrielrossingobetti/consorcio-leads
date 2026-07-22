@@ -111,15 +111,31 @@ export default function ConsorcioImovelPage() {
               </div>
 
               <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-4">
-                Compre seu imóvel<br />
-                <span className="text-red-400">sem pagar juros.</span>
+                Conquiste seu imóvel<br />
+                <span className="text-red-400">sem juros e sem entrada.</span>
               </h1>
 
-              <p className="text-xl text-white/80 leading-relaxed mb-8">
-                No financiamento de 30 anos, um imóvel de <strong className="text-white">R$ 400.000</strong> pode custar mais de{' '}
-                <strong className="text-red-400">R$ 1.200.000</strong> no total. No consórcio, você paga{' '}
-                <strong className="text-white">só R$ 496.000</strong> — sem juros, sem entrada obrigatória.
+              <p className="text-xl text-white/80 leading-relaxed mb-6">
+                Com o consórcio você tem <strong className="text-white">parcelas que cabem no orçamento</strong>,{' '}
+                <strong className="text-white">poder de compra à vista</strong> e{' '}
+                <strong className="text-green-400">zero juros</strong> — do primeiro ao último mês.
               </p>
+
+              <div className="grid grid-cols-2 gap-3 mb-8">
+                {[
+                  { icon: '✅', texto: 'Zero juros no contrato' },
+                  { icon: '💳', texto: 'Sem entrada obrigatória' },
+                  { icon: '🏠', texto: 'Residencial, comercial ou terreno' },
+                  { icon: '💰', texto: 'Carta equivale a dinheiro à vista' },
+                  { icon: '📋', texto: 'Use o FGTS como lance' },
+                  { icon: '🏦', texto: '100% regulado pelo Banco Central' },
+                ].map((b, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl px-3 py-2">
+                    <span className="text-base">{b.icon}</span>
+                    <span className="text-white/90 text-sm font-medium leading-tight">{b.texto}</span>
+                  </div>
+                ))}
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <button

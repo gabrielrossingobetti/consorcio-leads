@@ -57,7 +57,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
     setStep(prevStep)
   }
 
-  async function salvarLead(n: string, w: string, b: BemType) {
+  async function salvarLead(n: string, w: string, b: BemType): Promise<string | null> {
     const utms = getUTMs()
     try {
       const res = await fetch('/api/lead', {
@@ -71,19 +71,20 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
         if (typeof window !== 'undefined' && (window as unknown as { gtag?: Function }).gtag) {
           (window as unknown as { gtag: Function }).gtag('event', 'generate_lead', { bem: b })
         }
+        return data.id
       }
     } catch {
       // silencioso
     }
+    return null
   }
 
-  async function atualizarLeadComValor(v: number, perfil: string) {
-    if (!leadId) return
+  async function atualizarLeadComValor(id: string, v: number, perfil: string) {
     try {
       await fetch('/api/lead', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: leadId, valor: v, ja_tentou_financiar: perfil }),
+        body: JSON.stringify({ id, valor: v, ja_tentou_financiar: perfil }),
       })
     } catch {
       // silencioso
@@ -213,17 +214,17 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                 onSubmit={async (n, w) => {
                   setNome(n)
                   setWhatsapp(w)
-                  if (bem) await salvarLead(n, w, bem)
+                  const leadIdNovo = bem ? await salvarLead(n, w, bem) : null
                   if (resultado) {
                     await Promise.all([
                       salvarSimulacao(resultado, n, w),
-                      atualizarLeadComValor(resultado.valor, jaTentouFinanciar),
+                      leadIdNovo ? atualizarLeadComValor(leadIdNovo, resultado.valor, jaTentouFinanciar) : Promise.resolve(),
                     ])
                     goNext('resultado')
                   } else if (resultadoInvestidor) {
                     await Promise.all([
                       salvarSimulacao({ ...resultadoInvestidor, bem: 'investidor', nome: n, whatsapp: w } as never, n, w),
-                      atualizarLeadComValor(resultadoInvestidor.carta, ''),
+                      leadIdNovo ? atualizarLeadComValor(leadIdNovo, resultadoInvestidor.carta, '') : Promise.resolve(),
                     ])
                     goNext('resultado_investidor')
                   }

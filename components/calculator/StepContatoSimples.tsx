@@ -12,7 +12,7 @@ function formatPhone(value: string): string {
 }
 
 interface Props {
-  onSubmit: (nome: string, whatsapp: string) => void
+  onSubmit: (nome: string, whatsapp: string) => Promise<void>
   onBack: () => void
 }
 
@@ -28,7 +28,12 @@ export default function StepContatoSimples({ onSubmit, onBack }: Props) {
     if (whatsapp.replace(/\D/g, '').length < 10) { setErro('WhatsApp inválido'); return }
     setErro('')
     setLoading(true)
-    onSubmit(nome.trim(), whatsapp.replace(/\D/g, ''))
+    try {
+      await onSubmit(nome.trim(), whatsapp.replace(/\D/g, ''))
+    } catch {
+      setErro('Algo deu errado. Tente novamente.')
+      setLoading(false)
+    }
   }
 
   return (
