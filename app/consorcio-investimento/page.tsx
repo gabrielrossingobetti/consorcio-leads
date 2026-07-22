@@ -437,6 +437,7 @@ export default function ConsorcioInvestimentoPage() {
         href="https://wa.me/5511993929660?text=Ol%C3%A1!%20Tenho%20interesse%20em%20usar%20cons%C3%B3rcio%20como%20investimento."
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => { if (typeof window !== 'undefined' && (window as any).gtag) { (window as any).gtag('event', 'whatsapp_click', { event_category: 'lead', event_label: 'investimento' }); } }}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold px-5 py-3.5 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"
       >
         <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white flex-shrink-0" xmlns="http://www.w3.org/2000/svg">

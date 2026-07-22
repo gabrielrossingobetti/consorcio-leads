@@ -639,6 +639,7 @@ export default function LandingPage() {
         href="https://wa.me/5511993929660?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20gostaria%20de%20tirar%20uma%20d%C3%BAvida%20sobre%20cons%C3%B3rcio."
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => { if (typeof window !== 'undefined' && (window as any).gtag) { (window as any).gtag('event', 'whatsapp_click', { event_category: 'lead', event_label: 'home' }); } }}
         className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold px-5 py-3.5 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95 group"
         aria-label="Tire suas dúvidas pelo WhatsApp"
       >
