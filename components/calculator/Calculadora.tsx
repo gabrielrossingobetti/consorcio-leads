@@ -72,6 +72,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
           const g = (window as unknown as { gtag: Function }).gtag
           g('event', 'generate_lead', { bem: b })
           g('event', 'SUBMIT_LEAD_FORM', { bem: b })
+          g('event', 'whatsapp_click', { event_category: 'lead', event_label: 'simulador' })
         }
         return data.id
       }
