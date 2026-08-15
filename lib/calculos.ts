@@ -24,6 +24,7 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
     prazoFinanciamentoMeses: 60,       // 5 anos
     taxaAdminConsorcio: 16,            // 16% total Ademicon
     prazoConsorcioMeses: 90,           // 7,5 anos
+    taxaParcelaCheia: 0.0131,          // R$1.310 a cada R$100k (taxa real Ademicon)
   },
   negocio: {
     label: 'Negócio/Empresa',
