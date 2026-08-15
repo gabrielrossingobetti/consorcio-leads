@@ -11,8 +11,9 @@ import StepResultado from './StepResultado'
 import StepResultadoInvestidor from './StepResultadoInvestidor'
 import StepMesesInvestidor from './StepMesesInvestidor'
 import StepContatoSimples from './StepContatoSimples'
+import StepAgendamento from './StepAgendamento'
 
-type Step = 'bem' | 'contato' | 'valor' | 'perfil' | 'resultado' | 'meses_investidor' | 'resultado_investidor'
+type Step = 'bem' | 'contato' | 'valor' | 'perfil' | 'resultado' | 'agendamento' | 'meses_investidor' | 'resultado_investidor'
 
 function getUTMs() {
   if (typeof window === 'undefined') return {}
@@ -25,7 +26,7 @@ function getUTMs() {
   }
 }
 
-const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'contato', 'resultado']
+const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'contato', 'resultado', 'agendamento']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'contato', 'resultado_investidor']
 
 export default function Calculadora({ onClose }: { onClose?: () => void } = {}) {
@@ -239,8 +240,18 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
             {step === 'resultado' && resultado && (
               <StepResultado
                 resultado={resultado}
-                onContinuar={() => redirectObrigado(resultado)}
+                onContinuar={() => goNext('agendamento')}
                 onBack={() => goBack('contato')}
+              />
+            )}
+
+            {step === 'agendamento' && resultado && (
+              <StepAgendamento
+                resultado={resultado}
+                nome={nome}
+                whatsapp={whatsapp}
+                onBack={() => goBack('resultado')}
+                onSuccess={() => redirectObrigado(resultado)}
               />
             )}
           </motion.div>

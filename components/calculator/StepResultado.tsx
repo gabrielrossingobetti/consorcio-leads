@@ -112,12 +112,13 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
           </div>
           <div className="space-y-2">
             <div>
-              <p className="text-[10px] text-gray-500 uppercase">Parcela</p>
-              <p className="font-bold text-green-600 text-lg">{formatCurrency(resultado.parcelaConsorcio)}</p>
+              <p className="text-[10px] text-gray-500 uppercase">A partir de</p>
+              <p className="font-black text-green-600 text-xl">{formatCurrency(resultado.parcelaReduzida)}<span className="text-xs font-normal text-green-500">/mês</span></p>
+              <p className="text-[10px] text-green-500">com lance embutido</p>
             </div>
             <div>
-              <p className="text-[10px] text-gray-500 uppercase">Total pago</p>
-              <p className="font-bold text-green-700">{formatCurrency(resultado.totalConsorcio)}</p>
+              <p className="text-[10px] text-gray-400 uppercase">Parcela cheia</p>
+              <p className="text-sm text-gray-500 line-through">{formatCurrency(resultado.parcelaConsorcio)}</p>
             </div>
             <div>
               <p className="text-[10px] text-gray-500 uppercase">Zero juros</p>
@@ -149,7 +150,7 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
           onClick={onContinuar}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-lg"
         >
-          Quero receber minha proposta
+          Quero garantir essa proposta
           <ChevronRight className="w-5 h-5" />
         </motion.button>
 

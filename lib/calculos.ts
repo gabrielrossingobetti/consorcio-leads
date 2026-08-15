@@ -57,6 +57,7 @@ export interface ResultadoCalculo {
   jurosFinanciamento: number
   // Consórcio
   parcelaConsorcio: number
+  parcelaReduzida: number
   totalConsorcio: number
   taxaAdminTotal: number
   // Comparativo
@@ -86,6 +87,9 @@ export function calcular(bem: BemType, valor: number): ResultadoCalculo {
   const taxaAdminTotal = valor * (taxaAdminConsorcio / 100)
   const totalConsorcio = valor + taxaAdminTotal
   const parcelaConsorcio = totalConsorcio / prazoMeses
+  // Parcela reduzida (com lance embutido): imovel 0,337%/mês, veículo 0,73%/mês
+  const TAXA_REDUZIDA: Partial<Record<BemType, number>> = { imovel: 0.00337, carro: 0.0073 }
+  const parcelaReduzida = valor * (TAXA_REDUZIDA[bem] ?? parcelaConsorcio / valor)
 
   // Comparativo
   const economiaMensal = parcelaFinanciamento - parcelaConsorcio
@@ -108,6 +112,7 @@ export function calcular(bem: BemType, valor: number): ResultadoCalculo {
     totalFinanciamento: Math.round(totalFinanciamento),
     jurosFinanciamento: Math.round(jurosFinanciamento),
     parcelaConsorcio: Math.round(parcelaConsorcio),
+    parcelaReduzida: Math.round(parcelaReduzida),
     totalConsorcio: Math.round(totalConsorcio),
     taxaAdminTotal: Math.round(taxaAdminTotal),
     economiaMensal: Math.round(economiaMensal),
