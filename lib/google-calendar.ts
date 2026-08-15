@@ -3,15 +3,10 @@ import { google } from 'googleapis'
 const SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 export function getCalendarClient() {
-  const privateKey = process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-  const auth = new google.auth.GoogleAuth({
-    credentials: {
-      type: 'service_account',
-      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-      private_key: privateKey,
-    },
-    scopes: SCOPES,
-  })
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
+  if (!raw) throw new Error('GOOGLE_SERVICE_ACCOUNT_JSON not set')
+  const credentials = JSON.parse(Buffer.from(raw, 'base64').toString('utf-8'))
+  const auth = new google.auth.GoogleAuth({ credentials, scopes: SCOPES })
   return google.calendar({ version: 'v3', auth })
 }
 
