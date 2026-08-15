@@ -16,12 +16,16 @@ export const CALENDAR_ID = process.env.GOOGLE_CALENDAR_ID!
 export const WORK_HOURS = { start: 9 * 60 + 30, end: 19 * 60 } // minutos desde meia-noite
 export const SLOT_DURATION = 30 // minutos
 
+// BRT = UTC-3 (Brazil Standard Time, sem DST desde 2019)
+const BRT_OFFSET_HOURS = 3
+
 export function generateSlots(date: Date): Date[] {
   const slots: Date[] = []
+  // Converte horários BRT para UTC adicionando 3h
   const start = new Date(date)
-  start.setHours(Math.floor(WORK_HOURS.start / 60), WORK_HOURS.start % 60, 0, 0)
+  start.setUTCHours(Math.floor(WORK_HOURS.start / 60) + BRT_OFFSET_HOURS, WORK_HOURS.start % 60, 0, 0)
   const end = new Date(date)
-  end.setHours(Math.floor(WORK_HOURS.end / 60), WORK_HOURS.end % 60, 0, 0)
+  end.setUTCHours(Math.floor(WORK_HOURS.end / 60) + BRT_OFFSET_HOURS, WORK_HOURS.end % 60, 0, 0)
 
   let current = new Date(start)
   while (current < end) {
