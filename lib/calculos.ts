@@ -12,14 +12,14 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
   imovel: {
     label: 'Imóvel',
     taxaFinanciamentoAnual: 10.5,
-    taxaAdminConsorcio: 12,
-    prazoMeses: 200,
-    prazoLabel: '200 meses (~16 anos)',
+    taxaAdminConsorcio: 24,
+    prazoMeses: 225,
+    prazoLabel: '225 meses (~18 anos)',
   },
   carro: {
     label: 'Veículo',
     taxaFinanciamentoAnual: 18,
-    taxaAdminConsorcio: 16.1,
+    taxaAdminConsorcio: 16,
     prazoMeses: 90,
     prazoLabel: '90 meses (7,5 anos)',
   },
@@ -83,11 +83,15 @@ export function calcular(bem: BemType, valor: number): ResultadoCalculo {
   const totalFinanciamento = parcelaFinanciamento * prazoMeses
   const jurosFinanciamento = totalFinanciamento - valor
 
-  // Consórcio Ademicon
+  // Consórcio Ademicon — taxas reais por produto
   const taxaAdminTotal = valor * (taxaAdminConsorcio / 100)
   const totalConsorcio = valor + taxaAdminTotal
-  const parcelaConsorcio = totalConsorcio / prazoMeses
-  // Parcela reduzida (com lance embutido): imovel 0,337%/mês, veículo 0,73%/mês
+  // Parcela cheia real (até a contemplação): imóvel R$550/100k, veículo formula
+  const TAXA_PARCELA_CHEIA: Partial<Record<BemType, number>> = { imovel: 0.0055 }
+  const parcelaConsorcio = TAXA_PARCELA_CHEIA[bem]
+    ? Math.round(valor * TAXA_PARCELA_CHEIA[bem]!)
+    : Math.round(totalConsorcio / prazoMeses)
+  // Parcela reduzida (pós-contemplação, uso interno — não exibida ao cliente)
   const TAXA_REDUZIDA: Partial<Record<BemType, number>> = { imovel: 0.00337, carro: 0.0073 }
   const parcelaReduzida = valor * (TAXA_REDUZIDA[bem] ?? parcelaConsorcio / valor)
 
