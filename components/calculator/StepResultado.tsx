@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingDown, TrendingUp, Clock, ChevronRight, Share2 } from 'lucide-react'
+import { TrendingDown, TrendingUp, ChevronRight, Share2 } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
 
 interface Props {
@@ -128,18 +128,6 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
         </div>
       </motion.div>
 
-      {/* Tempo de contemplação */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.35 }}
-        className="flex items-center gap-3 bg-blue-50 border border-blue-200 rounded-xl p-3 mb-6"
-      >
-        <Clock className="w-5 h-5 text-blue-500 flex-shrink-0" />
-        <p className="text-sm text-blue-800">
-          <strong>Tempo de contemplação:</strong> entre 1 e 36 meses — por sorteio ou lance
-        </p>
-      </motion.div>
 
       {/* CTAs */}
       <div className="flex flex-col gap-3">
