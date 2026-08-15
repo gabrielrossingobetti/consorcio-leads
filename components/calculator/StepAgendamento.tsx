@@ -44,6 +44,32 @@ function formatSlot(iso: string) {
   return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })
 }
 
+// Gera todos os slots possíveis do dia (mesma lógica do backend: 9:30–19:00, 30min, BRT=UTC-3)
+function getAllSlots(date: Date): string[] {
+  const slots: string[] = []
+  const start = 9 * 60 + 30  // 9h30 em minutos
+  const end = 19 * 60         // 19h00
+  for (let m = start; m < end; m += 30) {
+    const d = new Date(date)
+    d.setUTCHours(Math.floor(m / 60) + 3, m % 60, 0, 0)
+    slots.push(d.toISOString())
+  }
+  return slots
+}
+
+// Determina quais slots ficam sempre bloqueados (escassez visual)
+// Usa seed baseado na data para ser consistente mas variar por dia
+function getBlockedSlots(date: Date, allSlots: string[]): Set<string> {
+  const seed = date.getDate() + date.getMonth() * 31
+  const blocked = new Set<string>()
+  // Bloqueia ~35% dos slots de forma pseudo-aleatória mas consistente
+  allSlots.forEach((slot, i) => {
+    const hash = (seed * 31 + i * 17) % 100
+    if (hash < 35) blocked.add(slot)
+  })
+  return blocked
+}
+
 const FICHA_EMPTY: FichaForm = {
   nome: '', cpf: '', nascimento: '', estado_civil: '',
   nome_mae: '', nacionalidade: '', profissao: '', renda: '',
@@ -71,6 +97,8 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [ficha, setFicha] = useState<FichaForm>({ ...FICHA_EMPTY, nome, telefone: whatsapp })
+  const [allDaySlots, setAllDaySlots] = useState<string[]>([])
+  const [blockedSlots, setBlockedSlots] = useState<Set<string>>(new Set())
   const days = getNext14Days()
   const ctx = { bem: resultado.bem, valor: resultado.valor, nome, whatsapp }
 
@@ -84,6 +112,9 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
   async function fetchSlots(day: Date) {
     setLoadingSlots(true)
     setSlots([])
+    const all = getAllSlots(day)
+    setAllDaySlots(all)
+    setBlockedSlots(getBlockedSlots(day, all))
     try {
       const res = await fetch(`/api/calendar/availability?date=${toDateStr(day)}`)
       const data = await res.json()
@@ -193,7 +224,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
               </div>
               <div>
                 <div className="font-bold text-gray-900 text-base mb-1">Agendar reunião com consultor</div>
-                <div className="text-sm text-gray-500">Escolha um horário na agenda. Em 30 minutos te explico tudo e montamos a melhor proposta.</div>
+                <div className="text-sm text-gray-500">Escolha um horário. O administrativo confirma pelo WhatsApp. Bate-papo rápido de 10 minutos.</div>
                 <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
                   ✓ Sem compromisso · Gratuito
                 </div>
@@ -429,7 +460,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         <div className="text-center mb-5">
           <Calendar className="w-8 h-8 text-blue-500 mx-auto mb-2" />
           <h2 className="text-xl font-bold text-gray-900">Escolha o melhor dia</h2>
-          <p className="text-gray-500 text-sm">Reunião de 30 minutos · Seg a Dom · 9h30 às 19h</p>
+          <p className="text-gray-500 text-sm">Bate-papo de 10 minutos · Seg a Dom · 9h30 às 19h</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
@@ -472,23 +503,41 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
           </div>
-        ) : slots.length === 0 ? (
+        ) : allDaySlots.length === 0 ? (
           <div className="text-center py-8 text-gray-400">
             <p>Sem horários disponíveis neste dia.</p>
             <button onClick={() => setStep('dia')} className="mt-3 text-blue-500 text-sm font-medium">Escolher outro dia</button>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
-            {slots.map((slot, i) => (
-              <button
-                key={i}
-                onClick={() => { setSelectedSlot(slot); setStep('confirmar') }}
-                className="py-3 px-2 rounded-xl border-2 border-gray-200 text-center font-bold text-gray-800 hover:border-blue-500 hover:bg-blue-50 transition-all"
-              >
-                {formatSlot(slot)}
-              </button>
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-3 gap-2">
+              {allDaySlots.map((slot, i) => {
+                const available = slots.includes(slot) && !blockedSlots.has(slot)
+                const occupied = !available
+                return occupied ? (
+                  <div
+                    key={i}
+                    className="py-3 px-2 rounded-xl border-2 border-red-200 bg-red-50 text-center cursor-not-allowed"
+                  >
+                    <div className="font-bold text-red-400 text-sm">{formatSlot(slot)}</div>
+                    <div className="text-xs text-red-300 mt-0.5">Ocupado</div>
+                  </div>
+                ) : (
+                  <button
+                    key={i}
+                    onClick={() => { setSelectedSlot(slot); setStep('confirmar') }}
+                    className="py-3 px-2 rounded-xl border-2 border-gray-200 text-center font-bold text-gray-800 hover:border-blue-500 hover:bg-blue-50 transition-all"
+                  >
+                    {formatSlot(slot)}
+                  </button>
+                )
+              })}
+            </div>
+            <div className="flex items-center gap-4 mt-3 text-xs text-gray-400 justify-center">
+              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-red-200 inline-block" /> Ocupado</span>
+              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-gray-200 border border-gray-300 inline-block" /> Disponível</span>
+            </div>
+          </>
         )}
       </motion.div>
     )
