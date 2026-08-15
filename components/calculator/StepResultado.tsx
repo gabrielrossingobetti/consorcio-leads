@@ -54,7 +54,7 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
               <p className="font-bold text-red-600 text-xl">{formatCurrency(resultado.parcelaFinanciamento)}</p>
             </div>
             <div className="pt-2 border-t border-red-100">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Total pago</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Total pago em {resultado.prazoFinanciamentoMeses} meses</p>
               <p className="font-black text-red-700 text-lg">{formatCurrency(resultado.totalFinanciamento)}</p>
               <p className="text-[10px] text-red-400 mt-0.5">{formatCurrency(resultado.jurosFinanciamento)} só em juros</p>
             </div>
@@ -74,7 +74,7 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
               <p className="text-[10px] text-green-500 mt-0.5">até a contemplação</p>
             </div>
             <div className="pt-2 border-t border-green-100">
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Total pago</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Total pago em {resultado.prazoConsorcioMeses} meses</p>
               <p className="font-black text-green-700 text-lg">{formatCurrency(resultado.totalConsorcio)}</p>
               <p className="text-[10px] text-green-500 mt-0.5">zero juros — taxa admin apenas</p>
             </div>
