@@ -182,7 +182,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
             </div>
           </button>
 
-          {/* Opção 2: Quero minha proposta */}
+          {/* Opção 2: Já sei como funciona, quero contratar */}
           <button
             onClick={() => { logFunil('clicou_proposta', ctx); setStep('proposta_form') }}
             className="w-full text-left p-5 rounded-2xl border-2 border-green-500 bg-green-50 hover:bg-green-100 transition-all active:scale-[0.99]"
@@ -192,8 +192,8 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <div className="font-bold text-gray-900 text-base mb-1">Quero minha proposta</div>
-                <div className="text-sm text-gray-500">Direcionamos você para a administradora com a melhor condição disponível.</div>
+                <div className="font-bold text-gray-900 text-base mb-1">Já sei como funciona — quero contratar</div>
+                <div className="text-sm text-gray-500">Informe seus dados e receba a proposta direto no WhatsApp.</div>
               </div>
             </div>
           </button>
@@ -233,11 +233,11 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         </button>
 
         <div className="text-center mb-6">
-          <div className="text-4xl mb-3">📋</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Só mais dois dados</h2>
+          <div className="text-4xl mb-3">✅</div>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Ótimo, {nome.split(' ')[0]}!</h2>
           <p className="text-gray-500 text-sm">
-            {nome.split(' ')[0]}, seu nome e telefone já estão.<br />
-            Precisamos do CPF e e-mail para montar a proposta.
+            Informe CPF e e-mail para montar a proposta.<br />
+            Nome e telefone já estão registrados.
           </p>
         </div>
 
