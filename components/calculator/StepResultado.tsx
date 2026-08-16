@@ -87,11 +87,11 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.25 }}
-        className="bg-gray-900 rounded-2xl p-4 mb-5 text-center"
+        className="bg-green-700 rounded-2xl p-4 mb-5 text-center"
       >
-        <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">Diferença total</p>
+        <p className="text-green-200 text-xs uppercase tracking-widest mb-1">Diferença total</p>
         <p className="text-3xl font-black text-white">{formatCurrency(resultado.economiaTotal)}</p>
-        <p className="text-gray-400 text-sm mt-1">
+        <p className="text-green-200 text-sm mt-1">
           {resultado.percentualEconomia}% a menos no consórcio de {bemLabel}
         </p>
       </motion.div>

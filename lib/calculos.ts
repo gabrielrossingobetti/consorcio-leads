@@ -16,7 +16,7 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
     prazoFinanciamentoMeses: 360,      // 30 anos
     taxaAdminConsorcio: 24,            // 24% total Ademicon
     prazoConsorcioMeses: 225,          // ~18 anos
-    taxaParcelaCheia: 0.0055,          // R$550 a cada R$100k (taxa real Ademicon)
+    taxaParcelaCheia: 0.00337,         // R$337 a cada R$100k (parcela até a contemplação)
   },
   carro: {
     label: 'Veículo',
