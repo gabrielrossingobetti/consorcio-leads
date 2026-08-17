@@ -104,186 +104,200 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ── HERO ───────────────────────────────────────────────────── */}
-      <section className="min-h-screen pt-20 pb-0 relative overflow-hidden">
-        {/* Background grid */}
-        <div
-          className="absolute inset-0 opacity-[0.04] pointer-events-none"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.6) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
-        {/* Red ambient glow */}
-        <div className="absolute top-0 left-1/4 w-[800px] h-[600px] bg-red-700/8 rounded-full blur-[160px] pointer-events-none" />
+      {/* ── HERO: PRODUTO DOMINANTE ────────────────────────────────── */}
+      <section className="relative h-screen min-h-[600px] max-h-[900px] overflow-hidden" id="produtos">
+        {/* Background: foto do produto ativo */}
+        <AnimatePresence mode="sync">
+          <motion.div
+            key={produtoAtivo}
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={PRODUTOS[produtoAtivo].img}
+              alt={PRODUTOS[produtoAtivo].label}
+              className="w-full h-full object-cover"
+            />
+          </motion.div>
+        </AnimatePresence>
 
-        <div className="max-w-7xl mx-auto px-6 py-12 lg:py-20 grid lg:grid-cols-2 gap-10 lg:gap-16 items-start relative z-10">
+        {/* Gradiente escuro sobre a foto */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
 
-          {/* LEFT: copy */}
-          <div>
+        {/* Conteúdo sobreposto */}
+        <div className="relative z-10 h-full flex flex-col justify-between pt-24 pb-8 px-6 max-w-7xl mx-auto">
+
+          {/* Topo: headline */}
+          <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
-              className="inline-flex items-center gap-2 bg-red-600/15 border border-red-500/25 text-red-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-6"
+              className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 text-red-300 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
               Indica Consórcio · Administrado pela Ademicon
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.05 }}
-              className="text-5xl md:text-6xl lg:text-7xl font-black leading-[0.92] mb-6 tracking-tight"
+              transition={{ duration: 0.55, delay: 0.05 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-black leading-[0.92] mb-5 tracking-tight drop-shadow-2xl"
             >
               Compre o que<br />
-              <span className="text-red-500">você quer.</span><br />
-              Não o que o<br />
-              banco deixa.
+              <span className="text-red-400">você quer.</span><br />
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={produtoAtivo}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.35 }}
+                  className="text-white/90"
+                >
+                  {PRODUTOS[produtoAtivo].label} próprio.
+                </motion.span>
+              </AnimatePresence>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.15 }}
-              className="text-white/80 text-lg leading-relaxed mb-8 max-w-lg"
+              className="text-white/80 text-lg leading-relaxed mb-6 max-w-lg drop-shadow"
             >
-              Parcela mensal que cabe no seu bolso.
-              Sem juros. Sem taxa de adesão.
-              Contemplado, você compra o bem à vista — com poder de negociação que o financiado nunca terá.
+              Parcela que cabe no bolso. Sem juros. Sem taxa de adesão.
+              Contemplado, você compra à vista — com poder de negociação que o financiado nunca terá.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="flex flex-col sm:flex-row gap-3 mb-10"
+              className="flex flex-wrap gap-3"
             >
               <button
                 onClick={() => setModalOpen(true)}
-                className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full text-base transition-all hover:scale-105 active:scale-95 shadow-lg shadow-red-950/50"
+                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full text-base transition-all hover:scale-105 active:scale-95 shadow-xl"
               >
                 Simular minha economia
                 <ArrowRight className="w-5 h-5" />
               </button>
               <a
                 href="#como-funciona"
-                className="inline-flex items-center justify-center gap-2 border border-white/20 text-white/80 hover:text-white hover:border-white/40 font-semibold px-8 py-4 rounded-full text-base transition-all"
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-8 py-4 rounded-full text-base transition-all backdrop-blur-sm"
               >
                 Como funciona
               </a>
             </motion.div>
+          </div>
 
+          {/* Rodapé do hero: seletor de produtos + resumo */}
+          <div>
+            {/* Resumo do produto ativo */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.25 }}
-              className="flex items-center gap-5 text-sm text-white/60 mb-10"
+              transition={{ delay: 0.3 }}
+              className="flex items-center gap-3 mb-4"
             >
-              <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" /> Sem juros</span>
-              <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" /> Sem taxa de adesão</span>
-              <span className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400 flex-shrink-0" /> 100% gratuito</span>
-            </motion.div>
-
-            {/* Produtos carrossel */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              id="produtos"
-            >
-              <p className="text-white/40 text-xs uppercase tracking-widest font-semibold mb-3">Consórcio de</p>
-              <div className="flex gap-2">
-                {PRODUTOS.map((p, i) => (
-                  <button
-                    key={p.label}
-                    onClick={() => { setProdutoAtivo(i); setModalOpen(true) }}
-                    className={`relative flex-1 min-w-0 rounded-2xl overflow-hidden transition-all duration-300 ${
-                      produtoAtivo === i ? 'ring-2 ring-red-500 scale-[1.03]' : 'opacity-60 hover:opacity-80'
-                    }`}
-                    style={{ paddingTop: '90%' }}
+              <span className="text-2xl">{PRODUTOS[produtoAtivo].emoji}</span>
+              <div>
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={produtoAtivo}
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 8 }}
+                    transition={{ duration: 0.25 }}
+                    className="text-white font-bold text-base"
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={p.img}
-                      alt={p.label}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-2">
-                      <p className="text-white font-bold text-[11px] leading-tight">{p.label}</p>
-                    </div>
-                  </button>
-                ))}
+                    Consórcio de {PRODUTOS[produtoAtivo].label}
+                  </motion.p>
+                </AnimatePresence>
+                <p className="text-white/60 text-sm">{PRODUTOS[produtoAtivo].tag}</p>
               </div>
-              <div className="mt-2 flex items-center gap-2">
-                <span className="text-white/50 text-xs">{PRODUTOS[produtoAtivo].emoji}</span>
-                <span className="text-white/70 text-xs font-medium">{PRODUTOS[produtoAtivo].tag}</span>
-                <button onClick={() => setModalOpen(true)} className="ml-auto text-red-400 text-xs font-bold hover:text-red-300 transition-colors">
-                  Simular →
-                </button>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* RIGHT: Savings preview */}
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            <div className="bg-[#111] border border-white/10 rounded-3xl p-7 shadow-2xl lg:sticky lg:top-24">
-              <p className="text-white/50 text-xs uppercase tracking-widest font-semibold mb-5">Veja a diferença — sem simular</p>
-
-              <div className="flex gap-1.5 mb-5 bg-white/5 p-1 rounded-2xl">
-                {(['imovel', 'carro'] as const).map((b) => (
-                  <button
-                    key={b}
-                    onClick={() => setBemPreview(b)}
-                    className={`flex-1 py-2.5 px-3 rounded-xl text-sm font-bold transition-all ${
-                      bemPreview === b ? 'bg-red-600 text-white shadow-lg' : 'text-white/50 hover:text-white/80'
-                    }`}
-                  >
-                    {b === 'imovel' ? '🏠 Imóvel' : '🚗 Veículo'}
-                  </button>
-                ))}
-              </div>
-
-              <p className="text-white/40 text-xs mb-4">{ex.label} · comparativo real</p>
-
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-red-950/50 border border-red-900/40 rounded-2xl p-4">
-                  <p className="text-red-400 text-[10px] font-bold uppercase tracking-wider mb-2">Financiamento</p>
-                  <p className="text-white font-black text-xl leading-none mb-1">
-                    {fmt(ex.parcelaFin)}<span className="text-white/40 text-xs font-normal">/mês</span>
-                  </p>
-                  <p className="text-red-400/80 text-xs">Total: {fmt(ex.totalFin)}</p>
-                </div>
-                <div className="bg-green-950/50 border border-green-900/40 rounded-2xl p-4">
-                  <p className="text-green-400 text-[10px] font-bold uppercase tracking-wider mb-2">Consórcio</p>
-                  <p className="text-white font-black text-xl leading-none mb-1">
-                    {fmt(ex.parcelaCons)}<span className="text-white/40 text-xs font-normal">/mês</span>
-                  </p>
-                  <p className="text-green-400/80 text-xs">Total: {fmt(ex.totalCons)}</p>
-                </div>
-              </div>
-
-              <div className="bg-amber-500/10 border border-amber-500/25 rounded-2xl p-4 mb-5 text-center">
-                <p className="text-amber-400/70 text-xs uppercase tracking-widest mb-1">Você economiza</p>
-                <p className="text-amber-400 font-black text-4xl mb-0.5">{fmt(economiaTotal)}</p>
-                <p className="text-amber-400/50 text-xs">{fmt(economiaMensal)}/mês que ficam no seu bolso</p>
-              </div>
-
               <button
                 onClick={() => setModalOpen(true)}
-                className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-4 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98]"
+                className="ml-auto text-red-400 hover:text-red-300 font-bold text-sm border border-red-500/30 px-4 py-2 rounded-full transition-all hover:bg-red-600/10"
+              >
+                Simular este →
+              </button>
+            </motion.div>
+
+            {/* Tabs de produto */}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {PRODUTOS.map((p, i) => (
+                <button
+                  key={p.label}
+                  onClick={() => setProdutoAtivo(i)}
+                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all ${
+                    produtoAtivo === i
+                      ? 'bg-red-600 text-white shadow-lg scale-105'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white backdrop-blur-sm'
+                  }`}
+                >
+                  <span>{p.emoji}</span>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── SAVINGS PREVIEW: LOGO ABAIXO DO HERO ───────────────────── */}
+      <section className="py-12 px-6 bg-[#0d0d0d] border-b border-white/8">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-white/50 text-xs uppercase tracking-widest font-semibold text-center mb-6">Veja a diferença antes de simular</p>
+
+          <div className="flex gap-2 justify-center mb-6">
+            {(['imovel', 'carro'] as const).map((b) => (
+              <button
+                key={b}
+                onClick={() => setBemPreview(b)}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+                  bemPreview === b ? 'bg-red-600 text-white' : 'bg-white/8 text-white/60 hover:text-white border border-white/10'
+                }`}
+              >
+                {b === 'imovel' ? '🏠 Imóvel R$300k' : '🚗 Veículo R$80k'}
+              </button>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-3 gap-4 items-center">
+            <div className="bg-red-950/50 border border-red-900/40 rounded-2xl p-5 text-center">
+              <p className="text-red-400 text-xs font-bold uppercase tracking-wider mb-3">Financiamento</p>
+              <p className="text-white font-black text-3xl mb-1">{fmt(ex.parcelaFin)}<span className="text-white/40 text-sm font-normal">/mês</span></p>
+              <p className="text-red-400/80 text-sm font-semibold">Total: {fmt(ex.totalFin)}</p>
+            </div>
+
+            <div className="text-center">
+              <div className="bg-amber-500/10 border border-amber-500/25 rounded-2xl p-5">
+                <p className="text-amber-400/70 text-xs uppercase tracking-widest mb-2">Você economiza</p>
+                <p className="text-amber-400 font-black text-4xl mb-1">{fmt(economiaTotal)}</p>
+                <p className="text-amber-400/50 text-xs">{fmt(economiaMensal)}/mês no bolso</p>
+              </div>
+              <button
+                onClick={() => setModalOpen(true)}
+                className="mt-3 w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3 rounded-xl transition-all text-sm"
               >
                 Calcular o meu →
               </button>
-              <p className="text-center text-white/30 text-xs mt-2">Gratuito · Sem compromisso · 2 minutos</p>
             </div>
-          </motion.div>
+
+            <div className="bg-green-950/50 border border-green-900/40 rounded-2xl p-5 text-center">
+              <p className="text-green-400 text-xs font-bold uppercase tracking-wider mb-3">Consórcio</p>
+              <p className="text-white font-black text-3xl mb-1">{fmt(ex.parcelaCons)}<span className="text-white/40 text-sm font-normal">/mês</span></p>
+              <p className="text-green-400/80 text-sm font-semibold">Total: {fmt(ex.totalCons)}</p>
+            </div>
+          </div>
         </div>
       </section>
 
