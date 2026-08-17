@@ -34,7 +34,7 @@ const FAQ = [
   { pergunta: 'Quanto tempo leva para ser contemplado?', resposta: 'O tempo médio varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode antecipar com um lance — quanto maior o lance, maior a chance de ser contemplado mais rápido.' },
   { pergunta: 'Tem taxa de adesão ou juros?', resposta: 'Não existe taxa de adesão e zero juros. Você paga apenas uma taxa administrativa incluída na parcela mensal. É exatamente essa diferença que gera a economia de centenas de milhares de reais comparado ao financiamento.' },
   { pergunta: 'E se eu precisar do bem com urgência?', resposta: 'Se a necessidade for imediata, o consórcio pode não ser a melhor escolha. Mas para quem planeja — e o planejamento começa hoje — é o instrumento mais inteligente: você paga até 50% menos no total.' },
-  { pergunta: 'O consórcio é seguro? É regulamentado?', resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil. A Ademicon é a maior administradora privada do país, com mais de 35 anos de mercado.' },
+  { pergunta: 'O consórcio é seguro? É regulamentado?', resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil. Nossa parceira é a maior administradora privada do país, com mais de 35 anos de mercado e mais de 641 mil clientes atendidos.' },
   { pergunta: 'Posso usar o FGTS no consórcio de imóvel?', resposta: 'Sim. Para consórcios de imóveis, você pode usar o FGTS tanto para dar um lance quanto para abater o saldo devedor após ser contemplado.' },
 ]
 
@@ -156,7 +156,7 @@ export default function LandingPage() {
                 className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 text-red-300 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
               >
                 <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                Indica Consórcio · Administrado pela Ademicon · +35 anos
+                Indica Consórcio · Parceria com a maior administradora privada do Brasil
               </motion.div>
 
               <motion.h1
@@ -502,8 +502,8 @@ export default function LandingPage() {
           <div className="max-w-6xl mx-auto relative z-10">
             <div className="text-center mb-10">
               <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Quem está por trás</p>
-              <h2 className="text-3xl font-black">Administrado pela Ademicon</h2>
-              <p className="text-white/55 text-sm mt-2">A maior administradora de consórcios privada do Brasil</p>
+              <h2 className="text-3xl font-black">A maior administradora privada do Brasil</h2>
+              <p className="text-white/55 text-sm mt-2">Regulada pelo Banco Central · +35 anos no mercado · presente em todo o território nacional</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
