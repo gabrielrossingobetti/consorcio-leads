@@ -151,71 +151,79 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
   if (step === 'escolha') {
     return (
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full">
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-3">🎯</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            {nome.split(' ')[0]}, como quer prosseguir?
+        {/* Cabeçalho */}
+        <div className="text-center mb-5">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">
+            Próximo passo, {nome.split(' ')[0]}
           </h2>
           <p className="text-gray-500 text-sm">
             Carta de {formatCurrency(resultado.valor)} · {bemLabel}
           </p>
         </div>
 
-        <div className="flex flex-col gap-3">
-
-          {/* Opção 1: Agendar bate-papo */}
-          <button
-            onClick={() => { logFunil('clicou_agendar', ctx); setStep('dia') }}
-            className="w-full text-left p-5 rounded-2xl border-2 border-blue-500 bg-blue-50 hover:bg-blue-100 transition-all active:scale-[0.99]"
-          >
-            <div className="flex items-start gap-4">
-              <div className="bg-blue-500 text-white rounded-xl p-2.5 flex-shrink-0">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900 text-base mb-1">Agendar bate-papo</div>
-                <div className="text-sm text-gray-500">Escolha um horário. O administrativo confirma pelo WhatsApp. Conversa de 10 minutos.</div>
-                <div className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                  ✓ Sem compromisso · Gratuito
-                </div>
-              </div>
+        {/* CTA Principal — agendar */}
+        <motion.button
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          onClick={() => { logFunil('clicou_agendar', ctx); setStep('dia') }}
+          className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-2xl p-5 mb-3 text-left transition-all shadow-lg shadow-blue-200"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              <span className="font-bold text-lg">Agendar conversa grátis</span>
             </div>
-          </button>
+            <span className="text-xs bg-white/20 px-2 py-1 rounded-full font-semibold">Recomendado</span>
+          </div>
+          <p className="text-blue-100 text-sm leading-relaxed mb-3">
+            10 minutos pelo WhatsApp. Tiro todas as suas dúvidas e apresento a proposta personalizada.
+          </p>
+          <div className="flex items-center gap-4 text-xs text-blue-200">
+            <span className="flex items-center gap-1">✓ Sem compromisso</span>
+            <span className="flex items-center gap-1">✓ Totalmente gratuito</span>
+          </div>
+        </motion.button>
 
-          {/* Opção 2: Já sei como funciona, quero contratar */}
-          <button
-            onClick={() => { logFunil('clicou_proposta', ctx); setStep('proposta_form') }}
-            className="w-full text-left p-5 rounded-2xl border-2 border-green-500 bg-green-50 hover:bg-green-100 transition-all active:scale-[0.99]"
-          >
-            <div className="flex items-start gap-4">
-              <div className="bg-green-500 text-white rounded-xl p-2.5 flex-shrink-0">
-                <CheckCircle className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900 text-base mb-1">Já sei como funciona — quero contratar</div>
-                <div className="text-sm text-gray-500">Informe seus dados e receba a proposta direto no WhatsApp.</div>
-              </div>
-            </div>
-          </button>
-
-          {/* Opção 3: Tirar dúvidas */}
-          <button
-            onClick={abrirDuvidas}
-            className="w-full text-left p-5 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 transition-all active:scale-[0.99]"
-          >
-            <div className="flex items-start gap-4">
-              <div className="bg-gray-700 text-white rounded-xl p-2.5 flex-shrink-0">
-                <MessageCircle className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="font-bold text-gray-900 text-base mb-1">Tirar uma dúvida</div>
-                <div className="text-sm text-gray-500">Fale pelo WhatsApp antes de decidir.</div>
-              </div>
-            </div>
-          </button>
+        {/* Divisor */}
+        <div className="flex items-center gap-3 mb-3">
+          <div className="flex-1 h-px bg-gray-200" />
+          <span className="text-xs text-gray-400 font-medium">ou</span>
+          <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        <button onClick={onBack} className="mt-4 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors">
+        {/* Secundária — já sei, quero contratar */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          onClick={() => { logFunil('clicou_proposta', ctx); setStep('proposta_form') }}
+          className="w-full text-left p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98] transition-all mb-2"
+        >
+          <div className="flex items-center gap-3">
+            <div className="bg-gray-100 rounded-xl p-2 flex-shrink-0">
+              <CheckCircle className="w-4 h-4 text-gray-600" />
+            </div>
+            <div>
+              <div className="font-semibold text-gray-800 text-sm">Já sei como funciona — quero contratar</div>
+              <div className="text-xs text-gray-400 mt-0.5">Envio os dados pelo WhatsApp agora</div>
+            </div>
+          </div>
+        </motion.button>
+
+        {/* Terciária — dúvida, texto simples */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.25 }}
+          onClick={abrirDuvidas}
+          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          <MessageCircle className="w-4 h-4" />
+          Tenho uma dúvida antes de decidir
+        </motion.button>
+
+        <button onClick={onBack} className="w-full text-center text-xs text-gray-300 hover:text-gray-500 transition-colors mt-1">
           ← Voltar à simulação
         </button>
       </motion.div>
