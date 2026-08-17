@@ -31,11 +31,11 @@ const PRODUTOS: Produto[] = [
 ]
 
 const FAQ = [
-  { pergunta: 'Quanto tempo leva para ser contemplado?', resposta: 'O tempo médio varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode antecipar com um lance — quanto maior o lance, maior a chance de ser contemplado mais rápido.' },
+  { pergunta: 'Quanto tempo leva para receber o valor?', resposta: 'O tempo médio varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode acelerar esse prazo dando um lance — quanto maior o lance, maior a chance de receber antes.' },
   { pergunta: 'Tem taxa de adesão ou juros?', resposta: 'Não existe taxa de adesão e zero juros. Você paga apenas uma taxa administrativa incluída na parcela mensal. É exatamente essa diferença que gera a economia de centenas de milhares de reais comparado ao financiamento.' },
   { pergunta: 'E se eu precisar do bem com urgência?', resposta: 'Se a necessidade for imediata, o consórcio pode não ser a melhor escolha. Mas para quem planeja — e o planejamento começa hoje — é o instrumento mais inteligente: você paga até 50% menos no total.' },
   { pergunta: 'O consórcio é seguro? É regulamentado?', resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil. Nossa parceira é a maior administradora privada do país, com mais de 35 anos de mercado e mais de 641 mil clientes atendidos.' },
-  { pergunta: 'Posso usar o FGTS no consórcio de imóvel?', resposta: 'Sim. Para consórcios de imóveis, você pode usar o FGTS tanto para dar um lance quanto para abater o saldo devedor após ser contemplado.' },
+  { pergunta: 'Posso usar o FGTS no consórcio de imóvel?', resposta: 'Sim. Para consórcios de imóveis, você pode usar o FGTS tanto para dar um lance e receber o valor mais rápido, quanto para reduzir o saldo que ainda falta pagar.' },
 ]
 
 const DEPOIMENTOS = [
@@ -410,15 +410,15 @@ export default function LandingPage() {
               <h2 className="text-4xl md:text-5xl font-black mb-5">Como funciona o consórcio</h2>
               <p className="text-white/75 text-xl max-w-2xl mx-auto leading-relaxed">
                 Você paga uma parcela mensal sem juros e sem taxa de adesão.
-                Quando contemplado, compra o bem à vista com poder de negociação real.
+                Quando chegar sua vez, você compra o bem à vista — com poder de negociação que o financiado nunca terá.
               </p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-5 mb-14">
               {[
-                { num: '01', cor: 'blue',   titulo: 'Você escolhe sua parcela',  desc: 'Escolhe o valor da carta de crédito e o prazo. A parcela é calculada sem juros — só a taxa administrativa, muito menor que qualquer financiamento.' },
-                { num: '02', cor: 'purple', titulo: 'Entra em um grupo',         desc: 'Todo mês, consorciados são contemplados por sorteio ou lance. Você pode dar um lance para ser contemplado mais rápido.' },
-                { num: '03', cor: 'green',  titulo: 'Compra à vista',            desc: 'Ao ser contemplado, usa a carta de crédito para comprar o bem à vista — com poder de negociação que o financiado nunca terá.' },
+                { num: '01', cor: 'blue',   titulo: 'Você escolhe o que quer',   desc: 'Imóvel, veículo, negócio — você decide o valor e escolhe uma parcela mensal que cabe no seu bolso. Sem juros. Sem taxa de adesão.' },
+                { num: '02', cor: 'purple', titulo: 'Todo mês alguém recebe',    desc: 'Você entra em um grupo. Todo mês, um participante recebe o valor total para comprar à vista — por sorteio ou dando um lance maior.' },
+                { num: '03', cor: 'green',  titulo: 'Quando chegar sua vez, você compra', desc: 'Você vai lá e compra o bem à vista. Isso te dá poder de negociação que quem financia nunca vai ter — e paga menos pelo mesmo bem.' },
               ].map((item, i) => {
                 const colors: Record<string, string> = {
                   blue:   'text-blue-400 border-blue-400/25 bg-blue-400/8',
