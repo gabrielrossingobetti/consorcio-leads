@@ -12,7 +12,7 @@ interface Props {
 }
 
 const RANGES: Record<BemType, { min: number; max: number; step: number; default: number }> = {
-  imovel:     { min: 100000, max: 1500000, step: 10000, default: 350000 },
+  imovel:     { min: 100000, max: 1000000, step: 10000, default: 300000 },
   carro:      { min: 30000,  max: 300000,  step: 5000,  default: 80000  },
   negocio:    { min: 50000,  max: 500000,  step: 10000, default: 150000 },
   reforma:    { min: 20000,  max: 200000,  step: 5000,  default: 60000  },
