@@ -240,6 +240,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
             {step === 'resultado' && resultado && (
               <StepResultado
                 resultado={resultado}
+                nome={nome}
                 onContinuar={() => goNext('agendamento')}
                 onBack={() => goBack('contato')}
               />

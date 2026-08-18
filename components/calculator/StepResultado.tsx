@@ -1,23 +1,24 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingDown, TrendingUp, ChevronRight, Share2 } from 'lucide-react'
+import { TrendingDown, TrendingUp, Calendar, MessageCircle } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
 
 interface Props {
   resultado: ResultadoCalculo
+  nome?: string
   onContinuar: () => void
   onBack: () => void
 }
 
-export default function StepResultado({ resultado, onContinuar, onBack }: Props) {
-  const compartilhar = () => {
-    const bem = resultado.bem === 'imovel' ? 'imóvel' : 'veículo'
-    const texto = `Fiz uma simulação de consórcio de ${bem} no valor de ${formatCurrency(resultado.valor)}.\n\nNo financiamento pagaria no total: ${formatCurrency(resultado.totalFinanciamento)}\nNo consórcio pago no total: ${formatCurrency(resultado.totalConsorcio)}\n\nDiferença de ${formatCurrency(resultado.economiaTotal)} — sem pagar juros.\n\nSimule também: ${window.location.origin}`
-    window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank')
-  }
-
+export default function StepResultado({ resultado, nome, onContinuar, onBack }: Props) {
   const bemLabel = resultado.bem === 'imovel' ? 'imóvel' : resultado.bem === 'carro' ? 'veículo' : resultado.bem
+
+  const abrirWhatsApp = () => {
+    const saudacao = nome ? `Olá, sou ${nome}!` : 'Olá!'
+    const texto = `${saudacao} Fiz a simulação no site e quero contratar o consórcio de ${bemLabel}.\n\nValor da carta: ${formatCurrency(resultado.valor)}\nParcela: ${formatCurrency(resultado.parcelaConsorcio)}/mês\nEconomia vs financiamento: ${formatCurrency(resultado.economiaTotal)}\n\nPode me ajudar a fechar?`
+    window.open(`https://wa.me/5511993929660?text=${encodeURIComponent(texto)}`, '_blank')
+  }
 
   return (
     <div className="w-full">
@@ -102,22 +103,22 @@ export default function StepResultado({ resultado, onContinuar, onBack }: Props)
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          onClick={onContinuar}
-          className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-lg"
+          onClick={abrirWhatsApp}
+          className="w-full flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
         >
-          Ver minha proposta
-          <ChevronRight className="w-5 h-5" />
+          <MessageCircle className="w-5 h-5" />
+          Quero meu contrato agora
         </motion.button>
 
         <motion.button
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.45 }}
-          onClick={compartilhar}
-          className="w-full flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-600 font-semibold py-3 rounded-xl hover:border-gray-300 transition-all"
+          onClick={onContinuar}
+          className="w-full flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-600 font-semibold py-3.5 rounded-xl hover:border-blue-300 hover:text-blue-600 transition-all"
         >
-          <Share2 className="w-4 h-4" />
-          Compartilhar no WhatsApp
+          <Calendar className="w-4 h-4" />
+          Prefiro agendar uma reunião
         </motion.button>
       </div>
 

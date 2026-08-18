@@ -1,4 +1,4 @@
-export default function AdemIconLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+export default function AdemIconLogo({ size = 'md', dark = false }: { size?: 'sm' | 'md' | 'lg'; dark?: boolean }) {
   const scales = { sm: 0.7, md: 1, lg: 1.4 }
   const s = scales[size]
 
@@ -11,8 +11,8 @@ export default function AdemIconLogo({ size = 'md' }: { size?: 'sm' | 'md' | 'lg
         IC
       </div>
       <div className="flex flex-col leading-none">
-        <span style={{ fontSize: Math.round(16 * s) }} className="font-black text-gray-900 tracking-wide">INDICA</span>
-        <span style={{ fontSize: Math.round(9 * s) }} className="text-gray-500 tracking-widest uppercase">consórcio</span>
+        <span style={{ fontSize: Math.round(16 * s) }} className={`font-black tracking-wide ${dark ? 'text-white' : 'text-gray-900'}`}>INDICA</span>
+        <span style={{ fontSize: Math.round(9 * s) }} className={`tracking-widest uppercase ${dark ? 'text-white/50' : 'text-gray-500'}`}>consórcio</span>
       </div>
     </div>
   )
