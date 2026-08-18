@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Calculadora from '@/components/calculator/Calculadora'
 import AdemIconLogo from '@/components/AdemIconLogo'
 import { Star, CheckCircle, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, type LucideIcon } from 'lucide-react'
+import { trackEvent } from '@/lib/gtag'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
@@ -51,6 +52,8 @@ const EXEMPLOS = {
 
 /* ══════════════════════════════════════════════════════════════════════════ */
 export default function LandingPage() {
+  function abrirModal(origem: string) { trackEvent('simulador_aberto', { origem }); setModalOpen(true) }
+
   const [modalOpen, setModalOpen]   = useState(false)
   const [faqAberto, setFaqAberto]   = useState<number | null>(null)
   const [bemPreview, setBemPreview] = useState<'imovel' | 'carro'>('imovel')
@@ -104,11 +107,12 @@ export default function LandingPage() {
               <a href="#faq" className="hover:text-white transition-colors">Dúvidas</a>
             </div>
             <button
-              onClick={() => setModalOpen(true)}
+              onClick={() => abrirModal("hero")}
               className="bg-red-600 hover:bg-red-500 text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all hover:scale-105"
             >
               Simular grátis
             </button>
+
           </div>
         </nav>
 
@@ -198,7 +202,7 @@ export default function LandingPage() {
                 className="flex flex-wrap gap-3"
               >
                 <button
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => abrirModal("hero")}
                   className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full text-base transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/60"
                 >
                   Simular minha economia
@@ -233,7 +237,7 @@ export default function LandingPage() {
                     <p className="text-white/55 text-xs">{p.tag}</p>
                   </div>
                   <button
-                    onClick={() => setModalOpen(true)}
+                    onClick={() => abrirModal("hero")}
                     className="ml-auto text-sm font-bold border border-red-500/40 text-red-300 hover:text-white hover:bg-red-600 px-4 py-2 rounded-full transition-all"
                   >
                     Simular este →
@@ -310,7 +314,7 @@ export default function LandingPage() {
                   <p className="text-amber-400/50 text-xs">{fmt(economiaMensal)}/mês no bolso</p>
                 </div>
                 <button
-                  onClick={() => setModalOpen(true)}
+                  onClick={() => abrirModal("hero")}
                   className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] text-sm"
                 >
                   Calcular o meu →
@@ -389,7 +393,7 @@ export default function LandingPage() {
                 A diferença existe porque o consórcio não tem juros — só taxa administrativa.
               </p>
               <button
-                onClick={() => setModalOpen(true)}
+                onClick={() => abrirModal("hero")}
                 className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-3.5 rounded-full transition-all hover:scale-105"
               >
                 Ver meu cálculo personalizado
@@ -487,7 +491,7 @@ export default function LandingPage() {
               Informe o bem e o valor. Em 2 minutos você vê a diferença exata — personalizada para o seu caso.
             </p>
             <button
-              onClick={() => setModalOpen(true)}
+              onClick={() => abrirModal("hero")}
               className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/50"
             >
               Simular minha economia
@@ -619,7 +623,7 @@ export default function LandingPage() {
               Simule agora. Gratuito, leva 2 minutos, e você vê exatamente quanto pode economizar.
             </p>
             <button
-              onClick={() => setModalOpen(true)}
+              onClick={() => abrirModal("hero")}
               className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/40"
             >
               Simular gratuitamente
@@ -642,7 +646,7 @@ export default function LandingPage() {
               <div className="text-xs text-white/40 space-y-1.5">
                 <p className="font-semibold text-white/50 uppercase tracking-wide text-xs mb-2">Produtos</p>
                 {PRODUTOS.map((prod) => (
-                  <button key={prod.label} onClick={() => setModalOpen(true)} className="block hover:text-red-400 transition-colors">
+                  <button key={prod.label} onClick={() => abrirModal("hero")} className="block hover:text-red-400 transition-colors">
                     Consórcio de {prod.label}
                   </button>
                 ))}
@@ -651,7 +655,7 @@ export default function LandingPage() {
                 <p className="font-semibold text-white/50 uppercase tracking-wide text-xs mb-2">Contato</p>
                 <p>Simulação e atendimento via WhatsApp</p>
                 <p>Resposta em até 2 horas úteis</p>
-                <button onClick={() => setModalOpen(true)} className="mt-3 block text-red-500 hover:text-red-400 font-semibold">
+                <button onClick={() => abrirModal("hero")} className="mt-3 block text-red-500 hover:text-red-400 font-semibold">
                   Fazer simulação gratuita →
                 </button>
               </div>
@@ -668,11 +672,7 @@ export default function LandingPage() {
           href="https://wa.me/5511993929660?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20o%20cons%C3%B3rcio."
           target="_blank"
           rel="noopener noreferrer"
-          onClick={() => {
-            if (typeof window !== 'undefined' && (window as any).gtag) {
-              ;(window as any).gtag('event', 'whatsapp_click', { event_category: 'lead', event_label: 'home' })
-            }
-          }}
+          onClick={() => trackEvent('whatsapp_fixo_click', { label: 'home' })}
           className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold px-5 py-3.5 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"
           aria-label="Tire suas dúvidas pelo WhatsApp"
         >

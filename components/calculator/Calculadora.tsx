@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
+import { trackEvent } from '@/lib/gtag'
 import StepBem from './StepBem'
 import StepValor from './StepValor'
 import StepPerfil from './StepPerfil'
@@ -69,12 +70,8 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
       const data = await res.json()
       if (data.id) {
         setLeadId(data.id)
-        if (typeof window !== 'undefined' && (window as unknown as { gtag?: Function }).gtag) {
-          const g = (window as unknown as { gtag: Function }).gtag
-          g('event', 'generate_lead', { bem: b })
-          g('event', 'SUBMIT_LEAD_FORM', { bem: b })
-          g('event', 'whatsapp_click', { event_category: 'lead', event_label: 'simulador' })
-        }
+        trackEvent('generate_lead', { bem: b })
+        trackEvent('simulacao_contato_enviado', { bem: b })
         return data.id
       }
     } catch {
@@ -167,7 +164,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
             transition={{ duration: 0.25, ease: 'easeInOut' }}
           >
             {step === 'bem' && (
-              <StepBem onSelect={(b) => { setBem(b); goNext('valor') }} />
+              <StepBem onSelect={(b) => { setBem(b); trackEvent('simulacao_bem_selecionado', { bem: b }); goNext('valor') }} />
             )}
 
             {step === 'valor' && bem && (
@@ -175,6 +172,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                 bem={bem}
                 onConfirm={(v) => {
                   setValor(v)
+                  trackEvent('simulacao_valor_confirmado', { bem, valor: v })
                   goNext(bem === 'investidor' ? 'meses_investidor' : 'perfil')
                 }}
                 onBack={() => goBack('bem')}
@@ -241,7 +239,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
               <StepResultado
                 resultado={resultado}
                 nome={nome}
-                onContinuar={() => goNext('agendamento')}
+                onContinuar={() => { trackEvent('agendamento_clicado', { bem: resultado.bem, valor: resultado.valor }); goNext('agendamento') }}
                 onBack={() => goBack('contato')}
               />
             )}

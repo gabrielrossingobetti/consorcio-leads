@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { TrendingDown, TrendingUp, Calendar, MessageCircle } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
+import { trackEvent } from '@/lib/gtag'
 
 interface Props {
   resultado: ResultadoCalculo
@@ -15,6 +16,7 @@ export default function StepResultado({ resultado, nome, onContinuar, onBack }: 
   const bemLabel = resultado.bem === 'imovel' ? 'imóvel' : resultado.bem === 'carro' ? 'veículo' : resultado.bem
 
   const abrirWhatsApp = () => {
+    trackEvent('whatsapp_contrato_click', { bem: resultado.bem, valor: resultado.valor, economia: resultado.economiaTotal })
     const saudacao = nome ? `Olá, sou ${nome}!` : 'Olá!'
     const texto = `${saudacao} Fiz a simulação no site e quero contratar o consórcio de ${bemLabel}.\n\nValor da carta: ${formatCurrency(resultado.valor)}\nParcela: ${formatCurrency(resultado.parcelaConsorcio)}/mês\nEconomia vs financiamento: ${formatCurrency(resultado.economiaTotal)}\n\nPode me ajudar a fechar?`
     window.open(`https://wa.me/5511993929660?text=${encodeURIComponent(texto)}`, '_blank')

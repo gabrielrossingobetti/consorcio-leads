@@ -105,6 +105,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
       if (res.ok) {
         if (typeof window !== 'undefined' && (window as any).gtag) {
           ;(window as any).gtag('event', 'meeting_scheduled', { bem: resultado.bem, valor: resultado.valor })
+          ;(window as any).gtag('event', 'reuniao_confirmada', { bem: resultado.bem, valor: resultado.valor })
         }
         logFunil('reuniao_confirmada', ctx)
         setStep('sucesso')
