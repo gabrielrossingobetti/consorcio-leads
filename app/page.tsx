@@ -12,11 +12,11 @@ function fmt(n: number) {
 }
 
 /* ── Blob animado – quebra o preto estático ───────────────────────────────── */
-function Blob({ className }: { className: string }) {
+function Blob({ className, style }: { className: string; style?: React.CSSProperties }) {
   return (
     <div
       className={`absolute rounded-full pointer-events-none ${className}`}
-      style={{ filter: 'blur(120px)', animation: 'blobFloat 14s ease-in-out infinite' }}
+      style={{ filter: 'blur(120px)', animation: 'blobFloat 14s ease-in-out infinite', ...style }}
     />
   )
 }
