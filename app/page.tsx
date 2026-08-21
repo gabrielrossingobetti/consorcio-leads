@@ -215,6 +215,28 @@ export default function LandingPage() {
                   Como funciona
                 </a>
               </motion.div>
+
+              {/* Mini fluxo — como funciona (visível sem scroll) */}
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.3 }}
+                className="mt-8 flex flex-wrap items-center gap-2"
+              >
+                {[
+                  { num: '1', texto: 'Paga parcelas mensais sem juros' },
+                  { num: '2', texto: 'É contemplado por sorteio ou lance' },
+                  { num: '3', texto: 'Compra o bem à vista' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 bg-white/8 border border-white/12 rounded-full px-3 py-1.5">
+                      <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-black flex items-center justify-center flex-shrink-0">{item.num}</span>
+                      <span className="text-white/80 text-xs font-medium">{item.texto}</span>
+                    </div>
+                    {i < 2 && <span className="text-white/30 text-xs">→</span>}
+                  </div>
+                ))}
+              </motion.div>
             </div>
 
             {/* Parte inferior: produto ativo + tabs */}
