@@ -4,45 +4,34 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Calculadora from '@/components/calculator/Calculadora'
 import AdemIconLogo from '@/components/AdemIconLogo'
-import { Star, CheckCircle, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, type LucideIcon } from 'lucide-react'
+import { Star, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, CheckCircle, XCircle, type LucideIcon } from 'lucide-react'
 import { trackEvent } from '@/lib/gtag'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
 }
 
-/* ── Blob animado – quebra o preto estático ───────────────────────────────── */
-function Blob({ className, style }: { className: string; style?: React.CSSProperties }) {
-  return (
-    <div
-      className={`absolute rounded-full pointer-events-none ${className}`}
-      style={{ filter: 'blur(120px)', animation: 'blobFloat 14s ease-in-out infinite', ...style }}
-    />
-  )
-}
-
-/* ── Dados ────────────────────────────────────────────────────────────────── */
 interface Produto { label: string; Icon: LucideIcon; img: string; tag: string }
 const PRODUTOS: Produto[] = [
-  { label: 'Imóvel',      Icon: Home,       img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85', tag: 'A partir de R$500/mês' },
-  { label: 'Veículo',     Icon: Car,        img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85', tag: 'A partir de R$400/mês' },
-  { label: 'Negócio',     Icon: Building2,  img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85', tag: 'Expansão sem juros' },
-  { label: 'Reforma',     Icon: Wrench,     img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85', tag: 'Valorize seu imóvel' },
-  { label: 'Investimento', Icon: TrendingUp, img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85', tag: 'Rentabilidade real' },
+  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85', tag: 'A partir de R$500/mês' },
+  { label: 'Veículo',      Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85', tag: 'A partir de R$400/mês' },
+  { label: 'Negócio',      Icon: Building2,   img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85', tag: 'Expansão sem juros' },
+  { label: 'Reforma',      Icon: Wrench,      img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85', tag: 'Valorize seu imóvel' },
+  { label: 'Investimento',  Icon: TrendingUp,  img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85', tag: 'Rentabilidade real' },
 ]
 
 const FAQ = [
-  { pergunta: 'Quanto tempo leva para ser contemplado?', resposta: 'O tempo médio varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode antecipar com um lance — quanto maior o lance, maior a chance de ser contemplado mais rápido.' },
-  { pergunta: 'Tem taxa de adesão ou juros?', resposta: 'Não existe taxa de adesão e zero juros. Você paga apenas uma taxa administrativa incluída na parcela mensal. É exatamente essa diferença que gera a economia de centenas de milhares de reais comparado ao financiamento.' },
-  { pergunta: 'E se eu precisar do bem com urgência?', resposta: 'Se a necessidade for imediata, o consórcio pode não ser a melhor escolha. Mas para quem planeja — e o planejamento começa hoje — é o instrumento mais inteligente: você paga até 50% menos no total.' },
-  { pergunta: 'O consórcio é seguro? É regulamentado?', resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil. Nossa parceira é a maior administradora privada do país, com mais de 35 anos de mercado e mais de 641 mil clientes atendidos.' },
+  { pergunta: 'Quanto tempo leva para ser contemplado?',   resposta: 'O tempo médio varia entre 12 e 36 meses para imóveis e 6 a 24 meses para veículos. Você pode antecipar com um lance — quanto maior o lance, maior a chance de ser contemplado mais rápido.' },
+  { pergunta: 'Tem taxa de adesão ou juros?',              resposta: 'Não existe taxa de adesão e zero juros. Você paga apenas uma taxa administrativa incluída na parcela mensal. É exatamente essa diferença que gera a economia de centenas de milhares de reais comparado ao financiamento.' },
+  { pergunta: 'E se eu precisar do bem com urgência?',     resposta: 'Se a necessidade for imediata, o consórcio pode não ser a melhor escolha. Mas para quem planeja — e o planejamento começa hoje — é o instrumento mais inteligente: você paga até 50% menos no total.' },
+  { pergunta: 'O consórcio é seguro? É regulamentado?',   resposta: 'Sim. As administradoras de consórcio são regulamentadas e fiscalizadas pelo Banco Central do Brasil. Nossa parceira é a maior administradora privada do país, com mais de 35 anos de mercado e mais de 641 mil clientes atendidos.' },
   { pergunta: 'Posso usar o FGTS no consórcio de imóvel?', resposta: 'Sim. Para consórcios de imóveis, você pode usar o FGTS tanto para dar um lance quanto para abater o saldo devedor após ser contemplado.' },
 ]
 
 const DEPOIMENTOS = [
-  { nome: 'Mariana C.', cidade: 'São Paulo, SP', texto: 'Fiz a simulação, vi que economizaria R$87.000 e fechei em uma semana. Melhor decisão da minha vida.', bem: 'Imóvel', economia: 'R$87.000' },
-  { nome: 'Ricardo A.', cidade: 'Campinas, SP', texto: 'Tinha financiamento ativo e pagava juros absurdos. Migrei pro consórcio e reduzi minha parcela em R$800 por mês.', bem: 'Veículo', economia: 'R$800/mês' },
-  { nome: 'Fernanda L.', cidade: 'Ribeirão Preto, SP', texto: 'Fui contemplada em 14 meses com um lance. Hoje tenho meu apartamento sem ter pago fortuna em juros.', bem: 'Imóvel', economia: 'R$124.000' },
+  { nome: 'Mariana C.',  cidade: 'São Paulo, SP',      texto: 'Fiz a simulação, vi que economizaria R$87.000 e fechei em uma semana. Melhor decisão da minha vida.',                                         bem: 'Imóvel',  economia: 'R$87.000'  },
+  { nome: 'Ricardo A.',  cidade: 'Campinas, SP',       texto: 'Tinha financiamento ativo e pagava juros absurdos. Migrei pro consórcio e reduzi minha parcela em R$800 por mês.',                            bem: 'Veículo', economia: 'R$800/mês' },
+  { nome: 'Fernanda L.', cidade: 'Ribeirão Preto, SP', texto: 'Fui contemplada em 14 meses com um lance. Hoje tenho meu apartamento sem ter pago fortuna em juros.',                                          bem: 'Imóvel',  economia: 'R$124.000' },
 ]
 
 const EXEMPLOS = {
@@ -50,21 +39,33 @@ const EXEMPLOS = {
   carro:  { label: 'Veículo · R$80.000',  parcelaFin: 2027, totalFin: 121620,  parcelaCons: 1048, totalCons: 92800  },
 }
 
-/* ══════════════════════════════════════════════════════════════════════════ */
-export default function LandingPage() {
-  function abrirModal(origem: string) { trackEvent('simulador_aberto', { origem }); setModalOpen(true) }
+/* Paleta */
+const C = {
+  blue:     '#1C5FA8',
+  blueDark: '#0D3D72',
+  gold:     '#C9A84C',
+  goldDark: '#A8883A',
+  bg:       '#FFFFFF',
+  bgSoft:   '#EEF5FF',
+  text:     '#0D1B3E',
+  muted:    '#5E6F8A',
+  border:   '#D6E4F5',
+}
 
-  const [modalOpen, setModalOpen]   = useState(false)
-  const [faqAberto, setFaqAberto]   = useState<number | null>(null)
-  const [bemPreview, setBemPreview] = useState<'imovel' | 'carro'>('imovel')
+export default function LandingPage() {
+  const [modalOpen, setModalOpen]       = useState(false)
+  const [faqAberto, setFaqAberto]       = useState<number | null>(null)
+  const [bemPreview, setBemPreview]     = useState<'imovel' | 'carro'>('imovel')
   const [produtoAtivo, setProdutoAtivo] = useState(0)
 
-  const ex           = EXEMPLOS[bemPreview]
-  const economiaTotal  = ex.totalFin - ex.totalCons
-  const economiaMensal = ex.parcelaFin - ex.parcelaCons
+  function abrirModal(origem: string) { trackEvent('simulador_aberto', { origem }); setModalOpen(true) }
+
+  const ex            = EXEMPLOS[bemPreview]
+  const economiaTotal = ex.totalFin - ex.totalCons
+  const economiaMes   = ex.parcelaFin - ex.parcelaCons
 
   useEffect(() => {
-    const t = setInterval(() => setProdutoAtivo((p) => (p + 1) % PRODUTOS.length), 4000)
+    const t = setInterval(() => setProdutoAtivo((p) => (p + 1) % PRODUTOS.length), 4500)
     return () => clearInterval(t)
   }, [])
 
@@ -77,107 +78,98 @@ export default function LandingPage() {
 
   return (
     <>
-      {/* Keyframes globais – blob flutuante */}
       <style>{`
-        @keyframes blobFloat {
-          0%,100% { transform: translate(0,0) scale(1); }
-          33%      { transform: translate(40px,-60px) scale(1.12); }
-          66%      { transform: translate(-30px,30px) scale(0.9); }
+        :root { font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif; }
+        @keyframes heroFloat {
+          0%,100% { transform: scale(1); }
+          50%      { transform: scale(1.04); }
         }
-        @keyframes blobFloat2 {
-          0%,100% { transform: translate(0,0) scale(1); }
-          33%      { transform: translate(-50px,40px) scale(1.08); }
-          66%      { transform: translate(30px,-20px) scale(0.95); }
+        .hero-img { animation: heroFloat 14s ease-in-out infinite; }
+        .gold-btn {
+          background: linear-gradient(135deg, #C9A84C 0%, #E2C06A 50%, #C9A84C 100%);
+          box-shadow: 0 4px 24px rgba(201,168,76,0.35);
         }
-        @keyframes scanLine {
-          0%   { transform: translateY(-100%); }
-          100% { transform: translateY(100vh); }
-        }
+        .gold-btn:hover { filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 8px 32px rgba(201,168,76,0.45); }
+        .gold-btn:active { transform: translateY(0); }
+        .card-hover { transition: box-shadow .2s, transform .2s; }
+        .card-hover:hover { box-shadow: 0 8px 32px rgba(28,95,168,0.12); transform: translateY(-2px); }
       `}</style>
 
-      <div className="min-h-screen bg-[#080808] text-white font-sans">
+      <div style={{ background: C.bg, color: C.text }} className="min-h-screen">
 
-        {/* ── NAVBAR ─────────────────────────────────────────────────── */}
-        <nav className="fixed top-0 left-0 right-0 z-40 bg-[#080808]/95 backdrop-blur-md border-b border-white/8">
+        {/* ── NAVBAR ──────────────────────────────────────────────── */}
+        <nav style={{ background: 'rgba(255,255,255,0.95)', borderBottom: `1px solid ${C.border}` }}
+          className="fixed top-0 left-0 right-0 z-40 backdrop-blur-md"
+        >
           <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <AdemIconLogo size="md" dark />
-            <div className="hidden md:flex items-center gap-8 text-sm text-white/65 font-medium">
-              <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
-              <a href="#produtos" className="hover:text-white transition-colors">Produtos</a>
-              <a href="#faq" className="hover:text-white transition-colors">Dúvidas</a>
+            <AdemIconLogo size="md" />
+            <div className="hidden md:flex items-center gap-8 text-sm font-medium" style={{ color: C.muted }}>
+              <a href="#como-funciona" className="hover:text-[#1C5FA8] transition-colors">Como funciona</a>
+              <a href="#produtos"      className="hover:text-[#1C5FA8] transition-colors">Produtos</a>
+              <a href="#faq"           className="hover:text-[#1C5FA8] transition-colors">Dúvidas</a>
             </div>
             <button
-              onClick={() => abrirModal("hero")}
-              className="bg-red-600 hover:bg-red-500 text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all hover:scale-105"
+              onClick={() => abrirModal('navbar')}
+              className="gold-btn text-white font-bold px-5 py-2.5 rounded-full text-sm transition-all"
             >
               Simular grátis
             </button>
-
           </div>
         </nav>
 
-        {/* ── HERO: PRODUTO DOMINANTE FULL-SCREEN ────────────────────── */}
+        {/* ── HERO FULL-SCREEN ─────────────────────────────────────── */}
         <section className="relative h-screen min-h-[640px] max-h-[960px] overflow-hidden" id="produtos">
 
-          {/* Foto do produto ativo (fundo full-screen) */}
           <AnimatePresence mode="sync">
             <motion.div
               key={produtoAtivo}
               initial={{ opacity: 0, scale: 1.06 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 1 }}
+              transition={{ duration: 1.1 }}
               className="absolute inset-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={p.img}
-                alt={p.label}
-                className="w-full h-full object-cover"
-              />
+              <img src={p.img} alt={p.label} className="hero-img w-full h-full object-cover" />
             </motion.div>
           </AnimatePresence>
 
-          {/* Gradientes sobre a foto */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/55 to-black/20" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-black/40" />
+          {/* Overlay azul royal — não preto */}
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(110deg, rgba(13,61,114,0.88) 0%, rgba(13,61,114,0.60) 55%, rgba(13,61,114,0.25) 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,61,114,0.75) 0%, transparent 50%)' }} />
 
-          {/* Linha de scan sutil para movimento */}
-          <div
-            className="absolute left-0 right-0 h-px bg-white/5 pointer-events-none"
-            style={{ animation: 'scanLine 8s linear infinite' }}
-          />
+          <div className="relative z-10 h-full flex flex-col justify-between pt-28 pb-10 px-6 max-w-7xl mx-auto">
 
-          {/* Conteúdo */}
-          <div className="relative z-10 h-full flex flex-col justify-between pt-24 pb-8 px-6 max-w-7xl mx-auto">
-
-            {/* Parte superior: headline */}
+            {/* Headline */}
             <div className="max-w-2xl">
+
+              {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45 }}
-                className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/30 text-red-300 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest mb-5"
+                transition={{ duration: 0.4 }}
+                className="inline-flex items-center gap-2 mb-5 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest"
+                style={{ background: 'rgba(201,168,76,0.18)', border: '1px solid rgba(201,168,76,0.45)', color: '#F0D98A' }}
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                Indica Consórcio · Parceria com a maior administradora privada do Brasil
+                <span className="w-1.5 h-1.5 rounded-full bg-[#C9A84C] animate-pulse" />
+                Parceria com a maior administradora privada do Brasil
               </motion.div>
 
               <motion.h1
-                initial={{ opacity: 0, y: 16 }}
+                initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.05 }}
-                className="text-5xl md:text-6xl lg:text-[72px] font-black leading-[0.9] mb-5 tracking-tight drop-shadow-2xl"
+                className="text-5xl md:text-6xl lg:text-[72px] font-black leading-[0.92] mb-5 tracking-tight text-white drop-shadow-2xl"
               >
                 Compre o que<br />
-                <span className="text-red-400">você quer.</span><br />
+                <span style={{ color: '#F0D98A' }}>você quer.</span><br />
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={produtoAtivo}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.4 }}
+                    transition={{ duration: 0.35 }}
                     className="text-white"
                   >
                     {p.label} próprio.
@@ -189,10 +181,10 @@ export default function LandingPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.15 }}
-                className="text-white/80 text-lg leading-relaxed mb-7 max-w-md drop-shadow"
+                className="text-white/85 text-lg leading-relaxed mb-7 max-w-md drop-shadow"
               >
-                Parcela que cabe no bolso. Sem juros. Sem taxa de adesão.
-                Contemplado, você compra à vista — com poder de negociação real.
+                Sem juros. Sem taxa de adesão. Você contrata uma carta de crédito,
+                paga parcelas mensais e compra à vista quando for contemplado.
               </motion.p>
 
               <motion.div
@@ -202,21 +194,22 @@ export default function LandingPage() {
                 className="flex flex-wrap gap-3"
               >
                 <button
-                  onClick={() => abrirModal("hero")}
-                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full text-base transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/60"
+                  onClick={() => abrirModal('hero')}
+                  className="gold-btn inline-flex items-center gap-2 text-white font-black px-8 py-4 rounded-full text-base transition-all"
                 >
                   Simular minha economia
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <a
                   href="#como-funciona"
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-8 py-4 rounded-full text-base transition-all backdrop-blur-sm"
+                  className="inline-flex items-center gap-2 font-semibold px-8 py-4 rounded-full text-base transition-all text-white"
+                  style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}
                 >
                   Como funciona
                 </a>
               </motion.div>
 
-              {/* Mini fluxo — como funciona (visível sem scroll) */}
+              {/* Mini-fluxo */}
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -224,62 +217,62 @@ export default function LandingPage() {
                 className="mt-8 flex flex-wrap items-center gap-2"
               >
                 {[
-                  { num: '1', texto: 'Paga parcelas mensais sem juros' },
-                  { num: '2', texto: 'É contemplado por sorteio ou lance' },
-                  { num: '3', texto: 'Compra o bem à vista' },
+                  { n: '1', t: 'Contrata a carta de crédito' },
+                  { n: '2', t: 'É contemplado por sorteio ou lance' },
+                  { n: '3', t: 'Compra à vista com poder de negociação' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 bg-white/8 border border-white/12 rounded-full px-3 py-1.5">
-                      <span className="w-5 h-5 rounded-full bg-red-600 text-white text-xs font-black flex items-center justify-center flex-shrink-0">{item.num}</span>
-                      <span className="text-white/80 text-xs font-medium">{item.texto}</span>
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.18)' }}>
+                      <span className="w-5 h-5 rounded-full text-white text-xs font-black flex items-center justify-center flex-shrink-0" style={{ background: C.gold }}>{item.n}</span>
+                      <span className="text-white/80 text-xs font-medium">{item.t}</span>
                     </div>
-                    {i < 2 && <span className="text-white/30 text-xs">→</span>}
+                    {i < 2 && <span className="text-white/35 text-xs">→</span>}
                   </div>
                 ))}
               </motion.div>
             </div>
 
-            {/* Parte inferior: produto ativo + tabs */}
+            {/* Tabs de produto */}
             <div>
-              {/* Label do produto ativo */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={produtoAtivo}
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 12 }}
-                  transition={{ duration: 0.3 }}
+                  transition={{ duration: 0.28 }}
                   className="flex items-center gap-3 mb-4"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-red-600/20 border border-red-500/30 flex items-center justify-center">
-                    <p.Icon className="w-4 h-4 text-red-400" />
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.4)' }}>
+                    <p.Icon className="w-4 h-4" style={{ color: '#F0D98A' }} />
                   </div>
                   <div>
                     <p className="text-white font-bold text-sm">Consórcio de {p.label}</p>
                     <p className="text-white/55 text-xs">{p.tag}</p>
                   </div>
                   <button
-                    onClick={() => abrirModal("hero")}
-                    className="ml-auto text-sm font-bold border border-red-500/40 text-red-300 hover:text-white hover:bg-red-600 px-4 py-2 rounded-full transition-all"
+                    onClick={() => abrirModal('hero')}
+                    className="ml-auto text-sm font-bold px-4 py-2 rounded-full transition-all text-white"
+                    style={{ border: '1px solid rgba(201,168,76,0.5)', color: '#F0D98A' }}
                   >
                     Simular este →
                   </button>
                 </motion.div>
               </AnimatePresence>
 
-              {/* Tabs de produto com ícones */}
-              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              <div className="flex gap-2 overflow-x-auto pb-1">
                 {PRODUTOS.map((prod, i) => {
                   const Icon = prod.Icon
+                  const ativo = produtoAtivo === i
                   return (
                     <button
                       key={prod.label}
                       onClick={() => setProdutoAtivo(i)}
-                      className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
-                        produtoAtivo === i
-                          ? 'bg-red-600 text-white shadow-lg shadow-red-900/50 scale-105'
-                          : 'bg-black/30 text-white/70 hover:bg-white/15 hover:text-white backdrop-blur-sm border border-white/10'
-                      }`}
+                      className="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-all duration-300"
+                      style={ativo
+                        ? { background: C.gold, color: '#fff', boxShadow: '0 4px 16px rgba(201,168,76,0.4)' }
+                        : { background: 'rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.75)', border: '1px solid rgba(255,255,255,0.15)' }
+                      }
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
                       {prod.label}
@@ -291,27 +284,24 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── SAVINGS PREVIEW ────────────────────────────────────────── */}
-        <section className="py-14 px-6 relative overflow-hidden border-b border-white/8" style={{ background: '#0d0d0d' }}>
-          {/* Blobs animados */}
-          <Blob className="w-[400px] h-[300px] bg-red-700/20 -top-20 -left-20" />
-          <Blob className="w-[300px] h-[300px] bg-purple-700/15 -bottom-10 right-10" style={{ animationName: 'blobFloat2', animationDelay: '-4s' } as React.CSSProperties} />
-
-          <div className="max-w-4xl mx-auto relative z-10">
-            <p className="text-white/50 text-xs uppercase tracking-widest font-semibold text-center mb-6">Compare antes de simular</p>
+        {/* ── COMPARATIVO RÁPIDO ───────────────────────────────────── */}
+        <section style={{ background: C.bgSoft, borderBottom: `1px solid ${C.border}` }} className="py-14 px-6">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-xs uppercase tracking-widest font-semibold text-center mb-6" style={{ color: C.muted }}>Compare antes de simular</p>
 
             <div className="flex gap-2 justify-center mb-8">
               {(['imovel', 'carro'] as const).map((b) => {
                 const Icon = b === 'imovel' ? Home : Car
+                const ativo = bemPreview === b
                 return (
                   <button
                     key={b}
                     onClick={() => setBemPreview(b)}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
-                      bemPreview === b
-                        ? 'bg-red-600 text-white shadow-lg'
-                        : 'bg-white/8 text-white/60 hover:text-white border border-white/10'
-                    }`}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all"
+                    style={ativo
+                      ? { background: C.blue, color: '#fff' }
+                      : { background: '#fff', color: C.muted, border: `1px solid ${C.border}` }
+                    }
                   >
                     <Icon className="w-4 h-4" />
                     {b === 'imovel' ? 'Imóvel R$300k' : 'Veículo R$80k'}
@@ -321,52 +311,120 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-3 gap-4 items-stretch">
-              <div className="bg-red-950/40 border border-red-900/40 rounded-2xl p-6 text-center flex flex-col justify-center">
-                <p className="text-red-400 text-xs font-bold uppercase tracking-wider mb-3">Financiamento</p>
-                <p className="text-white font-black text-3xl mb-1">
-                  {fmt(ex.parcelaFin)}<span className="text-white/40 text-sm font-normal">/mês</span>
-                </p>
-                <p className="text-red-400/80 text-sm font-semibold">Total: {fmt(ex.totalFin)}</p>
+              {/* Financiamento */}
+              <div className="bg-white rounded-2xl p-6 text-center flex flex-col justify-center card-hover" style={{ border: `1px solid #FECACA` }}>
+                <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#DC2626' }}>Financiamento</p>
+                <p className="font-black text-3xl mb-1" style={{ color: C.text }}>{fmt(ex.parcelaFin)}<span className="text-sm font-normal" style={{ color: C.muted }}>/mês</span></p>
+                <p className="text-sm font-semibold" style={{ color: '#DC2626' }}>Total: {fmt(ex.totalFin)}</p>
               </div>
 
+              {/* Economia */}
               <div className="flex flex-col gap-3">
-                <div className="flex-1 bg-amber-500/10 border border-amber-500/25 rounded-2xl p-5 text-center">
-                  <p className="text-amber-400/70 text-xs uppercase tracking-widest mb-2">Você economiza</p>
-                  <p className="text-amber-400 font-black text-4xl mb-1">{fmt(economiaTotal)}</p>
-                  <p className="text-amber-400/50 text-xs">{fmt(economiaMensal)}/mês no bolso</p>
+                <div className="flex-1 rounded-2xl p-5 text-center" style={{ background: 'linear-gradient(135deg, #FFF8E7 0%, #FFF3CC 100%)', border: `1px solid rgba(201,168,76,0.35)` }}>
+                  <p className="text-xs uppercase tracking-widest mb-2 font-semibold" style={{ color: C.goldDark }}>Você economiza</p>
+                  <p className="font-black text-4xl mb-1" style={{ color: C.gold }}>{fmt(economiaTotal)}</p>
+                  <p className="text-xs" style={{ color: C.goldDark }}>{fmt(economiaMes)}/mês no bolso</p>
                 </div>
                 <button
-                  onClick={() => abrirModal("hero")}
-                  className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 rounded-xl transition-all hover:scale-[1.02] text-sm"
+                  onClick={() => abrirModal('comparativo')}
+                  className="gold-btn w-full text-white font-bold py-3.5 rounded-xl transition-all text-sm"
                 >
                   Calcular o meu →
                 </button>
               </div>
 
-              <div className="bg-green-950/40 border border-green-900/40 rounded-2xl p-6 text-center flex flex-col justify-center">
-                <p className="text-green-400 text-xs font-bold uppercase tracking-wider mb-3">Consórcio</p>
-                <p className="text-white font-black text-3xl mb-1">
-                  {fmt(ex.parcelaCons)}<span className="text-white/40 text-sm font-normal">/mês</span>
-                </p>
-                <p className="text-green-400/80 text-sm font-semibold">Total: {fmt(ex.totalCons)}</p>
+              {/* Consórcio */}
+              <div className="bg-white rounded-2xl p-6 text-center flex flex-col justify-center card-hover" style={{ border: `1px solid #BBF7D0` }}>
+                <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#16A34A' }}>Consórcio</p>
+                <p className="font-black text-3xl mb-1" style={{ color: C.text }}>{fmt(ex.parcelaCons)}<span className="text-sm font-normal" style={{ color: C.muted }}>/mês</span></p>
+                <p className="text-sm font-semibold" style={{ color: '#16A34A' }}>Total: {fmt(ex.totalCons)}</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── DOR: MATEMÁTICA DO FINANCIAMENTO ──────────────────────── */}
-        <section className="py-24 px-6 relative overflow-hidden">
-          <Blob className="w-[500px] h-[400px] bg-red-800/12 top-10 right-0" style={{ animationDelay: '-7s', animationName: 'blobFloat2' } as React.CSSProperties} />
-
-          <div className="max-w-5xl mx-auto relative z-10">
+        {/* ── COMO FUNCIONA ────────────────────────────────────────── */}
+        <section id="como-funciona" style={{ background: C.bg }} className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
-              <p className="text-red-500 text-xs font-bold uppercase tracking-widest mb-4">A verdade que o banco não te conta</p>
-              <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4">
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: C.blue }}>A solução inteligente</p>
+              <h2 className="text-4xl md:text-5xl font-black mb-5" style={{ color: C.text }}>Como funciona o consórcio</h2>
+              <p className="text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: C.muted }}>
+                Você paga uma parcela mensal sem juros e sem taxa de adesão.
+                Quando contemplado, compra o bem à vista com poder de negociação real.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-14">
+              {[
+                { num: '01', cor: C.blue,    titulo: 'Contrata a carta de crédito', desc: 'Escolhe o valor da carta e o prazo. A parcela é calculada sem juros — só a taxa administrativa, muito menor que qualquer financiamento.' },
+                { num: '02', cor: C.gold,    titulo: 'Entra em um grupo',            desc: 'Todo mês, consorciados são contemplados por sorteio ou lance. Você pode dar um lance para ser contemplado mais rápido.' },
+                { num: '03', cor: '#16A34A', titulo: 'Compra à vista',               desc: 'Ao ser contemplado, usa a carta de crédito para comprar o bem à vista — com poder de negociação que o financiado nunca terá.' },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ delay: i * 0.12 }}
+                  className="bg-white rounded-2xl p-7 card-hover"
+                  style={{ border: `1px solid ${C.border}`, boxShadow: '0 2px 12px rgba(28,95,168,0.06)' }}
+                >
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg text-white mb-5" style={{ background: item.cor }}>
+                    {item.num}
+                  </div>
+                  <h3 className="font-bold text-lg mb-3" style={{ color: C.text }}>{item.titulo}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Tabela comparativa */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              className="rounded-3xl p-8"
+              style={{ background: C.bgSoft, border: `1px solid ${C.border}` }}
+            >
+              <p className="text-xs uppercase tracking-widest font-semibold mb-7 text-center" style={{ color: C.muted }}>Financiamento vs Consórcio</p>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#DC2626' }}>❌ Financiamento</p>
+                  <ul className="space-y-3.5">
+                    {['Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas no contrato', 'Score alto exigido para aprovação', 'Você paga até o dobro do preço do bem', 'Bem pode ser retomado em 3 parcelas atrasadas'].map((t) => (
+                      <li key={t} className="flex items-start gap-3 text-sm" style={{ color: C.muted }}>
+                        <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />{t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#16A34A' }}>✓ Consórcio</p>
+                  <ul className="space-y-3.5">
+                    {['Zero juros — só taxa administrativa', 'Sem taxa de adesão, sem IOF', 'Processo simplificado de adesão', 'Você paga o preço real do bem', 'Regulado e fiscalizado pelo Banco Central'].map((t) => (
+                      <li key={t} className="flex items-start gap-3 text-sm font-medium" style={{ color: C.text }}>
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />{t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ── DOR — QUANTO VAI AO BANCO ───────────────────────────── */}
+        <section style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }} className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: C.blue }}>A verdade que o banco não te conta</p>
+              <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4" style={{ color: C.text }}>
                 Quanto você vai<br />
-                <span className="text-red-500">dar de presente ao banco?</span>
+                <span style={{ color: '#DC2626' }}>dar de presente ao banco?</span>
               </h2>
-              <p className="text-white/75 text-lg max-w-2xl mx-auto">
-                Em todo financiamento, a maior parte do que você paga vai para os juros — direto para o bolso do banco, não para o bem.
+              <p className="text-lg max-w-2xl mx-auto" style={{ color: C.muted }}>
+                Em todo financiamento, a maior parte do que você paga vai direto para o banco — não para o bem.
               </p>
             </div>
 
@@ -382,41 +440,42 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ delay: i * 0.08 }}
-                  className="bg-[#141414] border border-white/8 rounded-2xl overflow-hidden"
+                  className="bg-white rounded-2xl overflow-hidden card-hover"
+                  style={{ border: `1px solid ${C.border}` }}
                 >
                   <div className="relative h-36 overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={item.img} alt={item.titulo} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/55" />
+                    <div className="absolute inset-0" style={{ background: 'rgba(13,61,114,0.55)' }} />
                     <p className="absolute bottom-3 left-4 text-white font-bold text-sm drop-shadow">{item.titulo}</p>
                   </div>
                   <div className="p-5 space-y-3">
                     <div>
-                      <p className="text-red-400 text-[10px] font-bold uppercase mb-1">Financiamento</p>
-                      <p className="text-white font-black text-2xl">{fmt(item.fin)}</p>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: '#DC2626' }}>Financiamento</p>
+                      <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.fin)}</p>
                     </div>
-                    <div className="h-px bg-white/8" />
+                    <div className="h-px" style={{ background: C.border }} />
                     <div>
-                      <p className="text-green-400 text-[10px] font-bold uppercase mb-1">Consórcio</p>
-                      <p className="text-white font-black text-2xl">{fmt(item.cons)}</p>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: '#16A34A' }}>Consórcio</p>
+                      <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.cons)}</p>
                     </div>
-                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3">
-                      <p className="text-amber-400 font-black text-xl">{fmt(item.fin - item.cons)}</p>
-                      <p className="text-amber-400/60 text-xs">entregues ao banco desnecessariamente</p>
+                    <div className="rounded-xl px-4 py-3" style={{ background: '#FFF8E7', border: '1px solid rgba(201,168,76,0.3)' }}>
+                      <p className="font-black text-xl" style={{ color: C.gold }}>{fmt(item.fin - item.cons)}</p>
+                      <p className="text-xs" style={{ color: C.goldDark }}>entregues ao banco desnecessariamente</p>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="bg-[#141414] border border-white/8 rounded-3xl p-8 text-center">
-              <p className="text-white/70 text-sm mb-5 max-w-xl mx-auto">
+            <div className="bg-white rounded-3xl p-8 text-center" style={{ border: `1px solid ${C.border}` }}>
+              <p className="text-sm mb-5 max-w-xl mx-auto" style={{ color: C.muted }}>
                 Esses números são calculados com as taxas médias praticadas pelos bancos brasileiros.
                 A diferença existe porque o consórcio não tem juros — só taxa administrativa.
               </p>
               <button
-                onClick={() => abrirModal("hero")}
-                className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-3.5 rounded-full transition-all hover:scale-105"
+                onClick={() => abrirModal('dor')}
+                className="gold-btn inline-flex items-center gap-2 text-white font-bold px-7 py-3.5 rounded-full transition-all"
               >
                 Ver meu cálculo personalizado
                 <ArrowRight className="w-4 h-4" />
@@ -425,121 +484,42 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── COMO FUNCIONA ───────────────────────────────────────────── */}
-        <section id="como-funciona" className="py-24 px-6 relative overflow-hidden border-t border-white/8" style={{ background: '#0d0d0d' }}>
-          <Blob className="w-[450px] h-[350px] bg-blue-800/10 top-0 left-0" style={{ animationDelay: '-3s' } as React.CSSProperties} />
-          <Blob className="w-[350px] h-[350px] bg-red-800/10 bottom-0 right-0" style={{ animationName: 'blobFloat2', animationDelay: '-9s' } as React.CSSProperties} />
-
-          <div className="max-w-5xl mx-auto relative z-10">
-            <div className="text-center mb-14">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-4">A solução inteligente</p>
-              <h2 className="text-4xl md:text-5xl font-black mb-5">Como funciona o consórcio</h2>
-              <p className="text-white/75 text-xl max-w-2xl mx-auto leading-relaxed">
-                Você paga uma parcela mensal sem juros e sem taxa de adesão.
-                Quando contemplado, compra o bem à vista com poder de negociação real.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-5 mb-14">
-              {[
-                { num: '01', cor: 'blue',   titulo: 'Você contrata a carta de crédito', desc: 'Escolhe o valor da carta e o prazo. A parcela é calculada sem juros — só a taxa administrativa, muito menor que qualquer financiamento.' },
-                { num: '02', cor: 'purple', titulo: 'Entra em um grupo',         desc: 'Todo mês, consorciados são contemplados por sorteio ou lance. Você pode dar um lance para ser contemplado mais rápido.' },
-                { num: '03', cor: 'green',  titulo: 'Compra à vista',            desc: 'Ao ser contemplado, usa a carta de crédito para comprar o bem à vista — com poder de negociação que o financiado nunca terá.' },
-              ].map((item, i) => {
-                const colors: Record<string, string> = {
-                  blue:   'text-blue-400 border-blue-400/25 bg-blue-400/8',
-                  purple: 'text-purple-400 border-purple-400/25 bg-purple-400/8',
-                  green:  'text-green-400 border-green-400/25 bg-green-400/8',
-                }
-                return (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 24 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-60px' }}
-                    transition={{ delay: i * 0.12 }}
-                    className="bg-[#111] border border-white/8 rounded-2xl p-7"
-                  >
-                    <div className={`inline-flex w-12 h-12 rounded-xl border items-center justify-center font-black text-lg mb-5 ${colors[item.cor]}`}>
-                      {item.num}
-                    </div>
-                    <h3 className="font-bold text-white text-lg mb-3">{item.titulo}</h3>
-                    <p className="text-white/65 text-sm leading-relaxed">{item.desc}</p>
-                  </motion.div>
-                )
-              })}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-60px' }}
-              className="bg-[#111] border border-white/8 rounded-3xl p-8"
-            >
-              <p className="text-white/40 text-xs uppercase tracking-widest font-semibold mb-7 text-center">Financiamento vs Consórcio</p>
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <p className="text-red-400 font-bold text-xs mb-5 uppercase tracking-widest">Financiamento</p>
-                  <ul className="space-y-3.5">
-                    {['Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas no contrato', 'Score alto exigido para aprovação', 'Você paga até o dobro do preço do bem', 'Bem pode ser retomado em 3 parcelas atrasadas'].map((t) => (
-                      <li key={t} className="flex items-start gap-3 text-white/65 text-sm">
-                        <span className="text-red-500 mt-0.5 flex-shrink-0 font-bold">✕</span>{t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-green-400 font-bold text-xs mb-5 uppercase tracking-widest">Consórcio</p>
-                  <ul className="space-y-3.5">
-                    {['Zero juros — só taxa administrativa', 'Sem taxa de adesão, sem IOF', 'Processo simplificado de adesão', 'Você paga o preço real do bem', 'Regulado e fiscalizado pelo Banco Central'].map((t) => (
-                      <li key={t} className="flex items-start gap-3 text-white/80 text-sm">
-                        <span className="text-green-400 mt-0.5 flex-shrink-0 font-bold">✓</span>{t}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── CTA SIMULADOR ───────────────────────────────────────────── */}
-        <section className="py-20 px-6 relative overflow-hidden border-y border-white/8">
-          <Blob className="w-[600px] h-[400px] bg-red-700/15 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" style={{ animationDelay: '-2s' } as React.CSSProperties} />
+        {/* ── CTA SIMULADOR ────────────────────────────────────────── */}
+        <section className="py-20 px-6 relative overflow-hidden" style={{ background: C.blue }}>
           <div className="max-w-3xl mx-auto text-center relative z-10">
-            <p className="text-red-500 text-xs font-bold uppercase tracking-widest mb-4">Calcule o seu agora</p>
-            <h2 className="text-4xl md:text-5xl font-black mb-4">Quanto você economiza?</h2>
-            <p className="text-white/70 text-lg mb-8">
+            <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.65)' }}>Calcule o seu agora</p>
+            <h2 className="text-4xl md:text-5xl font-black mb-4 text-white">Quanto você economiza?</h2>
+            <p className="text-lg mb-8 text-white/80">
               Informe o bem e o valor. Em 2 minutos você vê a diferença exata — personalizada para o seu caso.
             </p>
             <button
-              onClick={() => abrirModal("hero")}
-              className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/50"
+              onClick={() => abrirModal('cta-meio')}
+              className="gold-btn inline-flex items-center gap-3 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all"
             >
               Simular minha economia
               <ArrowRight className="w-6 h-6" />
             </button>
-            <p className="text-white/35 text-sm mt-4">Gratuito · Sem compromisso · Sem cadastro inicial</p>
+            <p className="text-sm mt-4" style={{ color: 'rgba(255,255,255,0.5)' }}>Gratuito · Sem compromisso · Sem cadastro inicial</p>
           </div>
         </section>
 
-        {/* ── CREDIBILIDADE ───────────────────────────────────────────── */}
-        <section className="py-20 px-6 relative overflow-hidden" style={{ background: '#0d0d0d' }}>
-          <div className="max-w-6xl mx-auto relative z-10">
+        {/* ── CREDIBILIDADE ────────────────────────────────────────── */}
+        <section style={{ background: C.bg }} className="py-20 px-6">
+          <div className="max-w-6xl mx-auto">
             <div className="text-center mb-10">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Quem está por trás</p>
-              <h2 className="text-3xl font-black">A maior administradora privada do Brasil</h2>
-              <p className="text-white/55 text-sm mt-2">Regulada pelo Banco Central · +35 anos no mercado · presente em todo o território nacional</p>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.muted }}>Quem está por trás</p>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>A maior administradora privada do Brasil</h2>
+              <p className="text-sm mt-2" style={{ color: C.muted }}>Regulada pelo Banco Central · +35 anos no mercado · presente em todo o território nacional</p>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
-                { num: '+292',    label: 'lojas no Brasil e exterior',   destaque: false },
-                { num: 'R$140bi', label: 'em créditos comercializados',  destaque: false },
-                { num: '+641mil', label: 'clientes atendidos',           destaque: true  },
-                { num: '+906mil', label: 'cotas comercializadas',        destaque: false },
-                { num: '+35 anos',label: 'de experiência no mercado',    destaque: false },
-                { num: 'Bacen',   label: 'Regulada pelo Banco Central',  destaque: false },
+                { num: '+292',     label: 'lojas no Brasil e exterior',  destaque: false },
+                { num: 'R$140bi',  label: 'em créditos comercializados', destaque: false },
+                { num: '+641mil',  label: 'clientes atendidos',          destaque: true  },
+                { num: '+906mil',  label: 'cotas comercializadas',       destaque: false },
+                { num: '+35 anos', label: 'de experiência no mercado',   destaque: false },
+                { num: 'Bacen',    label: 'Regulada pelo Banco Central', destaque: false },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -547,23 +527,26 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ delay: i * 0.05 }}
-                  className={`col-span-2 md:col-span-1 lg:col-span-2 rounded-2xl p-6 text-center ${item.destaque ? 'bg-red-600' : 'bg-[#111] border border-white/8'}`}
+                  className="col-span-2 md:col-span-1 lg:col-span-2 rounded-2xl p-6 text-center card-hover"
+                  style={item.destaque
+                    ? { background: C.gold, border: 'none' }
+                    : { background: C.bgSoft, border: `1px solid ${C.border}` }
+                  }
                 >
-                  <p className="text-3xl font-black text-white mb-1">{item.num}</p>
-                  <p className={`text-sm ${item.destaque ? 'text-red-200' : 'text-white/55'}`}>{item.label}</p>
+                  <p className="text-3xl font-black mb-1" style={{ color: item.destaque ? '#fff' : C.text }}>{item.num}</p>
+                  <p className="text-sm" style={{ color: item.destaque ? 'rgba(255,255,255,0.85)' : C.muted }}>{item.label}</p>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── DEPOIMENTOS ─────────────────────────────────────────────── */}
-        <section className="py-20 px-6 relative overflow-hidden border-y border-white/8">
-          <Blob className="w-[400px] h-[300px] bg-green-800/10 bottom-0 left-0" style={{ animationName: 'blobFloat2', animationDelay: '-6s' } as React.CSSProperties} />
-          <div className="max-w-5xl mx-auto relative z-10">
+        {/* ── DEPOIMENTOS ──────────────────────────────────────────── */}
+        <section style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }} className="py-20 px-6">
+          <div className="max-w-5xl mx-auto">
             <div className="text-center mb-10">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Resultados reais</p>
-              <h2 className="text-3xl font-black">Quem já saiu na frente</h2>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.blue }}>Resultados reais</p>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>Quem já saiu na frente</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-5">
               {DEPOIMENTOS.map((d, i) => (
@@ -573,20 +556,21 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-[#141414] border border-white/8 rounded-2xl p-6"
+                  className="bg-white rounded-2xl p-6 card-hover"
+                  style={{ border: `1px solid ${C.border}` }}
                 >
                   <div className="flex gap-0.5 mb-4">
-                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 text-amber-400 fill-amber-400" />)}
+                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-[#C9A84C]" style={{ color: C.gold }} />)}
                   </div>
-                  <p className="text-white/75 text-sm leading-relaxed mb-5">&quot;{d.texto}&quot;</p>
-                  <div className="border-t border-white/8 pt-4 flex items-center justify-between">
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>&quot;{d.texto}&quot;</p>
+                  <div className="pt-4 flex items-center justify-between" style={{ borderTop: `1px solid ${C.border}` }}>
                     <div>
-                      <p className="font-bold text-white text-sm">{d.nome}</p>
-                      <p className="text-white/40 text-xs">{d.cidade}</p>
+                      <p className="font-bold text-sm" style={{ color: C.text }}>{d.nome}</p>
+                      <p className="text-xs" style={{ color: C.muted }}>{d.cidade}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-white/35 text-xs">{d.bem}</p>
-                      <p className="font-bold text-green-400 text-sm">Economizou {d.economia}</p>
+                      <p className="text-xs" style={{ color: C.muted }}>{d.bem}</p>
+                      <p className="font-bold text-sm" style={{ color: '#16A34A' }}>Economizou {d.economia}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -595,22 +579,25 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── FAQ ─────────────────────────────────────────────────────── */}
-        <section id="faq" className="py-20 px-6 relative overflow-hidden" style={{ background: '#0d0d0d' }}>
-          <div className="max-w-3xl mx-auto relative z-10">
+        {/* ── FAQ ──────────────────────────────────────────────────── */}
+        <section id="faq" style={{ background: C.bg }} className="py-20 px-6">
+          <div className="max-w-3xl mx-auto">
             <div className="text-center mb-10">
-              <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-3">Dúvidas</p>
-              <h2 className="text-3xl font-black">Perguntas frequentes</h2>
+              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.muted }}>Dúvidas</p>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>Perguntas frequentes</h2>
             </div>
             <div className="space-y-2">
               {FAQ.map((item, i) => (
-                <div key={i} className="border border-white/8 bg-[#111] rounded-2xl overflow-hidden">
+                <div key={i} className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.border}`, background: C.bgSoft }}>
                   <button
                     onClick={() => setFaqAberto(faqAberto === i ? null : i)}
-                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-white/85 hover:text-white transition-colors text-sm"
+                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-sm transition-colors hover:opacity-80"
+                    style={{ color: C.text }}
                   >
                     {item.pergunta}
-                    <span className="text-white/35 ml-3 flex-shrink-0 text-2xl leading-none">{faqAberto === i ? '−' : '+'}</span>
+                    <span className="ml-3 flex-shrink-0 text-2xl leading-none font-black" style={{ color: C.blue }}>
+                      {faqAberto === i ? '−' : '+'}
+                    </span>
                   </button>
                   <AnimatePresence>
                     {faqAberto === i && (
@@ -621,7 +608,7 @@ export default function LandingPage() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <p className="px-5 pb-5 text-white/65 text-sm leading-relaxed border-t border-white/8 pt-4">
+                        <p className="px-5 pb-5 text-sm leading-relaxed pt-4" style={{ color: C.muted, borderTop: `1px solid ${C.border}` }}>
                           {item.resposta}
                         </p>
                       </motion.div>
@@ -633,69 +620,69 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── CTA FINAL ───────────────────────────────────────────────── */}
-        <section className="py-24 px-6 relative overflow-hidden border-t border-white/8">
-          <Blob className="w-[600px] h-[500px] bg-red-700/12 top-0 left-1/2 -translate-x-1/2" style={{ animationDelay: '-5s' } as React.CSSProperties} />
+        {/* ── CTA FINAL ────────────────────────────────────────────── */}
+        <section className="py-24 px-6 relative overflow-hidden" style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }}>
           <div className="max-w-2xl mx-auto text-center relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black mb-4 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-black mb-4 leading-tight" style={{ color: C.text }}>
               Cada mês que passa,<br />dinheiro indo
-              <span className="text-red-500"> direto pro banco.</span>
+              <span style={{ color: '#DC2626' }}> direto pro banco.</span>
             </h2>
-            <p className="text-white/70 text-lg mb-8">
+            <p className="text-lg mb-8" style={{ color: C.muted }}>
               Simule agora. Gratuito, leva 2 minutos, e você vê exatamente quanto pode economizar.
             </p>
             <button
-              onClick={() => abrirModal("hero")}
-              className="inline-flex items-center gap-3 bg-red-600 hover:bg-red-500 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-red-900/40"
+              onClick={() => abrirModal('cta-final')}
+              className="gold-btn inline-flex items-center gap-3 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all"
             >
               Simular gratuitamente
               <ArrowRight className="w-6 h-6" />
             </button>
-            <p className="text-white/30 text-sm mt-4">Sem compromisso · Sem cadastro · Resposta em até 2 horas</p>
+            <p className="text-sm mt-4" style={{ color: C.muted }}>Sem compromisso · Sem cadastro · Resposta em até 2 horas</p>
           </div>
         </section>
 
-        {/* ── FOOTER ──────────────────────────────────────────────────── */}
-        <footer className="bg-[#050505] py-12 px-6 border-t border-white/8">
+        {/* ── FOOTER ───────────────────────────────────────────────── */}
+        <footer className="py-12 px-6" style={{ background: C.blueDark, borderTop: `1px solid rgba(255,255,255,0.08)` }}>
           <div className="max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
               <div>
                 <AdemIconLogo size="sm" dark />
-                <p className="text-white/40 text-xs mt-3 max-w-xs leading-relaxed">
+                <p className="text-xs mt-3 max-w-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
                   Indicação de consórcio com as melhores condições do mercado. Atendimento personalizado e sem burocracia.
                 </p>
               </div>
-              <div className="text-xs text-white/40 space-y-1.5">
-                <p className="font-semibold text-white/50 uppercase tracking-wide text-xs mb-2">Produtos</p>
+              <div className="text-xs space-y-1.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                <p className="font-semibold uppercase tracking-wide text-xs mb-2" style={{ color: 'rgba(255,255,255,0.65)' }}>Produtos</p>
                 {PRODUTOS.map((prod) => (
-                  <button key={prod.label} onClick={() => abrirModal("hero")} className="block hover:text-red-400 transition-colors">
+                  <button key={prod.label} onClick={() => abrirModal('footer')} className="block hover:text-white transition-colors">
                     Consórcio de {prod.label}
                   </button>
                 ))}
               </div>
-              <div className="text-xs text-white/40 space-y-1.5">
-                <p className="font-semibold text-white/50 uppercase tracking-wide text-xs mb-2">Contato</p>
+              <div className="text-xs space-y-1.5" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                <p className="font-semibold uppercase tracking-wide text-xs mb-2" style={{ color: 'rgba(255,255,255,0.65)' }}>Contato</p>
                 <p>Simulação e atendimento via WhatsApp</p>
                 <p>Resposta em até 2 horas úteis</p>
-                <button onClick={() => abrirModal("hero")} className="mt-3 block text-red-500 hover:text-red-400 font-semibold">
+                <button onClick={() => abrirModal('footer')} className="mt-3 block font-semibold transition-colors" style={{ color: C.gold }}>
                   Fazer simulação gratuita →
                 </button>
               </div>
             </div>
-            <div className="border-t border-white/8 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/20">
+            <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs" style={{ borderTop: 'rgba(255,255,255,0.08) 1px solid', color: 'rgba(255,255,255,0.2)' }}>
               <p>© {new Date().getFullYear()} Indica Consórcio. Todos os direitos reservados.</p>
               <p className="text-center">As simulações são estimativas com base em taxas médias de mercado e não constituem proposta formal de contrato.</p>
             </div>
           </div>
         </footer>
 
-        {/* ── WHATSAPP FIXO ───────────────────────────────────────────── */}
+        {/* ── WHATSAPP FIXO ────────────────────────────────────────── */}
         <a
           href="https://wa.me/5511993929660?text=Ol%C3%A1!%20Vim%20pelo%20site%20e%20quero%20saber%20mais%20sobre%20o%20cons%C3%B3rcio."
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => trackEvent('whatsapp_fixo_click', { label: 'home' })}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold px-5 py-3.5 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-3 text-white font-bold px-5 py-3.5 rounded-full shadow-2xl transition-all hover:scale-105 active:scale-95"
+          style={{ background: '#25d366' }}
           aria-label="Tire suas dúvidas pelo WhatsApp"
         >
           <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
@@ -704,7 +691,7 @@ export default function LandingPage() {
           <span className="text-sm">Falar com consultor</span>
         </a>
 
-        {/* ── MODAL SIMULADOR ─────────────────────────────────────────── */}
+        {/* ── MODAL SIMULADOR ──────────────────────────────────────── */}
         <AnimatePresence>
           {modalOpen && (
             <>
@@ -713,7 +700,8 @@ export default function LandingPage() {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setModalOpen(false)}
-                className="fixed inset-0 bg-black/85 z-50 backdrop-blur-sm"
+                className="fixed inset-0 z-50 backdrop-blur-sm"
+                style={{ background: 'rgba(13,27,62,0.75)' }}
               />
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
