@@ -212,50 +212,11 @@ export default function LandingPage() {
                 </a>
               </motion.div>
 
-              {/* Mini-fluxo */}
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.3 }}
-                className="mt-8 flex flex-wrap items-center gap-2"
-              >
-                {[
-                  { n: '1', t: 'Contrata a carta de crédito' },
-                  { n: '2', t: 'É contemplado por sorteio ou lance' },
-                  { n: '3', t: 'Compra à vista com poder de negociação' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,255,255,0.10)', border: '1px solid rgba(255,255,255,0.18)' }}>
-                      <span className="w-5 h-5 rounded-full text-white text-xs font-black flex items-center justify-center flex-shrink-0" style={{ background: C.gold }}>{item.n}</span>
-                      <span className="text-white/80 text-xs font-medium">{item.t}</span>
-                    </div>
-                    {i < 2 && <span className="text-white/35 text-xs">→</span>}
-                  </div>
-                ))}
-              </motion.div>
             </div>
 
             {/* Tabs de produto */}
             <div>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={produtoAtivo}
-                  initial={{ opacity: 0, x: -12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 12 }}
-                  transition={{ duration: 0.28 }}
-                  className="flex items-center gap-3 mb-4"
-                >
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.4)' }}>
-                    <p.Icon className="w-5 h-5" style={{ color: '#F0D98A' }} />
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-base leading-tight">Consórcio de {p.label}</p>
-                    <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>{p.tag}</p>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-
+              <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>Escolha o produto</p>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {PRODUTOS.map((prod, i) => {
                   const Icon = prod.Icon
