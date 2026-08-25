@@ -141,7 +141,7 @@ export default function LandingPage() {
           <div className="absolute inset-0" style={{ background: 'linear-gradient(110deg, rgba(13,61,114,0.88) 0%, rgba(13,61,114,0.60) 55%, rgba(13,61,114,0.25) 100%)' }} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,61,114,0.75) 0%, transparent 50%)' }} />
 
-          <div className="relative z-10 h-full flex flex-col justify-between pt-28 pb-10 px-6 max-w-7xl mx-auto">
+          <div className="relative z-10 h-full flex flex-col pt-28 pb-40 px-6 max-w-7xl mx-auto">
 
             {/* Headline */}
             <div className="max-w-2xl">
@@ -214,8 +214,8 @@ export default function LandingPage() {
 
             </div>
 
-            {/* Tabs de produto */}
-            <div>
+            {/* Tabs de produto — fixo no bottom da section */}
+            <div className="absolute bottom-8 left-6 right-6 max-w-7xl">
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>Escolha o produto</p>
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {PRODUTOS.map((prod, i) => {
