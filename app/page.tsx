@@ -16,11 +16,11 @@ const PRODUTOS: Produto[] = [
   { label: 'Imóvel',       headline: 'Imóvel próprio.',        Icon: Home,       img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  imgPosition: 'center' },
   { label: 'Automóvel',    headline: 'Carro próprio.',         Icon: Car,        img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  imgPosition: 'center 60%' },
   { label: 'Investimento', headline: 'Patrimônio crescendo.',  Icon: TrendingUp, img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=85',  imgPosition: 'center' },
-  { label: 'Construção',   headline: 'Construa do zero.',      Icon: Hammer,     img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85',  imgPosition: 'center 30%' },
+  { label: 'Construção',   headline: 'Construa do zero.',      Icon: Hammer,     img: 'https://images.unsplash.com/photo-1590274853697-f0cce5f68d84?w=1400&q=85',  imgPosition: 'center 40%' },
   { label: 'Reforma',      headline: 'Reforma sem dívida.',    Icon: Wrench,     img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85',     imgPosition: 'center' },
   { label: 'Negócio',      headline: 'Negócio próprio.',       Icon: Building2,  img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85',  imgPosition: 'center' },
   { label: 'Viagens',      headline: 'Viaje pelo mundo.',      Icon: Plane,      img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&q=85',  imgPosition: 'center 40%' },
-  { label: 'Serviços',     headline: 'Serviços contratados.',  Icon: Briefcase,  img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=85',  imgPosition: 'center' },
+  { label: 'Serviços',     headline: 'Serviços sem juros.',    Icon: Briefcase,  img: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=1400&q=85',  imgPosition: 'center' },
 ]
 
 const FAQ = [
