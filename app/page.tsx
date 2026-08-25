@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Calculadora from '@/components/calculator/Calculadora'
 import AdemIconLogo from '@/components/AdemIconLogo'
-import { Star, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, CheckCircle, XCircle, type LucideIcon } from 'lucide-react'
+import { Star, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, CheckCircle, XCircle, Hammer, Plane, Briefcase, type LucideIcon } from 'lucide-react'
 import { trackEvent } from '@/lib/gtag'
 
 function fmt(n: number) {
@@ -13,11 +13,14 @@ function fmt(n: number) {
 
 interface Produto { label: string; Icon: LucideIcon; img: string; tag: string }
 const PRODUTOS: Produto[] = [
-  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85', tag: 'A partir de R$500/mês' },
-  { label: 'Veículo',      Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85', tag: 'A partir de R$400/mês' },
-  { label: 'Negócio',      Icon: Building2,   img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85', tag: 'Expansão sem juros' },
-  { label: 'Reforma',      Icon: Wrench,      img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85', tag: 'Valorize seu imóvel' },
-  { label: 'Investimento',  Icon: TrendingUp,  img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85', tag: 'Rentabilidade real' },
+  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  tag: 'A partir de R$500/mês' },
+  { label: 'Automóvel',    Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  tag: 'A partir de R$400/mês' },
+  { label: 'Investimento', Icon: TrendingUp,  img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85',  tag: 'Rentabilidade real' },
+  { label: 'Construção',   Icon: Hammer,      img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85',  tag: 'Construa sem banco' },
+  { label: 'Reforma',      Icon: Wrench,      img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85',     tag: 'Valorize seu imóvel' },
+  { label: 'Negócio',      Icon: Building2,   img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85',  tag: 'Expansão sem juros' },
+  { label: 'Viagens',      Icon: Plane,       img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&q=85',  tag: 'Explore o mundo' },
+  { label: 'Serviços',     Icon: Briefcase,   img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=85',  tag: 'Soluções para seu negócio' },
 ]
 
 const FAQ = [
@@ -35,8 +38,8 @@ const DEPOIMENTOS = [
 ]
 
 const EXEMPLOS = {
-  imovel: { label: 'Imóvel · R$300.000', parcelaFin: 3087, totalFin: 1111320, parcelaCons: 1011, totalCons: 372000 },
-  carro:  { label: 'Veículo · R$80.000',  parcelaFin: 2027, totalFin: 121620,  parcelaCons: 1048, totalCons: 92800  },
+  imovel: { label: 'Imóvel R$300k',    parcelaFin: 3087, totalFin: 1111320, prazoFin: 360, entradaFin: 90000, parcelaCons: 1011, totalCons: 372000, prazoCons: 220, entradaCons: 0 },
+  carro:  { label: 'Automóvel R$80k',  parcelaFin: 2027, totalFin: 121620,  prazoFin: 60,  entradaFin: 24000, parcelaCons: 1048, totalCons: 92800,  prazoCons: 80,  entradaCons: 0 },
 }
 
 /* Paleta */
@@ -284,9 +287,9 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── COMPARATIVO RÁPIDO ───────────────────────────────────── */}
+        {/* ── COMPARATIVO DETALHADO ───────────────────────────────── */}
         <section style={{ background: C.bgSoft, borderBottom: `1px solid ${C.border}` }} className="py-14 px-6">
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <p className="text-xs uppercase tracking-widest font-semibold text-center mb-6" style={{ color: C.muted }}>Compare antes de simular</p>
 
             <div className="flex gap-2 justify-center mb-8">
@@ -304,41 +307,75 @@ export default function LandingPage() {
                     }
                   >
                     <Icon className="w-4 h-4" />
-                    {b === 'imovel' ? 'Imóvel R$300k' : 'Veículo R$80k'}
+                    {b === 'imovel' ? 'Imóvel R$300k' : 'Automóvel R$80k'}
                   </button>
                 )
               })}
             </div>
 
-            <div className="grid grid-cols-3 gap-4 items-stretch">
+            {/* Tabela lado a lado */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
               {/* Financiamento */}
-              <div className="bg-white rounded-2xl p-6 text-center flex flex-col justify-center card-hover" style={{ border: `1px solid #FECACA` }}>
-                <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#DC2626' }}>Financiamento</p>
-                <p className="font-black text-3xl mb-1" style={{ color: C.text }}>{fmt(ex.parcelaFin)}<span className="text-sm font-normal" style={{ color: C.muted }}>/mês</span></p>
-                <p className="text-sm font-semibold" style={{ color: '#DC2626' }}>Total: {fmt(ex.totalFin)}</p>
-              </div>
-
-              {/* Economia */}
-              <div className="flex flex-col gap-3">
-                <div className="flex-1 rounded-2xl p-5 text-center" style={{ background: 'linear-gradient(135deg, #FFF8E7 0%, #FFF3CC 100%)', border: `1px solid rgba(201,168,76,0.35)` }}>
-                  <p className="text-xs uppercase tracking-widest mb-2 font-semibold" style={{ color: C.goldDark }}>Você economiza</p>
-                  <p className="font-black text-4xl mb-1" style={{ color: C.gold }}>{fmt(economiaTotal)}</p>
-                  <p className="text-xs" style={{ color: C.goldDark }}>{fmt(economiaMes)}/mês no bolso</p>
+              <div className="bg-white rounded-2xl p-5 card-hover" style={{ border: '1px solid #FECACA' }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#DC2626' }}>Financiamento</p>
+                <div className="space-y-2.5">
+                  {([
+                    { label: 'Entrada exigida',  val: fmt(ex.entradaFin),         bad: true  },
+                    { label: 'Prazo',             val: `${ex.prazoFin} meses`,     bad: false },
+                    { label: 'Juros',             val: '~12% ao ano',              bad: true  },
+                    { label: 'Parcela mensal',    val: `${fmt(ex.parcelaFin)}/mês`, bad: false, big: true },
+                    { label: 'Total que você paga', val: fmt(ex.totalFin),         bad: true,  big: true },
+                  ] as { label: string; val: string; bad?: boolean; big?: boolean }[]).map((row) => (
+                    <div key={row.label}
+                      className="flex items-center justify-between"
+                      style={row.big ? { borderTop: '1px solid #FEE2E2', paddingTop: '8px', marginTop: '4px' } : {}}
+                    >
+                      <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
+                      <span className={`font-bold ${row.big ? 'text-base' : 'text-sm'}`} style={{ color: row.bad ? '#DC2626' : C.text }}>{row.val}</span>
+                    </div>
+                  ))}
                 </div>
-                <button
-                  onClick={() => abrirModal('comparativo')}
-                  className="gold-btn w-full text-white font-bold py-3.5 rounded-xl transition-all text-sm"
-                >
-                  Calcular o meu →
-                </button>
               </div>
 
               {/* Consórcio */}
-              <div className="bg-white rounded-2xl p-6 text-center flex flex-col justify-center card-hover" style={{ border: `1px solid #BBF7D0` }}>
-                <p className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: '#16A34A' }}>Consórcio</p>
-                <p className="font-black text-3xl mb-1" style={{ color: C.text }}>{fmt(ex.parcelaCons)}<span className="text-sm font-normal" style={{ color: C.muted }}>/mês</span></p>
-                <p className="text-sm font-semibold" style={{ color: '#16A34A' }}>Total: {fmt(ex.totalCons)}</p>
+              <div className="bg-white rounded-2xl p-5 card-hover" style={{ border: '1px solid #BBF7D0' }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#16A34A' }}>Consórcio</p>
+                <div className="space-y-2.5">
+                  {([
+                    { label: 'Entrada',           val: 'R$0 — sem entrada',        good: true  },
+                    { label: 'Prazo',             val: `${ex.prazoCons} meses`,    good: false },
+                    { label: 'Juros',             val: 'Zero — sem juros',         good: true  },
+                    { label: 'Taxa administrativa', val: 'apenas 1,2% ao ano',     good: false },
+                    { label: 'Parcela mensal',    val: `${fmt(ex.parcelaCons)}/mês`, good: false, big: true },
+                    { label: 'Total que você paga', val: fmt(ex.totalCons),        good: true,  big: true },
+                  ] as { label: string; val: string; good?: boolean; big?: boolean }[]).map((row) => (
+                    <div key={row.label}
+                      className="flex items-center justify-between"
+                      style={row.big ? { borderTop: '1px solid #BBF7D0', paddingTop: '8px', marginTop: '4px' } : {}}
+                    >
+                      <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
+                      <span className={`font-bold ${row.big ? 'text-base' : 'text-sm'}`} style={{ color: row.good ? '#16A34A' : C.text }}>{row.val}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            </div>
+
+            {/* Economia */}
+            <div className="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+              style={{ background: 'linear-gradient(135deg, #FFF8E7 0%, #FFF3CC 100%)', border: '1px solid rgba(201,168,76,0.35)' }}
+            >
+              <div>
+                <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: C.goldDark }}>Você economiza no total</p>
+                <p className="font-black text-4xl" style={{ color: C.gold }}>{fmt(economiaTotal)}</p>
+                <p className="text-sm mt-1" style={{ color: C.goldDark }}>{fmt(economiaMes)}/mês no bolso até a contemplação</p>
+              </div>
+              <button
+                onClick={() => abrirModal('comparativo')}
+                className="gold-btn text-white font-bold py-3.5 px-7 rounded-xl transition-all text-sm flex-shrink-0"
+              >
+                Calcular o meu →
+              </button>
             </div>
           </div>
         </section>
@@ -355,11 +392,11 @@ export default function LandingPage() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6 mb-14">
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
               {[
-                { num: '01', cor: C.blue,    titulo: 'Contrata a carta de crédito', desc: 'Escolhe o valor da carta e o prazo. A parcela é calculada sem juros — só a taxa administrativa, muito menor que qualquer financiamento.' },
-                { num: '02', cor: C.gold,    titulo: 'Entra em um grupo',            desc: 'Todo mês, consorciados são contemplados por sorteio ou lance. Você pode dar um lance para ser contemplado mais rápido.' },
-                { num: '03', cor: '#16A34A', titulo: 'Compra à vista',               desc: 'Ao ser contemplado, usa a carta de crédito para comprar o bem à vista — com poder de negociação que o financiado nunca terá.' },
+                { num: '01', cor: C.blue, titulo: 'Contrata a carta de crédito', desc: 'Você escolhe o valor da carta — igual ao valor do bem que quer comprar. Sem entrada, sem aprovação de banco, sem score mínimo exigido.' },
+                { num: '02', cor: C.gold, titulo: 'Paga mensalmente, sem juros',  desc: 'Todo mês você paga uma parcela com apenas taxa administrativa (1,2% ao ano). Nada de juros. Mensalmente há contemplações por sorteio — e você pode acelerar dando um lance.' },
+                { num: '03', cor: C.blue, titulo: 'Compra à vista, fica com o bem', desc: 'Ao ser contemplado, usa a carta para comprar à vista. Com esse poder de negociação, consegue descontos que nenhum financiado conseguiria.' },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -379,7 +416,24 @@ export default function LandingPage() {
               ))}
             </div>
 
-            {/* Tabela comparativa */}
+            {/* Resumo do resultado */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              className="rounded-2xl p-6 mb-8 text-center"
+              style={{ background: C.bgSoft, border: `1px solid ${C.border}` }}
+            >
+              <p className="font-bold text-lg mb-2" style={{ color: C.text }}>O resultado:</p>
+              <p className="text-base leading-relaxed max-w-2xl mx-auto" style={{ color: C.muted }}>
+                Você fica com o bem pagando parcelas muito menores do que no banco —
+                sem ter dado entrada, sem ter pago um centavo de juros.
+                Enquanto o financiado entrega metade do dinheiro pro banco em juros,
+                <strong style={{ color: C.text }}> você cria patrimônio pagando o preço real do bem.</strong>
+              </p>
+            </motion.div>
+
+            {/* Checklist rápido */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -392,7 +446,7 @@ export default function LandingPage() {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#DC2626' }}>❌ Financiamento</p>
                   <ul className="space-y-3.5">
-                    {['Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas no contrato', 'Score alto exigido para aprovação', 'Você paga até o dobro do preço do bem', 'Bem pode ser retomado em 3 parcelas atrasadas'].map((t) => (
+                    {['30% de entrada obrigatória no ato', 'Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas no contrato', 'Score alto exigido para aprovação', 'Você paga quase o dobro do preço do bem'].map((t) => (
                       <li key={t} className="flex items-start gap-3 text-sm" style={{ color: C.muted }}>
                         <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />{t}
                       </li>
@@ -402,7 +456,7 @@ export default function LandingPage() {
                 <div>
                   <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#16A34A' }}>✓ Consórcio</p>
                   <ul className="space-y-3.5">
-                    {['Zero juros — só taxa administrativa', 'Sem taxa de adesão, sem IOF', 'Processo simplificado de adesão', 'Você paga o preço real do bem', 'Regulado e fiscalizado pelo Banco Central'].map((t) => (
+                    {['Sem entrada — começa do zero', 'Zero juros — só 1,2% de taxa ao ano', 'Sem IOF, sem taxas ocultas', 'Processo simples de adesão', 'Você paga o preço real do bem'].map((t) => (
                       <li key={t} className="flex items-start gap-3 text-sm font-medium" style={{ color: C.text }}>
                         <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />{t}
                       </li>
@@ -451,12 +505,12 @@ export default function LandingPage() {
                   </div>
                   <div className="p-5 space-y-3">
                     <div>
-                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: '#DC2626' }}>Financiamento</p>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: C.muted }}>Com financiamento</p>
                       <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.fin)}</p>
                     </div>
                     <div className="h-px" style={{ background: C.border }} />
                     <div>
-                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: '#16A34A' }}>Consórcio</p>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: C.blue }}>Com consórcio</p>
                       <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.cons)}</p>
                     </div>
                     <div className="rounded-xl px-4 py-3" style={{ background: '#FFF8E7', border: '1px solid rgba(201,168,76,0.3)' }}>
