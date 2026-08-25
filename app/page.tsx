@@ -162,7 +162,7 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.55, delay: 0.05 }}
-                className="text-5xl md:text-6xl lg:text-[72px] font-black leading-[0.92] mb-5 tracking-tight text-white drop-shadow-2xl"
+                className="text-4xl md:text-5xl lg:text-[60px] font-black leading-[0.92] mb-5 tracking-tight text-white drop-shadow-2xl"
               >
                 Compre o que<br />
                 <span style={{ color: '#F0D98A' }}>você quer.</span><br />
