@@ -11,16 +11,16 @@ function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
 }
 
-interface Produto { label: string; Icon: LucideIcon; img: string; tag: string }
+interface Produto { label: string; headline: string; Icon: LucideIcon; img: string; imgPosition?: string }
 const PRODUTOS: Produto[] = [
-  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  tag: 'Sem juros · sem entrada' },
-  { label: 'Automóvel',    Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  tag: 'Sem juros · sem entrada' },
-  { label: 'Investimento', Icon: TrendingUp,  img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85',  tag: 'Rentabilidade real' },
-  { label: 'Construção',   Icon: Hammer,      img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85',  tag: 'Construa sem banco' },
-  { label: 'Reforma',      Icon: Wrench,      img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85',     tag: 'Valorize seu imóvel' },
-  { label: 'Negócio',      Icon: Building2,   img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85',  tag: 'Expansão sem juros' },
-  { label: 'Viagens',      Icon: Plane,       img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&q=85',  tag: 'Explore o mundo' },
-  { label: 'Serviços',     Icon: Briefcase,   img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=85',  tag: 'Soluções para seu negócio' },
+  { label: 'Imóvel',       headline: 'Imóvel próprio.',        Icon: Home,       img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  imgPosition: 'center' },
+  { label: 'Automóvel',    headline: 'Carro próprio.',         Icon: Car,        img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  imgPosition: 'center 60%' },
+  { label: 'Investimento', headline: 'Patrimônio crescendo.',  Icon: TrendingUp, img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1400&q=85',  imgPosition: 'center' },
+  { label: 'Construção',   headline: 'Construa do zero.',      Icon: Hammer,     img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85',  imgPosition: 'center 30%' },
+  { label: 'Reforma',      headline: 'Reforma sem dívida.',    Icon: Wrench,     img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85',     imgPosition: 'center' },
+  { label: 'Negócio',      headline: 'Negócio próprio.',       Icon: Building2,  img: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1400&q=85',  imgPosition: 'center' },
+  { label: 'Viagens',      headline: 'Viaje pelo mundo.',      Icon: Plane,      img: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1400&q=85',  imgPosition: 'center 40%' },
+  { label: 'Serviços',     headline: 'Serviços contratados.',  Icon: Briefcase,  img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1400&q=85',  imgPosition: 'center' },
 ]
 
 const FAQ = [
@@ -133,7 +133,7 @@ export default function LandingPage() {
               className="absolute inset-0"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={p.img} alt={p.label} className="hero-img w-full h-full object-cover" />
+              <img src={p.img} alt={p.label} className="hero-img w-full h-full object-cover" style={{ objectPosition: p.imgPosition ?? 'center' }} />
             </motion.div>
           </AnimatePresence>
 
@@ -175,7 +175,7 @@ export default function LandingPage() {
                     transition={{ duration: 0.35 }}
                     className="text-white"
                   >
-                    {p.label} próprio.
+                    {p.headline}
                   </motion.span>
                 </AnimatePresence>
               </motion.h1>
