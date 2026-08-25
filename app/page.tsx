@@ -469,7 +469,7 @@ export default function LandingPage() {
                     </div>
                     <div className="rounded-xl px-4 py-3" style={{ background: '#FFF8E7', border: '1px solid rgba(201,168,76,0.3)' }}>
                       <p className="font-black text-xl" style={{ color: C.gold }}>{fmt(item.fin - item.cons)}</p>
-                      <p className="text-xs" style={{ color: C.goldDark }}>entregues ao banco desnecessariamente</p>
+                      <p className="text-xs" style={{ color: C.goldDark }}>economizado com consórcio</p>
                     </div>
                   </div>
                 </motion.div>
