@@ -13,8 +13,8 @@ function fmt(n: number) {
 
 interface Produto { label: string; Icon: LucideIcon; img: string; tag: string }
 const PRODUTOS: Produto[] = [
-  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  tag: 'A partir de R$500/mês' },
-  { label: 'Automóvel',    Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  tag: 'A partir de R$400/mês' },
+  { label: 'Imóvel',       Icon: Home,        img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1400&q=85',  tag: 'Sem juros · sem entrada' },
+  { label: 'Automóvel',    Icon: Car,         img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1400&q=85',  tag: 'Sem juros · sem entrada' },
   { label: 'Investimento', Icon: TrendingUp,  img: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1400&q=85',  tag: 'Rentabilidade real' },
   { label: 'Construção',   Icon: Hammer,      img: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1400&q=85',  tag: 'Construa sem banco' },
   { label: 'Reforma',      Icon: Wrench,      img: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1400&q=85',     tag: 'Valorize seu imóvel' },
