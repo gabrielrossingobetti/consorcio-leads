@@ -246,20 +246,13 @@ export default function LandingPage() {
                   transition={{ duration: 0.28 }}
                   className="flex items-center gap-3 mb-4"
                 >
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.4)' }}>
-                    <p.Icon className="w-4 h-4" style={{ color: '#F0D98A' }} />
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(201,168,76,0.2)', border: '1px solid rgba(201,168,76,0.4)' }}>
+                    <p.Icon className="w-5 h-5" style={{ color: '#F0D98A' }} />
                   </div>
                   <div>
-                    <p className="text-white font-bold text-sm">Consórcio de {p.label}</p>
-                    <p className="text-white/55 text-xs">{p.tag}</p>
+                    <p className="text-white font-bold text-base leading-tight">Consórcio de {p.label}</p>
+                    <p className="text-sm mt-0.5" style={{ color: 'rgba(255,255,255,0.55)' }}>{p.tag}</p>
                   </div>
-                  <button
-                    onClick={() => abrirModal('hero')}
-                    className="ml-auto text-sm font-bold px-4 py-2 rounded-full transition-all text-white"
-                    style={{ border: '1px solid rgba(201,168,76,0.5)', color: '#F0D98A' }}
-                  >
-                    Simular este →
-                  </button>
                 </motion.div>
               </AnimatePresence>
 
