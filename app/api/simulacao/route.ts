@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
         total_consorcio: body.totalConsorcio,
         total_financiamento: body.totalFinanciamento,
         economia_total: body.economiaTotal,
-        prazo_meses: body.prazoMeses,
+        prazo_meses: body.prazoConsorcioMeses ?? body.prazoMeses ?? null,
         converteu_lead: false,
         utm_source: body.utm_source || null,
         utm_medium: body.utm_medium || null,
