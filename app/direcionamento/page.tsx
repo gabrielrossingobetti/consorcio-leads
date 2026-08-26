@@ -45,41 +45,43 @@ const DIFERENCIAIS = [
 ]
 
 const PATROCINADORES = [
-  'São Paulo FC', 'Flamengo', 'BBB', 'Athletico-PR', 'Grêmio', 'Santos FC',
+  { nome: 'São Paulo FC',   sigla: 'SPFC',  cor: '#000000', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg/200px-Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg.png' },
+  { nome: 'Flamengo',       sigla: 'FLA',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_1.svg/200px-Flamengo_braz_1.svg.png' },
+  { nome: 'BBB',            sigla: 'BBB',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/BBB_logo.svg/200px-BBB_logo.svg.png' },
+  { nome: 'Athletico-PR',   sigla: 'CAP',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Athletico_Paranaense_logo.svg/200px-Athletico_Paranaense_logo.svg.png' },
+  { nome: 'Grêmio',         sigla: 'GRE',   cor: '#004F9F', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Gr%C3%AAmio_Foot-Ball_Porto_Alegrense_logo.svg/200px-Gr%C3%AAmio_Foot-Ball_Porto_Alegrense_logo.svg.png' },
+  { nome: 'Santos FC',      sigla: 'SAN',   cor: '#000000', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Santos_logo.svg/200px-Santos_logo.svg.png' },
+  { nome: 'Cuiabá EC',      sigla: 'CUI',   cor: '#F5A623', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Cuiab%C3%A1_Esporte_Clube_logo.svg/200px-Cuiab%C3%A1_Esporte_Clube_logo.svg.png' },
 ]
 
 function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
 }
 
-// SVG logo fiel à marca Ademicon
-function AdemIconSVG({ size = 72 }: { size?: number }) {
+// Logo Ademicon — outline vermelho, wordmark cinza escuro (fiel à marca)
+function AdemIconSVG({ size = 72, onRed = false }: { size?: number; onRed?: boolean }) {
+  const stroke = onRed ? '#fff' : '#E52D27'
   return (
-    <svg width={size} height={size} viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="80" height="80" rx="14" fill="#E52D27"/>
-      {/* Casa - telhado */}
-      <path d="M40 14 L66 36 H58 V62 H22 V36 H14 Z" fill="white"/>
-      {/* Porta */}
-      <rect x="33" y="44" width="14" height="18" rx="2" fill="#E52D27"/>
-      {/* Janela esquerda */}
-      <rect x="24" y="42" width="7" height="7" rx="1" fill="#E52D27"/>
-      {/* Janela direita */}
-      <rect x="49" y="42" width="7" height="7" rx="1" fill="#E52D27"/>
-      {/* Seta cima (crescimento) */}
-      <path d="M40 6 L46 14 H34 Z" fill="white" opacity="0.5"/>
+    <svg width={size} height={size * 0.72} viewBox="0 0 100 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Telhado externo */}
+      <path d="M50 4 L96 36 H82 V68 H18 V36 H4 Z" stroke={stroke} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
+      {/* Telhado interno (seta crescimento) */}
+      <path d="M50 18 L72 36 H62 V56 H38 V36 H28 Z" stroke={stroke} strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
     </svg>
   )
 }
 
-function AdemIconWordmark({ className = '' }: { className?: string }) {
+function AdemIconWordmark({ onRed = false, size = 'md' }: { onRed?: boolean; size?: 'sm' | 'md' | 'lg' }) {
+  const titleColor  = onRed ? '#fff'     : '#3A3A3A'
+  const subtitleColor = onRed ? 'rgba(255,255,255,0.6)' : '#888'
+  const sizes = { sm: { icon: 32, title: 'text-sm', sub: 'text-[9px]' }, md: { icon: 44, title: 'text-lg', sub: 'text-[10px]' }, lg: { icon: 60, title: 'text-2xl', sub: 'text-xs' } }
+  const s = sizes[size]
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <AdemIconSVG size={52} />
+    <div className="flex items-center gap-2.5">
+      <AdemIconSVG size={s.icon} onRed={onRed} />
       <div>
-        <div className="font-black text-2xl leading-none tracking-tight" style={{ color: '#E52D27', fontFamily: 'system-ui, sans-serif' }}>
-          ADEMICON
-        </div>
-        <div className="text-xs text-gray-500 tracking-wide mt-0.5">consórcio e investimento</div>
+        <div className={`font-black ${s.title} leading-none tracking-tight`} style={{ color: titleColor }}>ADEMICON</div>
+        <div className={`${s.sub} tracking-wide mt-0.5`} style={{ color: subtitleColor }}>consórcio e investimento</div>
       </div>
     </div>
   )
@@ -213,8 +215,8 @@ function DirecionamentoContent() {
               transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 15 }}
               className="mb-6"
             >
-              <div className="bg-white rounded-3xl p-5 shadow-2xl">
-                <AdemIconSVG size={80} />
+              <div className="bg-white rounded-3xl px-8 py-5 shadow-2xl">
+                <AdemIconWordmark size="lg" />
               </div>
             </motion.div>
 
@@ -255,13 +257,7 @@ function DirecionamentoContent() {
 
               {/* Navbar interna */}
               <div className="flex items-center justify-between px-6 pt-6 pb-4 max-w-4xl mx-auto">
-                <div className="flex items-center gap-2.5">
-                  <AdemIconSVG size={40} />
-                  <div>
-                    <div className="font-black text-white text-base leading-none tracking-tight">ADEMICON</div>
-                    <div className="text-white/60 text-[10px] tracking-wide">consórcio e investimento</div>
-                  </div>
-                </div>
+                <AdemIconWordmark onRed={true} size="sm" />
                 <div className="px-3 py-1 rounded-full text-xs font-bold text-white/90 tracking-wide"
                   style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
                   ✓ Administradora Indicada
@@ -351,19 +347,42 @@ function DirecionamentoContent() {
               </div>
             </motion.div>
 
-            {/* ── PATROCINADORES ───────────────────────────── */}
+            {/* ── PATROCINADORES — carousel infinito ───────── */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}
-              className="px-6 py-10 max-w-4xl mx-auto text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-5">
+              className="py-10 overflow-hidden">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 text-center mb-6">
                 Patrocinadora oficial de
               </p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {PATROCINADORES.map((p, i) => (
-                  <span key={i} className="px-4 py-2 rounded-full text-sm font-semibold bg-gray-100 text-gray-700">
-                    {p}
-                  </span>
+              <style>{`
+                @keyframes marquee-slide {
+                  0%   { transform: translateX(0); }
+                  100% { transform: translateX(-50%); }
+                }
+                .marquee-track { display: flex; gap: 16px; width: max-content; animation: marquee-slide 18s linear infinite; }
+                .marquee-track:hover { animation-play-state: paused; }
+              `}</style>
+              <div className="marquee-track">
+                {[...PATROCINADORES, ...PATROCINADORES].map((p, i) => (
+                  <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2 w-24">
+                    <div className="w-16 h-16 rounded-full overflow-hidden shadow-md border-2 border-gray-100 bg-white flex items-center justify-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={p.imgUrl}
+                        alt={p.nome}
+                        className="w-full h-full object-contain p-1"
+                        onError={(e) => {
+                          const el = e.currentTarget
+                          el.style.display = 'none'
+                          if (el.parentElement) {
+                            el.parentElement.style.background = p.cor
+                            el.parentElement.innerHTML = `<span style="color:${p.textColor};font-weight:900;font-size:11px;text-align:center;padding:4px">${p.sigla}</span>`
+                          }
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs text-gray-600 font-semibold text-center leading-tight w-20 truncate">{p.nome}</span>
+                  </div>
                 ))}
-                <span className="px-4 py-2 rounded-full text-sm text-gray-400 bg-gray-50">+ muito mais</span>
               </div>
             </motion.div>
 
