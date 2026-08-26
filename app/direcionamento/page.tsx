@@ -44,57 +44,17 @@ const DIFERENCIAIS = [
   { icon: '✅', texto: 'Sem score mínimo exigido' },
 ]
 
-// Inline SVG mini-escudos — sempre funcionam, sem depender de CDN externo
-function EscudoSPFC() {
-  return (
-    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#1A1A1A" stroke="#C40026" strokeWidth="3"/>
-      <polygon points="30,10 50,20 50,46 30,60 10,46 10,20" fill="#C40026"/>
-      <text x="30" y="40" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="Arial">SPFC</text>
-    </svg>
-  )
-}
-function EscudoFlamengo() {
-  return (
-    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#E52D27" stroke="#000" strokeWidth="2"/>
-      <rect x="14" y="18" width="10" height="32" fill="#000"/>
-      <rect x="36" y="18" width="10" height="32" fill="#000"/>
-      <rect x="14" y="32" width="32" height="8" fill="#000"/>
-      <text x="30" y="64" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold" fontFamily="Arial">FLA</text>
-    </svg>
-  )
-}
-function EscudoAthletico() {
-  return (
-    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#C40026" stroke="#111" strokeWidth="2"/>
-      <circle cx="30" cy="35" r="14" fill="#111"/>
-      <text x="30" y="40" textAnchor="middle" fill="#C40026" fontSize="11" fontWeight="900" fontFamily="Arial">CAP</text>
-    </svg>
-  )
-}
-function EscudoCoritiba() {
-  return (
-    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#00703C" stroke="#fff" strokeWidth="2"/>
-      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="none" stroke="#fff" strokeWidth="2"/>
-      <text x="30" y="40" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="900" fontFamily="Arial">CFC</text>
-    </svg>
-  )
-}
-
 const PATROCINADORES = [
-  { nome: 'São Paulo FC',        emoji: '⚽', cor: '#1A1A1A', Escudo: EscudoSPFC },
-  { nome: 'Flamengo',            emoji: '⚽', cor: '#E52D27', Escudo: EscudoFlamengo },
-  { nome: 'Athletico-PR',        emoji: '⚽', cor: '#C40026', Escudo: EscudoAthletico },
-  { nome: 'Coritiba',            emoji: '⚽', cor: '#00703C', Escudo: EscudoCoritiba },
-  { nome: 'BBB 26',              emoji: '🏠', cor: '#E52D27', Escudo: null },
-  { nome: 'Yago Dora',           emoji: '🏄', cor: '#0066CC', Escudo: null },
-  { nome: 'Rio Open',            emoji: '🎾', cor: '#C49A00', Escudo: null },
-  { nome: 'SP Open',             emoji: '🎾', cor: '#C49A00', Escudo: null },
-  { nome: 'Stock Car',           emoji: '🏎️', cor: '#1A1A1A', Escudo: null },
-  { nome: 'Corrida das Estações',emoji: '🏃', cor: '#E52D27', Escudo: null },
+  { nome: 'São Paulo FC',        emoji: '⚽', cor: '#1A1A1A', img: '/logos/spfc.png' },
+  { nome: 'Flamengo',            emoji: '⚽', cor: '#E52D27', img: '/logos/flamengo.png' },
+  { nome: 'Athletico-PR',        emoji: '⚽', cor: '#C40026', img: '/logos/athletico.png' },
+  { nome: 'Coritiba',            emoji: '⚽', cor: '#00703C', img: '/logos/coritiba.png' },
+  { nome: 'BBB 26',              emoji: '🏠', cor: '#E52D27', img: '' },
+  { nome: 'Yago Dora',           emoji: '🏄', cor: '#0066CC', img: '' },
+  { nome: 'Rio Open',            emoji: '🎾', cor: '#C49A00', img: '' },
+  { nome: 'SP Open',             emoji: '🎾', cor: '#C49A00', img: '' },
+  { nome: 'Stock Car',           emoji: '🏎️', cor: '#1A1A1A', img: '' },
+  { nome: 'Corrida das Estações',emoji: '🏃', cor: '#E52D27', img: '' },
 ]
 
 function fmt(n: number) {
@@ -420,10 +380,24 @@ function DirecionamentoContent() {
                     <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2.5" style={{ width: 110 }}>
                       <div
                         className="w-20 h-20 rounded-2xl shadow-md flex items-center justify-center overflow-hidden border border-gray-100"
-                        style={{ background: p.Escudo ? '#fff' : p.cor }}
+                        style={{ background: p.img ? '#fff' : p.cor }}
                       >
-                        {p.Escudo ? (
-                          <p.Escudo />
+                        {p.img ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={p.img}
+                            alt={p.nome}
+                            className="w-16 h-16 object-contain"
+                            onError={(e) => {
+                              const el = e.currentTarget
+                              const parent = el.parentElement
+                              if (parent) {
+                                el.style.display = 'none'
+                                parent.style.background = p.cor
+                                parent.innerHTML = `<span style="font-size:28px">${p.emoji}</span>`
+                              }
+                            }}
+                          />
                         ) : (
                           <span style={{ fontSize: 32 }}>{p.emoji}</span>
                         )}
