@@ -237,6 +237,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
               <StepResultado
                 resultado={resultado}
                 nome={nome}
+                onContrato={() => redirectObrigado(resultado)}
                 onContinuar={() => { trackEvent('agendamento_clicado', { bem: resultado.bem, valor: resultado.valor }); goNext('agendamento') }}
                 onBack={() => goBack('contato')}
               />

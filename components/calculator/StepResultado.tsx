@@ -9,18 +9,12 @@ interface Props {
   resultado: ResultadoCalculo
   nome?: string
   onContinuar: () => void
+  onContrato: () => void
   onBack: () => void
 }
 
-export default function StepResultado({ resultado, nome, onContinuar, onBack }: Props) {
+export default function StepResultado({ resultado, nome, onContinuar, onContrato, onBack }: Props) {
   const bemLabel = resultado.bem === 'imovel' ? 'imóvel' : resultado.bem === 'carro' ? 'veículo' : resultado.bem
-
-  const abrirWhatsApp = () => {
-    trackEvent('whatsapp_contrato_click', { bem: resultado.bem, valor: resultado.valor, economia: resultado.economiaTotal })
-    const saudacao = nome ? `Olá, sou ${nome}!` : 'Olá!'
-    const texto = `${saudacao} Fiz a simulação no site e quero contratar o consórcio de ${bemLabel}.\n\nValor da carta: ${formatCurrency(resultado.valor)}\nParcela: ${formatCurrency(resultado.parcelaConsorcio)}/mês\nEconomia vs financiamento: ${formatCurrency(resultado.economiaTotal)}\n\nPode me ajudar a fechar?`
-    window.open(`https://wa.me/5511993929660?text=${encodeURIComponent(texto)}`, '_blank')
-  }
 
   return (
     <div className="w-full">
@@ -105,7 +99,7 @@ export default function StepResultado({ resultado, nome, onContinuar, onBack }: 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35 }}
-          onClick={abrirWhatsApp}
+          onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
           className="w-full flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
         >
           <MessageCircle className="w-5 h-5" />
