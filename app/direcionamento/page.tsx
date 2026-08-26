@@ -68,11 +68,12 @@ function DirecionamentoContent() {
   const primeiroNome  = nome.split(' ')[0]
 
   const whatsappMsg = [
-    `Olá Gabriel! Sou ${nome}.`,
-    `Fiz a simulação no Indica Consórcio e tenho interesse em um consórcio de ${produtoLabel}.`,
+    `Olá! Me chamo ${nome}.`,
+    `Fiz a simulação no Indica Consórcio e quero contratar um consórcio de ${produtoLabel} pela Ademicon.`,
     credito > 0 ? `Carta de crédito: ${fmt(credito)}` : '',
-    parcela > 0 ? `Parcela estimada: ${fmt(parcela)}/mês` : '',
+    parcela > 0 ? `Parcela: ${fmt(parcela)}/mês` : '',
     whatsapp ? `Meu WhatsApp: ${whatsapp}` : '',
+    `Aguardo o contato!`,
   ].filter(Boolean).join('\n')
 
   const whatsappUrl = `https://wa.me/5511993929660?text=${encodeURIComponent(whatsappMsg)}`
