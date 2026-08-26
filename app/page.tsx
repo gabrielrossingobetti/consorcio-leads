@@ -196,6 +196,13 @@ export default function LandingPage() {
                 transition={{ duration: 0.4, delay: 0.2 }}
                 className="flex flex-wrap gap-3"
               >
+                <a
+                  href="#como-funciona"
+                  className="inline-flex items-center gap-2 font-semibold px-6 py-4 rounded-full text-base transition-all text-white"
+                  style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}
+                >
+                  Como funciona
+                </a>
                 <button
                   onClick={() => abrirModal('hero')}
                   className="gold-btn inline-flex items-center gap-2 text-white font-black px-8 py-4 rounded-full text-base transition-all"
@@ -204,13 +211,13 @@ export default function LandingPage() {
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <a
-                  href="https://wa.me/5511993929660?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20reuni%C3%A3o%20gratuita%20com%20um%20especialista%20em%20cons%C3%B3rcio."
+                  href="https://wa.me/5511993929660?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20reuni%C3%A3o%20com%20um%20especialista%20em%20cons%C3%B3rcio."
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-semibold px-8 py-4 rounded-full text-base transition-all text-white"
+                  className="inline-flex items-center gap-2 font-semibold px-6 py-4 rounded-full text-base transition-all text-white"
                   style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}
                 >
-                  Agendar reunião gratuita
+                  Agendar reunião com especialista
                 </a>
               </motion.div>
 
