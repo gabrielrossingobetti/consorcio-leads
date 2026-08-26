@@ -200,15 +200,17 @@ export default function LandingPage() {
                   onClick={() => abrirModal('hero')}
                   className="gold-btn inline-flex items-center gap-2 text-white font-black px-8 py-4 rounded-full text-base transition-all"
                 >
-                  Simular minha economia
+                  Quero fazer meu consórcio
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <a
-                  href="#como-funciona"
+                  href="https://wa.me/5511993929660?text=Ol%C3%A1%2C%20quero%20agendar%20uma%20reuni%C3%A3o%20gratuita%20com%20um%20especialista%20em%20cons%C3%B3rcio."
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 font-semibold px-8 py-4 rounded-full text-base transition-all text-white"
                   style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.25)', backdropFilter: 'blur(8px)' }}
                 >
-                  Como funciona
+                  Agendar reunião gratuita
                 </a>
               </motion.div>
 
