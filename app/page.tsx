@@ -429,7 +429,7 @@ export default function LandingPage() {
               <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: C.blue }}>A verdade que o banco não te conta</p>
               <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4" style={{ color: C.text }}>
                 Quanto você vai<br />
-                <span style={{ color: '#DC2626' }}>dar de presente ao banco?</span>
+                <span style={{ color: C.gold }}>dar de presente ao banco?</span>
               </h2>
               <p className="text-lg max-w-2xl mx-auto" style={{ color: C.muted }}>
                 Em todo financiamento, a maior parte do que você paga vai direto para o banco — não para o bem.
@@ -578,7 +578,7 @@ export default function LandingPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-xs" style={{ color: C.muted }}>{d.bem}</p>
-                      <p className="font-bold text-sm" style={{ color: '#16A34A' }}>Economizou {d.economia}</p>
+                      <p className="font-bold text-sm" style={{ color: C.goldDark }}>Economizou {d.economia}</p>
                     </div>
                   </div>
                 </motion.div>
