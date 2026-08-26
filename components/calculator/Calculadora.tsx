@@ -109,23 +109,21 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
 
   function redirectObrigado(r: ResultadoCalculo) {
     router.push(
-      `/obrigado?nome=${encodeURIComponent(nome)}` +
-      `&economia=${r.economiaTotal}` +
-      `&bem=${bem}` +
-      `&valor=${r.valor}` +
+      `/direcionamento?nome=${encodeURIComponent(nome)}` +
+      `&produto=${bem}` +
+      `&credito=${r.valor}` +
       `&parcela=${r.parcelaConsorcio}` +
-      `&prazo=${encodeURIComponent(jaTentouFinanciar)}`
+      `&whatsapp=${encodeURIComponent(whatsapp)}`
     )
   }
 
   function redirectObrigadoInvestidor(r: ResultadoInvestidor) {
     router.push(
-      `/obrigado?nome=${encodeURIComponent(nome)}` +
-      `&economia=${r.lucroLiquido}` +
-      `&bem=investidor` +
-      `&valor=${r.carta}` +
+      `/direcionamento?nome=${encodeURIComponent(nome)}` +
+      `&produto=investidor` +
+      `&credito=${r.carta}` +
       `&parcela=${r.parcelaReduzida}` +
-      `&prazo=`
+      `&whatsapp=${encodeURIComponent(whatsapp)}`
     )
   }
 
