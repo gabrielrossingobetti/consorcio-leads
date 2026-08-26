@@ -44,20 +44,57 @@ const DIFERENCIAIS = [
   { icon: '✅', texto: 'Sem score mínimo exigido' },
 ]
 
+// Inline SVG mini-escudos — sempre funcionam, sem depender de CDN externo
+function EscudoSPFC() {
+  return (
+    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#1A1A1A" stroke="#C40026" strokeWidth="3"/>
+      <polygon points="30,10 50,20 50,46 30,60 10,46 10,20" fill="#C40026"/>
+      <text x="30" y="40" textAnchor="middle" fill="#fff" fontSize="13" fontWeight="900" fontFamily="Arial">SPFC</text>
+    </svg>
+  )
+}
+function EscudoFlamengo() {
+  return (
+    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#E52D27" stroke="#000" strokeWidth="2"/>
+      <rect x="14" y="18" width="10" height="32" fill="#000"/>
+      <rect x="36" y="18" width="10" height="32" fill="#000"/>
+      <rect x="14" y="32" width="32" height="8" fill="#000"/>
+      <text x="30" y="64" textAnchor="middle" fill="#fff" fontSize="8" fontWeight="bold" fontFamily="Arial">FLA</text>
+    </svg>
+  )
+}
+function EscudoAthletico() {
+  return (
+    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#C40026" stroke="#111" strokeWidth="2"/>
+      <circle cx="30" cy="35" r="14" fill="#111"/>
+      <text x="30" y="40" textAnchor="middle" fill="#C40026" fontSize="11" fontWeight="900" fontFamily="Arial">CAP</text>
+    </svg>
+  )
+}
+function EscudoCoritiba() {
+  return (
+    <svg viewBox="0 0 60 70" width="52" height="60" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="#00703C" stroke="#fff" strokeWidth="2"/>
+      <polygon points="30,2 58,14 58,50 30,68 2,50 2,14" fill="none" stroke="#fff" strokeWidth="2"/>
+      <text x="30" y="40" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="900" fontFamily="Arial">CFC</text>
+    </svg>
+  )
+}
+
 const PATROCINADORES = [
-  // Futebol — patrocínios confirmados
-  { nome: 'São Paulo FC',        sigla: 'SPFC', emoji: '⚽', cor: '#C40026', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg/120px-Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg.png' },
-  { nome: 'Flamengo',            sigla: 'FLA',  emoji: '⚽', cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_1.svg/120px-Flamengo_braz_1.svg.png' },
-  { nome: 'Athletico-PR',        sigla: 'CAP',  emoji: '⚽', cor: '#C40026', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Athletico_Paranaense_logo.svg/120px-Athletico_Paranaense_logo.svg.png' },
-  { nome: 'Coritiba',            sigla: 'CFC',  emoji: '⚽', cor: '#00703C', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Coritiba_Football_Club_logo.svg/120px-Coritiba_Football_Club_logo.svg.png' },
-  // Entretenimento
-  { nome: 'BBB 26',              sigla: 'BBB',  emoji: '🏠', cor: '#E52D27', textColor: '#fff', imgUrl: '' },
-  // Esportes individuais
-  { nome: 'Yago Dora',           sigla: 'SURF', emoji: '🏄', cor: '#0066CC', textColor: '#fff', imgUrl: '' },
-  { nome: 'Rio Open',            sigla: 'TÊNIS',emoji: '🎾', cor: '#B8860B', textColor: '#fff', imgUrl: '' },
-  { nome: 'SP Open',             sigla: 'TÊNIS',emoji: '🎾', cor: '#B8860B', textColor: '#fff', imgUrl: '' },
-  { nome: 'Stock Car',           sigla: 'AUTO', emoji: '🏎️', cor: '#111111', textColor: '#fff', imgUrl: '' },
-  { nome: 'Corrida das Estações',sigla: 'RUN',  emoji: '🏃', cor: '#E52D27', textColor: '#fff', imgUrl: '' },
+  { nome: 'São Paulo FC',        emoji: '⚽', cor: '#1A1A1A', Escudo: EscudoSPFC },
+  { nome: 'Flamengo',            emoji: '⚽', cor: '#E52D27', Escudo: EscudoFlamengo },
+  { nome: 'Athletico-PR',        emoji: '⚽', cor: '#C40026', Escudo: EscudoAthletico },
+  { nome: 'Coritiba',            emoji: '⚽', cor: '#00703C', Escudo: EscudoCoritiba },
+  { nome: 'BBB 26',              emoji: '🏠', cor: '#E52D27', Escudo: null },
+  { nome: 'Yago Dora',           emoji: '🏄', cor: '#0066CC', Escudo: null },
+  { nome: 'Rio Open',            emoji: '🎾', cor: '#C49A00', Escudo: null },
+  { nome: 'SP Open',             emoji: '🎾', cor: '#C49A00', Escudo: null },
+  { nome: 'Stock Car',           emoji: '🏎️', cor: '#1A1A1A', Escudo: null },
+  { nome: 'Corrida das Estações',emoji: '🏃', cor: '#E52D27', Escudo: null },
 ]
 
 function fmt(n: number) {
@@ -383,24 +420,10 @@ function DirecionamentoContent() {
                     <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2.5" style={{ width: 110 }}>
                       <div
                         className="w-20 h-20 rounded-2xl shadow-md flex items-center justify-center overflow-hidden border border-gray-100"
-                        style={{ background: p.imgUrl ? '#fff' : p.cor }}
+                        style={{ background: p.Escudo ? '#fff' : p.cor }}
                       >
-                        {p.imgUrl ? (
-                          /* eslint-disable-next-line @next/next/no-img-element */
-                          <img
-                            src={p.imgUrl}
-                            alt={p.nome}
-                            className="w-16 h-16 object-contain"
-                            onError={(e) => {
-                              const el = e.currentTarget
-                              const parent = el.parentElement
-                              el.style.display = 'none'
-                              if (parent) {
-                                parent.style.background = p.cor
-                                parent.innerHTML = `<span style="font-size:28px">${p.emoji}</span>`
-                              }
-                            }}
-                          />
+                        {p.Escudo ? (
+                          <p.Escudo />
                         ) : (
                           <span style={{ fontSize: 32 }}>{p.emoji}</span>
                         )}
