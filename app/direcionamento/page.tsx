@@ -16,14 +16,14 @@ const PRODUTO_LABEL: Record<string, string> = {
 }
 
 const ADMINS = [
-  { nome: 'Embracon',      cor: '#1B3A6B' },
-  { nome: 'Porto Bank',    cor: '#004B93' },
-  { nome: 'BB Consórcio',  cor: '#F8C200', textDark: true },
-  { nome: 'Magalu',        cor: '#0086FF' },
-  { nome: 'Bradesco',      cor: '#CC0000' },
-  { nome: 'Itaú',          cor: '#EC7000' },
-  { nome: 'Caixa',         cor: '#005CA9' },
-  { nome: 'Sicredi',       cor: '#00843D' },
+  { nome: 'Embracon',      cor: '#1B3A6B', logo: 'https://logo.clearbit.com/embracon.com.br' },
+  { nome: 'Porto Bank',    cor: '#004B93', logo: 'https://logo.clearbit.com/portoseguro.com.br' },
+  { nome: 'BB Consórcio',  cor: '#F8C200', logo: 'https://logo.clearbit.com/bb.com.br', textDark: true },
+  { nome: 'Magalu',        cor: '#0086FF', logo: 'https://logo.clearbit.com/magazineluiza.com.br' },
+  { nome: 'Bradesco',      cor: '#CC0000', logo: 'https://logo.clearbit.com/bradesco.com.br' },
+  { nome: 'Itaú',          cor: '#EC7000', logo: 'https://logo.clearbit.com/itau.com.br' },
+  { nome: 'Caixa',         cor: '#005CA9', logo: 'https://logo.clearbit.com/caixa.gov.br' },
+  { nome: 'Sicredi',       cor: '#00843D', logo: 'https://logo.clearbit.com/sicredi.com.br' },
 ]
 
 const STATS = [
@@ -45,13 +45,19 @@ const DIFERENCIAIS = [
 ]
 
 const PATROCINADORES = [
-  { nome: 'São Paulo FC',   sigla: 'SPFC',  cor: '#000000', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg/200px-Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg.png' },
-  { nome: 'Flamengo',       sigla: 'FLA',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_1.svg/200px-Flamengo_braz_1.svg.png' },
-  { nome: 'BBB',            sigla: 'BBB',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/BBB_logo.svg/200px-BBB_logo.svg.png' },
-  { nome: 'Athletico-PR',   sigla: 'CAP',   cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Athletico_Paranaense_logo.svg/200px-Athletico_Paranaense_logo.svg.png' },
-  { nome: 'Grêmio',         sigla: 'GRE',   cor: '#004F9F', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Gr%C3%AAmio_Foot-Ball_Porto_Alegrense_logo.svg/200px-Gr%C3%AAmio_Foot-Ball_Porto_Alegrense_logo.svg.png' },
-  { nome: 'Santos FC',      sigla: 'SAN',   cor: '#000000', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Santos_logo.svg/200px-Santos_logo.svg.png' },
-  { nome: 'Cuiabá EC',      sigla: 'CUI',   cor: '#F5A623', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Cuiab%C3%A1_Esporte_Clube_logo.svg/200px-Cuiab%C3%A1_Esporte_Clube_logo.svg.png' },
+  // Futebol — patrocínios confirmados
+  { nome: 'São Paulo FC',        sigla: 'SPFC', emoji: '⚽', cor: '#C40026', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg/120px-Coat_of_arms_of_S%C3%A3o_Paulo_FC.svg.png' },
+  { nome: 'Flamengo',            sigla: 'FLA',  emoji: '⚽', cor: '#E52D27', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Flamengo_braz_1.svg/120px-Flamengo_braz_1.svg.png' },
+  { nome: 'Athletico-PR',        sigla: 'CAP',  emoji: '⚽', cor: '#C40026', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Athletico_Paranaense_logo.svg/120px-Athletico_Paranaense_logo.svg.png' },
+  { nome: 'Coritiba',            sigla: 'CFC',  emoji: '⚽', cor: '#00703C', textColor: '#fff', imgUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Coritiba_Football_Club_logo.svg/120px-Coritiba_Football_Club_logo.svg.png' },
+  // Entretenimento
+  { nome: 'BBB 26',              sigla: 'BBB',  emoji: '🏠', cor: '#E52D27', textColor: '#fff', imgUrl: '' },
+  // Esportes individuais
+  { nome: 'Yago Dora',           sigla: 'SURF', emoji: '🏄', cor: '#0066CC', textColor: '#fff', imgUrl: '' },
+  { nome: 'Rio Open',            sigla: 'TÊNIS',emoji: '🎾', cor: '#B8860B', textColor: '#fff', imgUrl: '' },
+  { nome: 'SP Open',             sigla: 'TÊNIS',emoji: '🎾', cor: '#B8860B', textColor: '#fff', imgUrl: '' },
+  { nome: 'Stock Car',           sigla: 'AUTO', emoji: '🏎️', cor: '#111111', textColor: '#fff', imgUrl: '' },
+  { nome: 'Corrida das Estações',sigla: 'RUN',  emoji: '🏃', cor: '#E52D27', textColor: '#fff', imgUrl: '' },
 ]
 
 function fmt(n: number) {
@@ -153,7 +159,7 @@ function DirecionamentoContent() {
               <span style={{ color: '#C9A84C' }}>administradoras para o seu perfil…</span>
             </motion.h1>
 
-            <div className="w-72 h-14 flex items-center justify-center relative mb-10">
+            <div className="w-80 h-16 flex items-center justify-center relative mb-10">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={adminIdx}
@@ -164,13 +170,22 @@ function DirecionamentoContent() {
                   className="absolute flex items-center gap-3"
                 >
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg shadow-lg flex-shrink-0"
-                    style={{
-                      background: ADMINS[adminIdx].cor,
-                      color: (ADMINS[adminIdx] as { textDark?: boolean }).textDark ? '#111' : '#fff'
-                    }}
+                    className="w-12 h-12 rounded-xl shadow-lg flex-shrink-0 overflow-hidden flex items-center justify-center"
+                    style={{ background: ADMINS[adminIdx].cor }}
                   >
-                    {ADMINS[adminIdx].nome[0]}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={ADMINS[adminIdx].logo}
+                      alt={ADMINS[adminIdx].nome}
+                      className="w-10 h-10 object-contain"
+                      onError={(e) => {
+                        const el = e.currentTarget
+                        el.style.display = 'none'
+                        if (el.parentElement) {
+                          el.parentElement.innerHTML = `<span style="color:${(ADMINS[adminIdx] as {textDark?:boolean}).textDark ? '#111' : '#fff'};font-weight:900;font-size:18px">${ADMINS[adminIdx].nome[0]}</span>`
+                        }
+                      }}
+                    />
                   </div>
                   <span className="text-white text-base font-semibold whitespace-nowrap">{ADMINS[adminIdx].nome}</span>
                   <motion.span
@@ -349,8 +364,8 @@ function DirecionamentoContent() {
 
             {/* ── PATROCINADORES — carousel infinito ───────── */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}
-              className="py-10 overflow-hidden">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 text-center mb-6">
+              className="py-12 overflow-hidden bg-white">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 text-center mb-8">
                 Patrocinadora oficial de
               </p>
               <style>{`
@@ -358,31 +373,42 @@ function DirecionamentoContent() {
                   0%   { transform: translateX(0); }
                   100% { transform: translateX(-50%); }
                 }
-                .marquee-track { display: flex; gap: 16px; width: max-content; animation: marquee-slide 18s linear infinite; }
+                .marquee-wrap { overflow: hidden; }
+                .marquee-track { display: flex; gap: 20px; width: max-content; animation: marquee-slide 24s linear infinite; padding: 8px 0; }
                 .marquee-track:hover { animation-play-state: paused; }
               `}</style>
-              <div className="marquee-track">
-                {[...PATROCINADORES, ...PATROCINADORES].map((p, i) => (
-                  <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2 w-24">
-                    <div className="w-16 h-16 rounded-full overflow-hidden shadow-md border-2 border-gray-100 bg-white flex items-center justify-center">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={p.imgUrl}
-                        alt={p.nome}
-                        className="w-full h-full object-contain p-1"
-                        onError={(e) => {
-                          const el = e.currentTarget
-                          el.style.display = 'none'
-                          if (el.parentElement) {
-                            el.parentElement.style.background = p.cor
-                            el.parentElement.innerHTML = `<span style="color:${p.textColor};font-weight:900;font-size:11px;text-align:center;padding:4px">${p.sigla}</span>`
-                          }
-                        }}
-                      />
+              <div className="marquee-wrap">
+                <div className="marquee-track">
+                  {[...PATROCINADORES, ...PATROCINADORES].map((p, i) => (
+                    <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2.5" style={{ width: 110 }}>
+                      <div
+                        className="w-20 h-20 rounded-2xl shadow-md flex items-center justify-center overflow-hidden border border-gray-100"
+                        style={{ background: p.imgUrl ? '#fff' : p.cor }}
+                      >
+                        {p.imgUrl ? (
+                          /* eslint-disable-next-line @next/next/no-img-element */
+                          <img
+                            src={p.imgUrl}
+                            alt={p.nome}
+                            className="w-16 h-16 object-contain"
+                            onError={(e) => {
+                              const el = e.currentTarget
+                              const parent = el.parentElement
+                              el.style.display = 'none'
+                              if (parent) {
+                                parent.style.background = p.cor
+                                parent.innerHTML = `<span style="font-size:28px">${p.emoji}</span>`
+                              }
+                            }}
+                          />
+                        ) : (
+                          <span style={{ fontSize: 32 }}>{p.emoji}</span>
+                        )}
+                      </div>
+                      <span className="text-xs text-gray-700 font-bold text-center leading-tight" style={{ width: 100 }}>{p.nome}</span>
                     </div>
-                    <span className="text-xs text-gray-600 font-semibold text-center leading-tight w-20 truncate">{p.nome}</span>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </motion.div>
 
