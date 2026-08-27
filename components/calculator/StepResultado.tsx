@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingDown, TrendingUp, Calendar, MessageCircle } from 'lucide-react'
+import { TrendingDown, TrendingUp, MessageCircle } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
 import { trackEvent } from '@/lib/gtag'
 
@@ -93,30 +93,17 @@ export default function StepResultado({ resultado, nome, onContinuar, onContrato
         </p>
       </motion.div>
 
-      {/* CTAs */}
-      <div className="flex flex-col gap-3">
-        <motion.button
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
-          className="w-full flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
-        >
-          <MessageCircle className="w-5 h-5" />
-          Quero meu contrato agora
-        </motion.button>
-
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.45 }}
-          onClick={onContinuar}
-          className="w-full flex items-center justify-center gap-2 border-2 border-gray-200 text-gray-600 font-semibold py-3.5 rounded-xl hover:border-blue-300 hover:text-blue-600 transition-all"
-        >
-          <Calendar className="w-4 h-4" />
-          Prefiro agendar uma reunião
-        </motion.button>
-      </div>
+      {/* CTA único */}
+      <motion.button
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.35 }}
+        onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
+        className="w-full flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
+      >
+        <MessageCircle className="w-5 h-5" />
+        Quero meu contrato agora
+      </motion.button>
 
       <button onClick={onBack} className="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors">
         ← Refazer simulação
