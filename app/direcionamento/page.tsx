@@ -254,94 +254,158 @@ function DirecionamentoContent() {
           >
 
             {/* ── HERO BANNER ──────────────────────────────── */}
-            <div style={{ background: 'linear-gradient(135deg, #E52D27 0%, #B01E1E 100%)' }}>
+            <div className="relative overflow-hidden" style={{ background: 'linear-gradient(120deg, #C0190F 0%, #8C1109 100%)' }}>
 
-              {/* Navbar interna */}
-              <div className="flex items-center justify-between px-6 pt-6 pb-4 max-w-4xl mx-auto">
-                <AdemIconWordmark onRed={true} size="sm" />
-                <div className="px-3 py-1 rounded-full text-xs font-bold text-white/90 tracking-wide"
-                  style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)' }}>
-                  ✓ Administradora Indicada
+              {/* Imóvel de fundo — lado direito */}
+              <div className="absolute right-0 top-0 bottom-0 hidden md:block" style={{ width: '48%' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=85&fit=crop&crop=center"
+                  alt="Imóvel"
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: 'center 60%' }}
+                />
+                {/* Gradiente de fusão */}
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, #8C1109 0%, rgba(140,17,9,0.6) 35%, transparent 75%)' }} />
+                {/* Gradiente inferior */}
+                <div className="absolute bottom-0 left-0 right-0 h-32" style={{ background: 'linear-gradient(180deg, transparent, rgba(140,17,9,0.5))' }} />
+              </div>
+
+              {/* Noise texture sutil */}
+              <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundSize: '200px' }} />
+
+              {/* Conteúdo */}
+              <div className="relative z-10">
+                {/* Navbar interna */}
+                <div className="flex items-center justify-between px-6 pt-6 pb-4 max-w-4xl mx-auto">
+                  <AdemIconWordmark onRed={true} size="sm" />
+                  <div className="px-3 py-1 rounded-full text-xs font-bold tracking-wide"
+                    style={{ background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.9)' }}>
+                    ✓ Administradora Indicada
+                  </div>
+                </div>
+
+                {/* Hero content */}
+                <div className="px-6 pt-8 pb-16" style={{ maxWidth: 'min(54%, 640px)' }}>
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                    <div className="inline-flex items-center gap-2 mb-5 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest"
+                      style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.75)' }}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
+                      Simulação aprovada
+                    </div>
+                    <h1 className="text-white font-black leading-[1.08] mb-4"
+                      style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
+                      {primeiroNome ? `${primeiroNome}, o seu` : 'O seu'}<br />
+                      <span style={{ color: '#FFD0D0' }}>imóvel dos sonhos</span><br />
+                      está mais perto<br />
+                      do que você pensa.
+                    </h1>
+                    <p className="text-white/60 text-base mb-1">
+                      Consórcio de <strong className="text-white/90">{produtoLabel}</strong>
+                    </p>
+                    {(credito > 0 || parcela > 0) && (
+                      <div className="flex flex-wrap gap-3 mb-8 mt-3">
+                        {credito > 0 && (
+                          <div className="px-4 py-2 rounded-xl text-sm font-bold"
+                            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}>
+                            Carta {fmt(credito)}
+                          </div>
+                        )}
+                        {parcela > 0 && (
+                          <div className="px-4 py-2 rounded-xl text-sm font-bold"
+                            style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)', color: '#fff' }}>
+                            {fmt(parcela)}/mês
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+
+                  <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                    className="flex flex-col gap-3" style={{ maxWidth: 380 }}>
+                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-black text-base transition-all active:scale-[0.98]"
+                      style={{ background: '#1DB954', color: '#fff', boxShadow: '0 8px 32px rgba(29,185,84,0.4)' }}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.853L0 24l6.303-1.493A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.816 9.816 0 01-5.007-1.369l-.359-.214-3.741.98.999-3.648-.233-.374A9.817 9.817 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+                      </svg>
+                      Garantir minha proposta agora
+                    </a>
+                    <p className="text-white/40 text-xs text-center">
+                      Especialista entra em contato em minutos{whatsapp && ` · ${whatsapp}`}
+                    </p>
+                  </motion.div>
                 </div>
               </div>
 
-              {/* Hero content */}
-              <div className="px-6 pt-6 pb-12 max-w-4xl mx-auto">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-                  <p className="text-white/70 text-sm font-medium mb-2">
-                    Sua simulação foi concluída com sucesso
-                  </p>
-                  <h1 className="text-white font-black text-3xl md:text-4xl lg:text-5xl leading-tight mb-3">
-                    {primeiroNome ? `${primeiroNome}, você está perto` : 'Você está perto'}<br />
-                    <span style={{ color: '#FFD0D0' }}>de realizar seu projeto de vida.</span>
-                  </h1>
-                  <p className="text-white/80 text-lg mb-6">
-                    Consórcio de <strong className="text-white">{produtoLabel}</strong>
-                    {credito > 0 && <> · Carta <strong className="text-white">{fmt(credito)}</strong></>}
-                    {parcela > 0 && <> · Parcela <strong className="text-white">{fmt(parcela)}/mês</strong></>}
-                  </p>
-                </motion.div>
-
-                {/* CTAs */}
-                <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}
-                  className="flex flex-col sm:flex-row gap-3 max-w-lg">
-                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2.5 py-4 rounded-xl font-black text-base transition-all hover:brightness-95 active:scale-[0.98] shadow-lg"
-                    style={{ background: '#25D366', color: '#fff' }}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-                      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.853L0 24l6.303-1.493A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.816 9.816 0 01-5.007-1.369l-.359-.214-3.741.98.999-3.648-.233-.374A9.817 9.817 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
-                    </svg>
-                    Falar com especialista agora
-                  </a>
-                </motion.div>
-
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-                  className="mt-4 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse flex-shrink-0" />
-                  <p className="text-white/70 text-sm">
-                    Um especialista Ademicon vai entrar em contato
-                    {whatsapp ? <strong className="text-white"> no WhatsApp ({whatsapp})</strong> : ' no seu WhatsApp'}
-                  </p>
-                </motion.div>
+              {/* Mobile: imóvel abaixo do texto */}
+              <div className="block md:hidden w-full" style={{ height: 220 }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80&fit=crop&crop=center"
+                  alt="Imóvel"
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: 'center 60%' }}
+                />
+                <div className="absolute bottom-0 left-0 right-0 h-20 md:hidden" style={{ background: 'linear-gradient(180deg, transparent, #8C1109)' }} />
               </div>
             </div>
 
             {/* ── STATS ────────────────────────────────────── */}
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
-              className="px-6 py-12 max-w-4xl mx-auto">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 text-center mb-8">
-                Por que a Ademicon é a número 1 do Brasil?
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {STATS.map((s, i) => (
-                  <motion.div key={i}
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + i * 0.06 }}
-                    className="text-center p-5 rounded-2xl border border-gray-100 bg-gray-50">
-                    <div className="font-black text-2xl md:text-3xl mb-1" style={{ color: '#E52D27' }}>{s.valor}</div>
-                    <div className="text-xs text-gray-500 leading-snug">{s.label}</div>
-                  </motion.div>
-                ))}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}
+              style={{ background: '#0D0D0D' }}
+              className="px-6 py-16">
+              <div className="max-w-4xl mx-auto">
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                  className="text-center mb-12">
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] mb-3" style={{ color: '#C9A84C' }}>
+                    Maior administradora privada do Brasil
+                  </p>
+                  <h2 className="text-white font-black text-2xl md:text-3xl">
+                    Números que provam liderança.
+                  </h2>
+                </motion.div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+                  {STATS.map((s, i) => (
+                    <motion.div key={i}
+                      initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.55 + i * 0.07 }}
+                      className="text-center">
+                      <div className="w-8 h-px mx-auto mb-4" style={{ background: '#C9A84C' }} />
+                      <div className="font-black text-3xl md:text-4xl text-white mb-2 leading-none">{s.valor}</div>
+                      <div className="text-xs uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </motion.div>
 
             {/* ── DIFERENCIAIS ─────────────────────────────── */}
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-              style={{ background: '#FFF5F5' }}
-              className="px-6 py-12">
+              style={{ background: '#fff' }}
+              className="px-6 py-14">
               <div className="max-w-4xl mx-auto">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400 mb-6">
-                  Diferenciais da Ademicon
+                <p className="text-xs font-bold uppercase tracking-[0.25em] mb-2" style={{ color: '#C9A84C' }}>
+                  Por que a Ademicon
                 </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <h3 className="text-2xl md:text-3xl font-black text-gray-900 mb-10">
+                  Condições que nenhum banco<br />consegue oferecer.
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {DIFERENCIAIS.map((d, i) => (
                     <motion.div key={i}
                       initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.75 + i * 0.05 }}
-                      className="flex items-center gap-3 p-4 rounded-xl bg-white border border-red-100 shadow-sm">
-                      <span className="text-xl flex-shrink-0">{d.icon}</span>
-                      <span className="text-sm font-semibold text-gray-800">{d.texto}</span>
+                      className="flex items-start gap-4 p-5 rounded-2xl"
+                      style={{ background: '#F7F7F7', border: '1px solid #EEEEEE' }}>
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center mt-0.5"
+                        style={{ background: '#C9A84C' }}>
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                          <path d="M2.5 7L5.5 10L11.5 4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      <span className="text-sm font-semibold text-gray-800 leading-snug pt-0.5">{d.texto}</span>
                     </motion.div>
                   ))}
                 </div>
