@@ -45,48 +45,38 @@ const DIFERENCIAIS = [
 ]
 
 const PATROCINADORES = [
-  { nome: 'São Paulo FC',        emoji: '⚽', cor: '#1A1A1A', img: '/logos/spfc.png' },
-  { nome: 'Flamengo',            emoji: '⚽', cor: '#E52D27', img: '/logos/flamengo.png' },
-  { nome: 'Athletico-PR',        emoji: '⚽', cor: '#C40026', img: '/logos/athletico.png' },
-  { nome: 'Coritiba',            emoji: '⚽', cor: '#00703C', img: '/logos/coritiba.png' },
-  { nome: 'BBB 26',              emoji: '🏠', cor: '#E52D27', img: '' },
-  { nome: 'Yago Dora',           emoji: '🏄', cor: '#0066CC', img: '' },
-  { nome: 'Rio Open',            emoji: '🎾', cor: '#C49A00', img: '' },
-  { nome: 'SP Open',             emoji: '🎾', cor: '#C49A00', img: '' },
-  { nome: 'Stock Car',           emoji: '🏎️', cor: '#1A1A1A', img: '' },
-  { nome: 'Corrida das Estações',emoji: '🏃', cor: '#E52D27', img: '' },
+  { nome: 'São Paulo FC',        cor: '#1A1A1A', img: '/logos/spfc.png' },
+  { nome: 'Flamengo',            cor: '#E52D27', img: '/logos/flamengo.png' },
+  { nome: 'Athletico-PR',        cor: '#C40026', img: '/logos/athletico.png' },
+  { nome: 'Coritiba',            cor: '#00703C', img: '/logos/coritiba.png' },
+  { nome: 'BBB 26',              cor: '#E52D27', img: '/logos/bbb.png' },
+  { nome: 'Stock Car',           cor: '#1A1A1A', img: '/logos/stockcar.png' },
+  { nome: 'Rio Open',            cor: '#0A4A8A', img: '' },
+  { nome: 'SP Open',             cor: '#0A4A8A', img: '' },
+  { nome: 'Yago Dora',           cor: '#0055AA', img: '' },
+  { nome: 'Corrida das Estações',cor: '#C52619', img: '' },
 ]
 
 function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
 }
 
-// Logo Ademicon — outline vermelho, wordmark cinza escuro (fiel à marca)
-function AdemIconSVG({ size = 72, onRed = false }: { size?: number; onRed?: boolean }) {
-  const stroke = onRed ? '#fff' : '#E52D27'
-  return (
-    <svg width={size} height={size * 0.72} viewBox="0 0 100 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      {/* Telhado externo */}
-      <path d="M50 4 L96 36 H82 V68 H18 V36 H4 Z" stroke={stroke} strokeWidth="5" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-      {/* Telhado interno (seta crescimento) */}
-      <path d="M50 18 L72 36 H62 V56 H38 V36 H28 Z" stroke={stroke} strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" fill="none"/>
-    </svg>
-  )
-}
-
 function AdemIconWordmark({ onRed = false, size = 'md' }: { onRed?: boolean; size?: 'sm' | 'md' | 'lg' }) {
-  const titleColor  = onRed ? '#fff'     : '#3A3A3A'
-  const subtitleColor = onRed ? 'rgba(255,255,255,0.6)' : '#888'
-  const sizes = { sm: { icon: 32, title: 'text-sm', sub: 'text-[9px]' }, md: { icon: 44, title: 'text-lg', sub: 'text-[10px]' }, lg: { icon: 60, title: 'text-2xl', sub: 'text-xs' } }
-  const s = sizes[size]
+  const heights = { sm: 28, md: 38, lg: 52 }
+  const h = heights[size]
   return (
-    <div className="flex items-center gap-2.5">
-      <AdemIconSVG size={s.icon} onRed={onRed} />
-      <div>
-        <div className={`font-black ${s.title} leading-none tracking-tight`} style={{ color: titleColor }}>ADEMICON</div>
-        <div className={`${s.sub} tracking-wide mt-0.5`} style={{ color: subtitleColor }}>consórcio e investimento</div>
-      </div>
-    </div>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/logos/ademicon.svg"
+      alt="Ademicon"
+      height={h}
+      style={{
+        height: h,
+        width: 'auto',
+        filter: onRed ? 'brightness(0) invert(1)' : 'none',
+        display: 'block',
+      }}
+    />
   )
 }
 
@@ -241,8 +231,7 @@ function DirecionamentoContent() {
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}
               className="text-center">
-              <div className="text-white font-black text-5xl md:text-6xl tracking-tight">ADEMICON</div>
-              <div className="text-white/70 text-sm tracking-widest mt-1">consórcio e investimento</div>
+              <div className="text-white/80 text-sm tracking-widest">consórcio e investimento</div>
             </motion.div>
 
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9 }}
@@ -377,32 +366,41 @@ function DirecionamentoContent() {
               <div className="marquee-wrap">
                 <div className="marquee-track">
                   {[...PATROCINADORES, ...PATROCINADORES].map((p, i) => (
-                    <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2.5" style={{ width: 110 }}>
+                    <div key={i} className="flex-shrink-0 flex flex-col items-center gap-2.5" style={{ width: 120 }}>
                       <div
-                        className="w-20 h-20 rounded-2xl shadow-md flex items-center justify-center overflow-hidden border border-gray-100"
-                        style={{ background: p.img ? '#fff' : p.cor }}
+                        className="w-24 h-20 rounded-2xl shadow-md flex items-center justify-center overflow-hidden border border-gray-100"
+                        style={{ background: '#fff', padding: p.img ? '8px' : '0' }}
                       >
                         {p.img ? (
                           /* eslint-disable-next-line @next/next/no-img-element */
                           <img
                             src={p.img}
                             alt={p.nome}
-                            className="w-16 h-16 object-contain"
+                            className="max-w-full max-h-full object-contain"
+                            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                             onError={(e) => {
                               const el = e.currentTarget
                               const parent = el.parentElement
                               if (parent) {
                                 el.style.display = 'none'
                                 parent.style.background = p.cor
-                                parent.innerHTML = `<span style="font-size:28px">${p.emoji}</span>`
+                                parent.style.padding = '0'
+                                parent.innerHTML = `<span style="color:#fff;font-weight:900;font-size:11px;text-align:center;padding:8px;line-height:1.2">${p.nome}</span>`
                               }
                             }}
                           />
                         ) : (
-                          <span style={{ fontSize: 32 }}>{p.emoji}</span>
+                          <div style={{
+                            background: p.cor,
+                            width: '100%', height: '100%',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            padding: '10px',
+                          }}>
+                            <span style={{ color: '#fff', fontWeight: 900, fontSize: 11, textAlign: 'center', lineHeight: 1.2 }}>{p.nome}</span>
+                          </div>
                         )}
                       </div>
-                      <span className="text-xs text-gray-700 font-bold text-center leading-tight" style={{ width: 100 }}>{p.nome}</span>
+                      <span className="text-xs text-gray-600 font-semibold text-center leading-tight" style={{ width: 110 }}>{p.nome}</span>
                     </div>
                   ))}
                 </div>
