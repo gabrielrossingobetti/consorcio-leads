@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import Calculadora from '@/components/calculator/Calculadora'
 import AdemIconLogo from '@/components/AdemIconLogo'
-import { Star, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, CheckCircle, XCircle, Hammer, Plane, Briefcase, ChevronDown, type LucideIcon } from 'lucide-react'
+import { Star, ArrowRight, Home, Car, Building2, Wrench, TrendingUp, CheckCircle, XCircle, Hammer, Plane, Briefcase, type LucideIcon } from 'lucide-react'
 import { trackEvent } from '@/lib/gtag'
 
 function fmt(n: number) {
@@ -32,16 +32,17 @@ const FAQ = [
 ]
 
 const DEPOIMENTOS = [
-  { nome: 'Mariana C.',  cidade: 'São Paulo, SP',      texto: 'Fiz a simulação, vi que economizaria R$87.000 e fechei em uma semana. Melhor decisão da minha vida.',                                         bem: 'Imóvel',  economia: 'R$87.000',  cor: '#1C5FA8' },
-  { nome: 'Ricardo A.',  cidade: 'Campinas, SP',       texto: 'Tinha financiamento ativo e pagava juros absurdos. Migrei pro consórcio e reduzi minha parcela em R$800 por mês.',                            bem: 'Veículo', economia: 'R$800/mês', cor: '#C9A84C' },
-  { nome: 'Fernanda L.', cidade: 'Ribeirão Preto, SP', texto: 'Fui contemplada em 14 meses com um lance. Hoje tenho meu apartamento sem ter pago fortuna em juros.',                                          bem: 'Imóvel',  economia: 'R$124.000', cor: '#0D3D72' },
+  { nome: 'Mariana C.',  cidade: 'São Paulo, SP',      texto: 'Fiz a simulação, vi que economizaria R$87.000 e fechei em uma semana. Melhor decisão da minha vida.',                                         bem: 'Imóvel',  economia: 'R$87.000'  },
+  { nome: 'Ricardo A.',  cidade: 'Campinas, SP',       texto: 'Tinha financiamento ativo e pagava juros absurdos. Migrei pro consórcio e reduzi minha parcela em R$800 por mês.',                            bem: 'Veículo', economia: 'R$800/mês' },
+  { nome: 'Fernanda L.', cidade: 'Ribeirão Preto, SP', texto: 'Fui contemplada em 14 meses com um lance. Hoje tenho meu apartamento sem ter pago fortuna em juros.',                                          bem: 'Imóvel',  economia: 'R$124.000' },
 ]
 
 const EXEMPLOS = {
-  imovel: { label: 'Imóvel R$300k',    parcelaFin: 3087, totalFin: 1111320, prazoFin: 360, entradaFin: 90000, parcelaCons: 1011, totalCons: 372000, prazoCons: 220, entradaCons: 0, juros: 739320 },
-  carro:  { label: 'Automóvel R$80k',  parcelaFin: 2027, totalFin: 121620,  prazoFin: 60,  entradaFin: 24000, parcelaCons: 1048, totalCons: 92800,  prazoCons: 80,  entradaCons: 0, juros: 41620  },
+  imovel: { label: 'Imóvel R$300k',    parcelaFin: 3087, totalFin: 1111320, prazoFin: 360, entradaFin: 90000, parcelaCons: 1011, totalCons: 372000, prazoCons: 220, entradaCons: 0 },
+  carro:  { label: 'Automóvel R$80k',  parcelaFin: 2027, totalFin: 121620,  prazoFin: 60,  entradaFin: 24000, parcelaCons: 1048, totalCons: 92800,  prazoCons: 80,  entradaCons: 0 },
 }
 
+/* Paleta */
 const C = {
   blue:     '#1C5FA8',
   blueDark: '#0D3D72',
@@ -52,63 +53,6 @@ const C = {
   text:     '#0D1B3E',
   muted:    '#5E6F8A',
   border:   '#D6E4F5',
-}
-
-/* ── Animated counter ─────────────────────────────────────────── */
-function AnimatedNumber({ to, prefix = '', suffix = '', duration = 1800 }: { to: number; prefix?: string; suffix?: string; duration?: number }) {
-  const [val, setVal] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-80px' })
-
-  useEffect(() => {
-    if (!inView) return
-    const start = performance.now()
-    const tick = (now: number) => {
-      const p = Math.min((now - start) / duration, 1)
-      const ease = 1 - Math.pow(1 - p, 3)
-      setVal(Math.round(ease * to))
-      if (p < 1) requestAnimationFrame(tick)
-    }
-    requestAnimationFrame(tick)
-  }, [inView, to, duration])
-
-  return <span ref={ref}>{prefix}{val.toLocaleString('pt-BR')}{suffix}</span>
-}
-
-/* ── Loss bar visual ──────────────────────────────────────────── */
-function LossBar({ fin, cons, label }: { fin: number; cons: number; label: string }) {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-60px' })
-  const pct = Math.round(((fin - cons) / fin) * 100)
-
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }} className="mb-6">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.6)' }}>{label}</span>
-        <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ background: 'rgba(201,168,76,0.2)', color: '#F0D98A' }}>
-          -{pct}% com consórcio
-        </span>
-      </div>
-      <div className="relative h-12 rounded-xl overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-        {/* Financiamento — barra vermelha */}
-        <div className="absolute inset-0 rounded-xl flex items-center px-4 justify-between" style={{ background: 'rgba(220,38,38,0.2)', border: '1px solid rgba(220,38,38,0.3)' }}>
-          <span className="text-xs font-bold text-red-300">Financiamento</span>
-          <span className="text-sm font-black text-red-300">{fmt(fin)}</span>
-        </div>
-        {/* Consórcio — barra verde animada por cima */}
-        <motion.div
-          initial={{ width: '0%' }}
-          animate={inView ? { width: `${(cons / fin) * 100}%` } : { width: '0%' }}
-          transition={{ duration: 1.2, delay: 0.3, ease: 'easeOut' }}
-          className="absolute inset-y-0 left-0 rounded-xl flex items-center px-4 justify-between overflow-hidden"
-          style={{ background: 'linear-gradient(90deg, #16A34A, #22C55E)', minWidth: 120 }}
-        >
-          <span className="text-xs font-bold text-white whitespace-nowrap">Consórcio</span>
-          <span className="text-sm font-black text-white whitespace-nowrap">{fmt(cons)}</span>
-        </motion.div>
-      </div>
-    </motion.div>
-  )
 }
 
 export default function LandingPage() {
@@ -193,12 +137,16 @@ export default function LandingPage() {
             </motion.div>
           </AnimatePresence>
 
+          {/* Overlay azul royal — não preto */}
           <div className="absolute inset-0" style={{ background: 'linear-gradient(110deg, rgba(13,61,114,0.88) 0%, rgba(13,61,114,0.60) 55%, rgba(13,61,114,0.25) 100%)' }} />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,61,114,0.75) 0%, transparent 50%)' }} />
 
           <div className="relative z-10 h-full flex flex-col pt-28 pb-40 px-6 max-w-7xl mx-auto">
 
+            {/* Headline */}
             <div className="max-w-2xl">
+
+              {/* Badge */}
               <motion.div
                 initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -272,9 +220,10 @@ export default function LandingPage() {
                   Agendar reunião com especialista
                 </a>
               </motion.div>
+
             </div>
 
-            {/* Tabs de produto */}
+            {/* Tabs de produto — fixo no bottom da section */}
             <div className="absolute bottom-8 left-6 right-6 max-w-7xl">
               <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: 'rgba(255,255,255,0.45)' }}>Escolha o produto</p>
               <div className="flex gap-2 overflow-x-auto pb-1">
@@ -301,275 +250,263 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── COMPARATIVO INTERATIVO ──────────────────────────────── */}
-        <section style={{ background: C.bg }} className="py-20 px-6">
-          <div className="max-w-4xl mx-auto">
+        {/* ── COMPARATIVO DETALHADO ───────────────────────────────── */}
+        <section style={{ background: C.bgSoft, borderBottom: `1px solid ${C.border}` }} className="py-14 px-6">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-xs uppercase tracking-widest font-semibold text-center mb-6" style={{ color: C.muted }}>Compare antes de simular</p>
 
-            <div className="text-center mb-10">
-              <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.blue }}>Compare antes de decidir</p>
-              <h2 className="text-3xl md:text-4xl font-black mb-2" style={{ color: C.text }}>
-                O que você paga no total.
-              </h2>
-              <p className="text-base" style={{ color: C.muted }}>Selecione o bem e veja a diferença real.</p>
+            <div className="flex gap-2 justify-center mb-8">
+              {(['imovel', 'carro'] as const).map((b) => {
+                const Icon = b === 'imovel' ? Home : Car
+                const ativo = bemPreview === b
+                return (
+                  <button
+                    key={b}
+                    onClick={() => setBemPreview(b)}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold transition-all"
+                    style={ativo
+                      ? { background: C.blue, color: '#fff' }
+                      : { background: '#fff', color: C.muted, border: `1px solid ${C.border}` }
+                    }
+                  >
+                    <Icon className="w-4 h-4" />
+                    {b === 'imovel' ? 'Imóvel R$300k' : 'Automóvel R$80k'}
+                  </button>
+                )
+              })}
             </div>
 
-            {/* Toggle */}
-            <div className="flex justify-center mb-10">
-              <div className="inline-flex p-1 rounded-2xl gap-1" style={{ background: C.bgSoft, border: `1px solid ${C.border}` }}>
-                {(['imovel', 'carro'] as const).map((b) => {
-                  const Icon = b === 'imovel' ? Home : Car
-                  const ativo = bemPreview === b
-                  return (
-                    <button
-                      key={b}
-                      onClick={() => setBemPreview(b)}
-                      className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-200"
-                      style={ativo
-                        ? { background: C.blue, color: '#fff', boxShadow: '0 4px 12px rgba(28,95,168,0.25)' }
-                        : { color: C.muted }
-                      }
+            {/* Tabela lado a lado */}
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              {/* Financiamento */}
+              <div className="bg-white rounded-2xl p-5 card-hover" style={{ border: '1px solid #FECACA' }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#DC2626' }}>Financiamento</p>
+                <div className="space-y-2.5">
+                  {([
+                    { label: 'Entrada exigida',  val: fmt(ex.entradaFin),         bad: true  },
+                    { label: 'Prazo',             val: `${ex.prazoFin} meses`,     bad: false },
+                    { label: 'Juros',             val: '~12% ao ano',              bad: true  },
+                    { label: 'Parcela mensal',    val: `${fmt(ex.parcelaFin)}/mês`, bad: false, big: true },
+                    { label: 'Total que você paga', val: fmt(ex.totalFin),         bad: true,  big: true },
+                  ] as { label: string; val: string; bad?: boolean; big?: boolean }[]).map((row) => (
+                    <div key={row.label}
+                      className="flex items-center justify-between"
+                      style={row.big ? { borderTop: '1px solid #FEE2E2', paddingTop: '8px', marginTop: '4px' } : {}}
                     >
-                      <Icon className="w-4 h-4" />
-                      {b === 'imovel' ? 'Imóvel R$300k' : 'Automóvel R$80k'}
-                    </button>
-                  )
-                })}
+                      <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
+                      <span className={`font-bold ${row.big ? 'text-base' : 'text-sm'}`} style={{ color: row.bad ? '#DC2626' : C.text }}>{row.val}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Consórcio */}
+              <div className="bg-white rounded-2xl p-5 card-hover" style={{ border: '1px solid #BBF7D0' }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#16A34A' }}>Consórcio</p>
+                <div className="space-y-2.5">
+                  {([
+                    { label: 'Entrada',           val: 'R$0 — sem entrada',        good: true  },
+                    { label: 'Prazo',             val: `${ex.prazoCons} meses`,    good: false },
+                    { label: 'Juros',             val: 'Zero — sem juros',         good: true  },
+                    { label: 'Taxa administrativa', val: 'apenas 1,2% ao ano',     good: false },
+                    { label: 'Parcela mensal',    val: `${fmt(ex.parcelaCons)}/mês`, good: false, big: true },
+                    { label: 'Total que você paga', val: fmt(ex.totalCons),        good: true,  big: true },
+                  ] as { label: string; val: string; good?: boolean; big?: boolean }[]).map((row) => (
+                    <div key={row.label}
+                      className="flex items-center justify-between"
+                      style={row.big ? { borderTop: '1px solid #BBF7D0', paddingTop: '8px', marginTop: '4px' } : {}}
+                    >
+                      <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
+                      <span className={`font-bold ${row.big ? 'text-base' : 'text-sm'}`} style={{ color: row.good ? '#16A34A' : C.text }}>{row.val}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Cards lado a lado */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={bemPreview}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2 }}
-                className="grid grid-cols-2 gap-4 mb-4"
+            {/* Economia */}
+            <div className="rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4"
+              style={{ background: 'linear-gradient(135deg, #FFF8E7 0%, #FFF3CC 100%)', border: '1px solid rgba(201,168,76,0.35)' }}
+            >
+              <div>
+                <p className="text-xs uppercase tracking-widest font-semibold mb-1" style={{ color: C.goldDark }}>Você economiza no total</p>
+                <p className="font-black text-4xl" style={{ color: C.gold }}>{fmt(economiaTotal)}</p>
+                <p className="text-sm mt-1" style={{ color: C.goldDark }}>{fmt(economiaMes)}/mês no bolso até a contemplação</p>
+              </div>
+              <button
+                onClick={() => abrirModal('comparativo')}
+                className="gold-btn text-white font-bold py-3.5 px-7 rounded-xl transition-all text-sm flex-shrink-0"
               >
-                {/* Financiamento */}
-                <div className="rounded-2xl p-6" style={{ background: '#FFF5F5', border: '1.5px solid #FECACA' }}>
-                  <div className="flex items-center gap-2 mb-5">
-                    <XCircle className="w-5 h-5 text-red-500" />
-                    <p className="text-sm font-black uppercase tracking-wide text-red-600">Financiamento</p>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Entrada obrigatória', val: fmt(ex.entradaFin), bad: true },
-                      { label: 'Prazo',               val: `${ex.prazoFin} meses` },
-                      { label: 'Juros anuais',        val: '~12% ao ano', bad: true },
-                      { label: 'Parcela mensal',      val: `${fmt(ex.parcelaFin)}/mês` },
-                    ].map(row => (
-                      <div key={row.label} className="flex items-center justify-between">
-                        <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
-                        <span className="text-sm font-bold" style={{ color: row.bad ? '#DC2626' : C.text }}>{row.val}</span>
-                      </div>
-                    ))}
-                    <div className="pt-3 mt-2" style={{ borderTop: '1.5px solid #FECACA' }}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase tracking-wide text-red-500">Total pago</span>
-                        <span className="text-xl font-black text-red-600">{fmt(ex.totalFin)}</span>
-                      </div>
-                      <p className="text-xs text-red-400 text-right mt-0.5">{fmt(ex.juros)} só em juros</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Consórcio */}
-                <div className="rounded-2xl p-6" style={{ background: '#F0FDF4', border: '2px solid #86EFAC' }}>
-                  <div className="flex items-center gap-2 mb-5">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                    <p className="text-sm font-black uppercase tracking-wide text-green-700">Consórcio</p>
-                  </div>
-                  <div className="space-y-3">
-                    {[
-                      { label: 'Entrada',             val: 'R$0 — sem entrada', good: true },
-                      { label: 'Prazo',               val: `${ex.prazoCons} meses` },
-                      { label: 'Juros',               val: 'Zero', good: true },
-                      { label: 'Parcela mensal',      val: `${fmt(ex.parcelaCons)}/mês` },
-                    ].map(row => (
-                      <div key={row.label} className="flex items-center justify-between">
-                        <span className="text-xs" style={{ color: C.muted }}>{row.label}</span>
-                        <span className="text-sm font-bold" style={{ color: (row as {good?: boolean}).good ? '#16A34A' : C.text }}>{row.val}</span>
-                      </div>
-                    ))}
-                    <div className="pt-3 mt-2" style={{ borderTop: '1.5px solid #86EFAC' }}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase tracking-wide text-green-600">Total pago</span>
-                        <span className="text-xl font-black text-green-700">{fmt(ex.totalCons)}</span>
-                      </div>
-                      <p className="text-xs text-green-500 text-right mt-0.5">zero juros — taxa admin apenas</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Economia em destaque */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={bemPreview + '-eco'}
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                className="rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-5"
-                style={{ background: 'linear-gradient(135deg, #0D3D72, #1C5FA8)', boxShadow: '0 12px 40px rgba(13,61,114,0.25)' }}
-              >
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.55)' }}>Você economiza no total</p>
-                  <p className="font-black text-5xl text-white">{fmt(economiaTotal)}</p>
-                  <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.65)' }}>+ {fmt(economiaMes)}/mês no bolso até ser contemplado</p>
-                </div>
-                <button
-                  onClick={() => abrirModal('comparativo')}
-                  className="gold-btn text-white font-black py-4 px-8 rounded-2xl transition-all text-base flex-shrink-0"
-                >
-                  Calcular o meu →
-                </button>
-              </motion.div>
-            </AnimatePresence>
+                Calcular o meu →
+              </button>
+            </div>
           </div>
         </section>
 
         {/* ── COMO FUNCIONA ────────────────────────────────────────── */}
-        <section id="como-funciona" style={{ background: '#0A0F1E' }} className="py-24 px-6">
+        <section id="como-funciona" style={{ background: C.bg }} className="py-24 px-6">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-16">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4" style={{ color: C.gold }}>A solução inteligente</p>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-4">Como funciona o consórcio</h2>
-              <p className="text-lg max-w-xl mx-auto" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                Três passos. Sem burocracia de banco, sem juros, sem entrada.
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: C.blue }}>A solução inteligente</p>
+              <h2 className="text-4xl md:text-5xl font-black mb-5" style={{ color: C.text }}>Como funciona o consórcio</h2>
+              <p className="text-xl max-w-2xl mx-auto leading-relaxed" style={{ color: C.muted }}>
+                Você paga uma parcela mensal sem juros e sem taxa de adesão.
+                Quando contemplado, compra o bem à vista com poder de negociação real.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 24, overflow: 'hidden' }}>
+            <div className="grid md:grid-cols-3 gap-6 mb-10">
               {[
-                {
-                  num: '01', cor: C.gold,
-                  titulo: 'Contrata a carta',
-                  desc: 'Você escolhe o valor da carta — equivalente ao bem que quer. Sem aprovação de banco, sem score mínimo, sem entrada.',
-                  icon: '📋',
-                },
-                {
-                  num: '02', cor: '#22C55E',
-                  titulo: 'Paga sem juros',
-                  desc: 'Parcelas mensais com apenas taxa administrativa (1,2% ao ano). Todo mês há contemplações por sorteio — e você pode acelerar com um lance.',
-                  icon: '💸',
-                },
-                {
-                  num: '03', cor: '#60A5FA',
-                  titulo: 'Compra à vista',
-                  desc: 'Com a carta em mãos, compra à vista e ainda negocia desconto que financiado nenhum consegue. Você paga o preço real do bem.',
-                  icon: '🏆',
-                },
+                { num: '01', cor: C.blue, titulo: 'Contrata a carta de crédito', desc: 'Você escolhe o valor da carta — igual ao valor do bem que quer comprar. Sem entrada, sem aprovação de banco, sem score mínimo exigido.' },
+                { num: '02', cor: C.gold, titulo: 'Paga mensalmente, sem juros',  desc: 'Todo mês você paga uma parcela com apenas taxa administrativa (1,2% ao ano). Nada de juros. Mensalmente há contemplações por sorteio — e você pode acelerar dando um lance.' },
+                { num: '03', cor: C.blue, titulo: 'Compra à vista, fica com o bem', desc: 'Ao ser contemplado, usa a carta para comprar à vista. Com esse poder de negociação, consegue descontos que nenhum financiado conseguiria.' },
               ].map((item, i) => (
                 <motion.div
                   key={i}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ delay: i * 0.12 }}
-                  className="p-8 flex flex-col gap-5"
-                  style={{ background: '#0D1220' }}
+                  className="bg-white rounded-2xl p-7 card-hover"
+                  style={{ border: `1px solid ${C.border}`, boxShadow: '0 2px 12px rgba(28,95,168,0.06)' }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-3xl">{item.icon}</span>
-                    <span className="text-4xl font-black" style={{ color: item.cor, opacity: 0.25 }}>{item.num}</span>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-lg text-white mb-5" style={{ background: item.cor }}>
+                    {item.num}
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black text-white mb-3">{item.titulo}</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)' }}>{item.desc}</p>
-                  </div>
-                  <div className="mt-auto h-0.5 rounded-full" style={{ background: item.cor, opacity: 0.4 }} />
+                  <h3 className="font-bold text-lg mb-3" style={{ color: C.text }}>{item.titulo}</h3>
+                  <p className="text-sm leading-relaxed" style={{ color: C.muted }}>{item.desc}</p>
                 </motion.div>
               ))}
             </div>
 
-            {/* Financiamento vs Consórcio — checklist no dark */}
+            {/* Resumo do resultado */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 12 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
-              className="mt-10 rounded-3xl p-8 grid md:grid-cols-2 gap-8"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="rounded-2xl p-6 mb-8 text-center"
+              style={{ background: C.bgSoft, border: `1px solid ${C.border}` }}
             >
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest mb-5 text-red-400">❌ Financiamento</p>
-                <ul className="space-y-3.5">
-                  {['30% de entrada obrigatória', 'Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas', 'Score alto exigido', 'Paga quase o dobro do preço'].map((t) => (
-                    <li key={t} className="flex items-start gap-3 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                      <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />{t}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest mb-5 text-green-400">✓ Consórcio</p>
-                <ul className="space-y-3.5">
-                  {['Sem entrada — começa do zero', 'Zero juros — só 1,2% de taxa ao ano', 'Sem IOF, sem taxas ocultas', 'Processo simples de adesão', 'Você paga o preço real do bem'].map((t) => (
-                    <li key={t} className="flex items-start gap-3 text-sm text-white/70">
-                      <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />{t}
-                    </li>
-                  ))}
-                </ul>
+              <p className="font-bold text-lg mb-2" style={{ color: C.text }}>O resultado:</p>
+              <p className="text-base leading-relaxed max-w-2xl mx-auto" style={{ color: C.muted }}>
+                Você fica com o bem pagando parcelas muito menores do que no banco —
+                sem ter dado entrada, sem ter pago um centavo de juros.
+                Enquanto o financiado entrega metade do dinheiro pro banco em juros,
+                <strong style={{ color: C.text }}> você cria patrimônio pagando o preço real do bem.</strong>
+              </p>
+            </motion.div>
+
+            {/* Checklist rápido */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              className="rounded-3xl p-8"
+              style={{ background: C.bgSoft, border: `1px solid ${C.border}` }}
+            >
+              <p className="text-xs uppercase tracking-widest font-semibold mb-7 text-center" style={{ color: C.muted }}>Financiamento vs Consórcio</p>
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#DC2626' }}>❌ Financiamento</p>
+                  <ul className="space-y-3.5">
+                    {['30% de entrada obrigatória no ato', 'Juros de 12% a 18% ao ano', 'IOF e tarifas ocultas no contrato', 'Score alto exigido para aprovação', 'Você paga quase o dobro do preço do bem'].map((t) => (
+                      <li key={t} className="flex items-start gap-3 text-sm" style={{ color: C.muted }}>
+                        <XCircle className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />{t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-widest mb-5" style={{ color: '#16A34A' }}>✓ Consórcio</p>
+                  <ul className="space-y-3.5">
+                    {['Sem entrada — começa do zero', 'Zero juros — só 1,2% de taxa ao ano', 'Sem IOF, sem taxas ocultas', 'Processo simples de adesão', 'Você paga o preço real do bem'].map((t) => (
+                      <li key={t} className="flex items-start gap-3 text-sm font-medium" style={{ color: C.text }}>
+                        <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />{t}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </motion.div>
           </div>
         </section>
 
-        {/* ── O DINHEIRO QUE O BANCO LEVA ─────────────────────────── */}
-        <section style={{ background: '#0D1220' }} className="py-24 px-6">
-          <div className="max-w-3xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              className="text-center mb-14"
-            >
-              <p className="text-xs font-bold uppercase tracking-[0.3em] mb-4" style={{ color: '#F87171' }}>A verdade que o banco não te conta</p>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
-                Quanto você vai dar<br />
-                <span style={{ color: '#F87171' }}>de presente ao banco?</span>
+        {/* ── DOR — QUANTO VAI AO BANCO ───────────────────────────── */}
+        <section style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }} className="py-24 px-6">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-14">
+              <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: C.blue }}>A verdade que o banco não te conta</p>
+              <h2 className="text-4xl md:text-5xl font-black leading-tight mb-4" style={{ color: C.text }}>
+                Quanto você vai<br />
+                <span style={{ color: C.gold }}>dar de presente ao banco?</span>
               </h2>
-              <p className="text-lg" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                Veja a diferença real — barra a barra.
+              <p className="text-lg max-w-2xl mx-auto" style={{ color: C.muted }}>
+                Em todo financiamento, a maior parte do que você paga vai direto para o banco — não para o bem.
               </p>
-            </motion.div>
+            </div>
 
-            <div className="rounded-3xl p-8" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <LossBar fin={1111320} cons={372000} label="Imóvel R$300.000" />
-              <LossBar fin={1852200} cons={620000} label="Imóvel R$500.000" />
-              <LossBar fin={121620}  cons={92800}  label="Veículo R$80.000" />
-
-              <motion.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true, margin: '-60px' }}
-                className="mt-8 pt-6 text-center"
-                style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
-              >
-                <p className="text-xs mb-5" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                  Calculado com taxas médias praticadas pelos bancos brasileiros.
-                </p>
-                <button
-                  onClick={() => abrirModal('dor')}
-                  className="gold-btn inline-flex items-center gap-2 text-white font-black px-8 py-4 rounded-2xl transition-all"
+            <div className="grid md:grid-cols-3 gap-5 mb-10">
+              {[
+                { titulo: 'Imóvel R$300.000', fin: 1111320, cons: 372000, img: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=600&q=80' },
+                { titulo: 'Imóvel R$500.000', fin: 1852200, cons: 620000, img: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80' },
+                { titulo: 'Veículo R$80.000',  fin: 121620,  cons: 92800,  img: 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=80' },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-60px' }}
+                  transition={{ delay: i * 0.08 }}
+                  className="bg-white rounded-2xl overflow-hidden card-hover"
+                  style={{ border: `1px solid ${C.border}` }}
                 >
-                  Ver meu cálculo personalizado
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </motion.div>
+                  <div className="relative h-36 overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.img} alt={item.titulo} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0" style={{ background: 'rgba(13,61,114,0.55)' }} />
+                    <p className="absolute bottom-3 left-4 text-white font-bold text-sm drop-shadow">{item.titulo}</p>
+                  </div>
+                  <div className="p-5 space-y-3">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: C.muted }}>Com financiamento</p>
+                      <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.fin)}</p>
+                    </div>
+                    <div className="h-px" style={{ background: C.border }} />
+                    <div>
+                      <p className="text-[10px] font-bold uppercase mb-1" style={{ color: C.blue }}>Com consórcio</p>
+                      <p className="font-black text-2xl" style={{ color: C.text }}>{fmt(item.cons)}</p>
+                    </div>
+                    <div className="rounded-xl px-4 py-3" style={{ background: '#FFF8E7', border: '1px solid rgba(201,168,76,0.3)' }}>
+                      <p className="font-black text-xl" style={{ color: C.gold }}>{fmt(item.fin - item.cons)}</p>
+                      <p className="text-xs" style={{ color: C.goldDark }}>economizado com consórcio</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="bg-white rounded-3xl p-8 text-center" style={{ border: `1px solid ${C.border}` }}>
+              <p className="text-sm mb-5 max-w-xl mx-auto" style={{ color: C.muted }}>
+                Esses números são calculados com as taxas médias praticadas pelos bancos brasileiros.
+                A diferença existe porque o consórcio não tem juros — só taxa administrativa.
+              </p>
+              <button
+                onClick={() => abrirModal('dor')}
+                className="gold-btn inline-flex items-center gap-2 text-white font-bold px-7 py-3.5 rounded-full transition-all"
+              >
+                Ver meu cálculo personalizado
+                <ArrowRight className="w-4 h-4" />
+              </button>
             </div>
           </div>
         </section>
 
         {/* ── CTA SIMULADOR ────────────────────────────────────────── */}
-        <section className="py-20 px-6" style={{ background: C.blue }}>
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.55)' }}>Calcule o seu agora</p>
+        <section className="py-20 px-6 relative overflow-hidden" style={{ background: C.blue }}>
+          <div className="max-w-3xl mx-auto text-center relative z-10">
+            <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: 'rgba(255,255,255,0.65)' }}>Calcule o seu agora</p>
             <h2 className="text-4xl md:text-5xl font-black mb-4 text-white">Quanto você economiza?</h2>
-            <p className="text-lg mb-8 text-white/70">
+            <p className="text-lg mb-8 text-white/80">
               Informe o bem e o valor. Em 2 minutos você vê a diferença exata — personalizada para o seu caso.
             </p>
             <button
@@ -579,44 +516,42 @@ export default function LandingPage() {
               Simular minha economia
               <ArrowRight className="w-6 h-6" />
             </button>
-            <p className="text-sm mt-4" style={{ color: 'rgba(255,255,255,0.4)' }}>Gratuito · Sem compromisso · Sem cadastro inicial</p>
+            <p className="text-sm mt-4" style={{ color: 'rgba(255,255,255,0.5)' }}>Gratuito · Sem compromisso · Sem cadastro inicial</p>
           </div>
         </section>
 
         {/* ── CREDIBILIDADE ────────────────────────────────────────── */}
-        <section style={{ background: C.bg }} className="py-24 px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-14">
+        <section style={{ background: C.bg }} className="py-20 px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-10">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.muted }}>Quem está por trás</p>
-              <h2 className="text-3xl md:text-4xl font-black" style={{ color: C.text }}>A maior administradora privada do Brasil</h2>
-              <p className="text-sm mt-2" style={{ color: C.muted }}>Regulada pelo Banco Central · +35 anos no mercado</p>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>A maior administradora privada do Brasil</h2>
+              <p className="text-sm mt-2" style={{ color: C.muted }}>Regulada pelo Banco Central · +35 anos no mercado · presente em todo o território nacional</p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
               {[
-                { num: 292,    prefix: '+',  suffix: '',    label: 'lojas no Brasil e exterior',  destaque: false },
-                { num: 641,    prefix: '+',  suffix: 'mil', label: 'clientes atendidos',          destaque: true  },
-                { num: 35,     prefix: '+',  suffix: ' anos',label: 'de experiência',             destaque: false },
-                { num: 906,    prefix: '+',  suffix: 'mil', label: 'cotas comercializadas',       destaque: false },
-                { num: 140,    prefix: 'R$', suffix: 'bi',  label: 'em créditos comercializados', destaque: false },
-                { num: 0,      prefix: '',   suffix: '',    label: 'Regulada pelo Banco Central', destaque: false, fixed: 'BACEN' },
+                { num: '+292',     label: 'lojas no Brasil e exterior',  destaque: false },
+                { num: 'R$140bi',  label: 'em créditos comercializados', destaque: false },
+                { num: '+641mil',  label: 'clientes atendidos',          destaque: true  },
+                { num: '+906mil',  label: 'cotas comercializadas',       destaque: false },
+                { num: '+35 anos', label: 'de experiência no mercado',   destaque: false },
+                { num: 'Bacen',    label: 'Regulada pelo Banco Central', destaque: false },
               ].map((item, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
-                  transition={{ delay: i * 0.07 }}
-                  className="rounded-2xl p-6 text-center card-hover"
+                  transition={{ delay: i * 0.05 }}
+                  className="col-span-2 md:col-span-1 lg:col-span-2 rounded-2xl p-6 text-center card-hover"
                   style={item.destaque
-                    ? { background: C.blue, border: 'none' }
+                    ? { background: C.gold, border: 'none' }
                     : { background: C.bgSoft, border: `1px solid ${C.border}` }
                   }
                 >
-                  <p className="text-3xl md:text-4xl font-black mb-2 leading-none" style={{ color: item.destaque ? '#fff' : C.text }}>
-                    {item.fixed ? item.fixed : <AnimatedNumber to={item.num} prefix={item.prefix} suffix={item.suffix} />}
-                  </p>
-                  <p className="text-xs leading-snug" style={{ color: item.destaque ? 'rgba(255,255,255,0.75)' : C.muted }}>{item.label}</p>
+                  <p className="text-3xl font-black mb-1" style={{ color: item.destaque ? '#fff' : C.text }}>{item.num}</p>
+                  <p className="text-sm" style={{ color: item.destaque ? 'rgba(255,255,255,0.85)' : C.muted }}>{item.label}</p>
                 </motion.div>
               ))}
             </div>
@@ -624,11 +559,11 @@ export default function LandingPage() {
         </section>
 
         {/* ── DEPOIMENTOS ──────────────────────────────────────────── */}
-        <section style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }} className="py-24 px-6">
+        <section style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }} className="py-20 px-6">
           <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-14">
+            <div className="text-center mb-10">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.blue }}>Resultados reais</p>
-              <h2 className="text-3xl md:text-4xl font-black" style={{ color: C.text }}>Quem já saiu na frente</h2>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>Quem já saiu na frente</h2>
             </div>
             <div className="grid md:grid-cols-3 gap-5">
               {DEPOIMENTOS.map((d, i) => (
@@ -638,31 +573,21 @@ export default function LandingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-60px' }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-white rounded-2xl overflow-hidden card-hover"
+                  className="bg-white rounded-2xl p-6 card-hover"
                   style={{ border: `1px solid ${C.border}` }}
                 >
-                  {/* Topo colorido */}
-                  <div className="h-2" style={{ background: d.cor }} />
-                  <div className="p-6">
-                    <div className="flex gap-0.5 mb-4">
-                      {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-[#C9A84C]" style={{ color: C.gold }} />)}
+                  <div className="flex gap-0.5 mb-4">
+                    {[...Array(5)].map((_, j) => <Star key={j} className="w-4 h-4 fill-[#C9A84C]" style={{ color: C.gold }} />)}
+                  </div>
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>&quot;{d.texto}&quot;</p>
+                  <div className="pt-4 flex items-center justify-between" style={{ borderTop: `1px solid ${C.border}` }}>
+                    <div>
+                      <p className="font-bold text-sm" style={{ color: C.text }}>{d.nome}</p>
+                      <p className="text-xs" style={{ color: C.muted }}>{d.cidade}</p>
                     </div>
-                    <p className="text-2xl font-black mb-1" style={{ color: d.cor, opacity: 0.15, lineHeight: 1 }}>"</p>
-                    <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>{d.texto}</p>
-                    <div className="pt-4 flex items-center justify-between" style={{ borderTop: `1px solid ${C.border}` }}>
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black flex-shrink-0" style={{ background: d.cor }}>
-                          {d.nome[0]}
-                        </div>
-                        <div>
-                          <p className="font-bold text-sm" style={{ color: C.text }}>{d.nome}</p>
-                          <p className="text-xs" style={{ color: C.muted }}>{d.cidade}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs" style={{ color: C.muted }}>{d.bem}</p>
-                        <p className="font-black text-sm" style={{ color: C.goldDark }}>+{d.economia}</p>
-                      </div>
+                    <div className="text-right">
+                      <p className="text-xs" style={{ color: C.muted }}>{d.bem}</p>
+                      <p className="font-bold text-sm" style={{ color: C.goldDark }}>Economizou {d.economia}</p>
                     </div>
                   </div>
                 </motion.div>
@@ -672,32 +597,24 @@ export default function LandingPage() {
         </section>
 
         {/* ── FAQ ──────────────────────────────────────────────────── */}
-        <section id="faq" style={{ background: C.bg }} className="py-24 px-6">
+        <section id="faq" style={{ background: C.bg }} className="py-20 px-6">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-12">
+            <div className="text-center mb-10">
               <p className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: C.muted }}>Dúvidas</p>
-              <h2 className="text-3xl md:text-4xl font-black" style={{ color: C.text }}>Perguntas frequentes</h2>
+              <h2 className="text-3xl font-black" style={{ color: C.text }}>Perguntas frequentes</h2>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               {FAQ.map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: '-40px' }}
-                  transition={{ delay: i * 0.06 }}
-                  className="rounded-2xl overflow-hidden"
-                  style={{ border: `1px solid ${faqAberto === i ? C.blue : C.border}`, background: faqAberto === i ? C.bgSoft : C.bg, transition: 'border-color 0.2s, background 0.2s' }}
-                >
+                <div key={i} className="rounded-2xl overflow-hidden" style={{ border: `1px solid ${C.border}`, background: C.bgSoft }}>
                   <button
                     onClick={() => setFaqAberto(faqAberto === i ? null : i)}
-                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-sm transition-colors"
-                    style={{ color: faqAberto === i ? C.blue : C.text }}
+                    className="w-full flex items-center justify-between p-5 text-left font-semibold text-sm transition-colors hover:opacity-80"
+                    style={{ color: C.text }}
                   >
-                    <span>{item.pergunta}</span>
-                    <motion.div animate={{ rotate: faqAberto === i ? 180 : 0 }} transition={{ duration: 0.2 }} className="flex-shrink-0 ml-3">
-                      <ChevronDown className="w-5 h-5" style={{ color: C.blue }} />
-                    </motion.div>
+                    {item.pergunta}
+                    <span className="ml-3 flex-shrink-0 text-2xl leading-none font-black" style={{ color: C.blue }}>
+                      {faqAberto === i ? '−' : '+'}
+                    </span>
                   </button>
                   <AnimatePresence>
                     {faqAberto === i && (
@@ -705,52 +622,39 @@ export default function LandingPage() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.22 }}
+                        transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <p className="px-5 pb-5 text-sm leading-relaxed" style={{ color: C.muted, borderTop: `1px solid ${C.border}`, paddingTop: 16 }}>
+                        <p className="px-5 pb-5 text-sm leading-relaxed pt-4" style={{ color: C.muted, borderTop: `1px solid ${C.border}` }}>
                           {item.resposta}
                         </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </motion.div>
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         {/* ── CTA FINAL ────────────────────────────────────────────── */}
-        <section className="py-28 px-6 relative overflow-hidden" style={{ background: '#0A0F1E' }}>
-          {/* Glow de fundo */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div style={{ width: 600, height: 400, background: 'radial-gradient(ellipse, rgba(201,168,76,0.12) 0%, transparent 70%)' }} />
-          </div>
+        <section className="py-24 px-6 relative overflow-hidden" style={{ background: C.bgSoft, borderTop: `1px solid ${C.border}` }}>
           <div className="max-w-2xl mx-auto text-center relative z-10">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
+            <h2 className="text-4xl md:text-5xl font-black mb-4 leading-tight" style={{ color: C.text }}>
+              Cada mês que passa,<br />dinheiro indo
+              <span style={{ color: '#DC2626' }}> direto pro banco.</span>
+            </h2>
+            <p className="text-lg mb-8" style={{ color: C.muted }}>
+              Simule agora. Gratuito, leva 2 minutos, e você vê exatamente quanto pode economizar.
+            </p>
+            <button
+              onClick={() => abrirModal('cta-final')}
+              className="gold-btn inline-flex items-center gap-3 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all"
             >
-              <p className="text-xs font-bold uppercase tracking-[0.3em] mb-6" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                A decisão é agora
-              </p>
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
-                Cada mês que passa,<br />
-                <span style={{ color: '#F87171' }}>dinheiro indo pro banco.</span>
-              </h2>
-              <p className="text-lg mb-10" style={{ color: 'rgba(255,255,255,0.45)' }}>
-                Simule agora. Gratuito, leva 2 minutos, e você vê exatamente quanto pode economizar.
-              </p>
-              <button
-                onClick={() => abrirModal('cta-final')}
-                className="gold-btn inline-flex items-center gap-3 text-white font-black px-10 py-5 rounded-2xl text-xl transition-all"
-              >
-                Simular gratuitamente
-                <ArrowRight className="w-6 h-6" />
-              </button>
-              <p className="text-sm mt-5" style={{ color: 'rgba(255,255,255,0.25)' }}>Sem compromisso · Sem cadastro · Resposta em até 2 horas</p>
-            </motion.div>
+              Simular gratuitamente
+              <ArrowRight className="w-6 h-6" />
+            </button>
+            <p className="text-sm mt-4" style={{ color: C.muted }}>Sem compromisso · Sem cadastro · Resposta em até 2 horas</p>
           </div>
         </section>
 
@@ -799,8 +703,7 @@ export default function LandingPage() {
           aria-label="Tire suas dúvidas pelo WhatsApp"
         >
           <svg viewBox="0 0 24 24" className="w-6 h-6 fill-white flex-shrink-0" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-            <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.553 4.116 1.522 5.853L0 24l6.303-1.493A11.954 11.954 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.816 9.816 0 01-5.007-1.369l-.359-.214-3.741.98.999-3.648-.233-.374A9.817 9.817 0 012.182 12C2.182 6.57 6.57 2.182 12 2.182S21.818 6.57 21.818 12 17.43 21.818 12 21.818z"/>
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
           </svg>
           <span className="text-sm">Falar com consultor</span>
         </a>
