@@ -94,16 +94,21 @@ export default function StepResultado({ resultado, nome, onContinuar, onContrato
       </motion.div>
 
       {/* CTA único */}
-      <motion.button
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
-        onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
-        className="w-full flex items-center justify-center gap-2 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-bold py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
+        className="flex flex-col items-center gap-2"
       >
-        <MessageCircle className="w-5 h-5" />
-        Quero meu contrato agora
-      </motion.button>
+        <button
+          onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
+          className="w-full flex items-center justify-center gap-2.5 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-black py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
+        >
+          <MessageCircle className="w-5 h-5" />
+          Ver minha proposta personalizada →
+        </button>
+        <p className="text-xs text-gray-400 text-center">⭐ Gratuito · Sem compromisso · Resposta em minutos</p>
+      </motion.div>
 
       <button onClick={onBack} className="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors">
         ← Refazer simulação
