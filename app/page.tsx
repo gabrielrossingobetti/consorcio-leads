@@ -43,7 +43,7 @@ const EXEMPLOS = {
   carro:  { label: 'Auto R$80k',    parcelaFin: 2027, totalFin: 121620,  prazoFin: 60,  entradaFin: 24000, parcelaCons: 1048, totalCons: 92800,  prazoCons: 80,  juros: 41620  },
 }
 
-const C = { blue: '#1C5FA8', blueDark: '#0D3D72', gold: '#C9A84C', goldLight: '#F0D98A', bg: '#FFFFFF', bgSoft: '#F0F6FF', text: '#0D1B3E', muted: '#5E6F8A', border: '#D6E4F5' }
+const C = { blue: '#1C5FA8', blueDark: '#0D3D72', gold: '#C9A84C', goldDark: '#A8883A', goldLight: '#F0D98A', bg: '#FFFFFF', bgSoft: '#F0F6FF', text: '#0D1B3E', muted: '#5E6F8A', border: '#D6E4F5' }
 
 /* ── Animated counter ──────────────────────────────────────────── */
 function Counter({ to, prefix = '', suffix = '' }: { to: number; prefix?: string; suffix?: string }) {
