@@ -57,6 +57,37 @@ const PATROCINADORES = [
   { nome: 'Corrida das Estações',cor: '#C52619', img: '' },
 ]
 
+function getHeroImage(produto: string, credito: number): { url: string; position: string } {
+  const q = 'w=900&q=90&fit=crop'
+
+  if (produto === 'carro' || produto === 'moto') {
+    if (credito < 60_000)
+      return { url: `https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?${q}`, position: 'center 50%' }
+    if (credito < 150_000)
+      return { url: `https://images.unsplash.com/photo-1616422285623-13ff0162193c?${q}`, position: 'center 55%' }
+    if (credito < 400_000)
+      return { url: `https://images.unsplash.com/photo-1503376780353-7e6692767b70?${q}`, position: 'center 50%' }
+    return { url: `https://images.unsplash.com/photo-1544636331-e26879cd4d9b?${q}`, position: 'center 50%' }
+  }
+
+  if (produto === 'investidor') {
+    return { url: `https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?${q}`, position: 'center 40%' }
+  }
+
+  if (produto === 'negocio' || produto === 'reforma' || produto === 'construcao') {
+    return { url: `https://images.unsplash.com/photo-1497366216548-37526070297c?${q}`, position: 'center 50%' }
+  }
+
+  // imóvel (padrão) — escala pelo crédito
+  if (credito < 300_000)
+    return { url: `https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?${q}`, position: 'center 40%' }
+  if (credito < 700_000)
+    return { url: `https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?${q}`, position: 'center 60%' }
+  if (credito < 1_200_000)
+    return { url: `https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?${q}`, position: 'center 50%' }
+  return { url: `https://images.unsplash.com/photo-1613490493576-7fde63acd811?${q}`, position: 'center 50%' }
+}
+
 function fmt(n: number) {
   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(n)
 }
@@ -96,6 +127,7 @@ function DirecionamentoContent() {
 
   const produtoLabel = PRODUTO_LABEL[produto] || 'Consórcio'
   const primeiroNome = nome.split(' ')[0]
+  const heroImg = getHeroImage(produto, credito)
 
   const whatsappMsg = [
     `Olá! Me chamo ${nome}.`,
@@ -260,10 +292,10 @@ function DirecionamentoContent() {
               <div className="absolute right-0 top-0 bottom-0 hidden md:block" style={{ width: '48%' }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=85&fit=crop&crop=center"
-                  alt="Imóvel"
+                  src={heroImg.url}
+                  alt={produtoLabel}
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 60%' }}
+                  style={{ objectPosition: heroImg.position }}
                 />
                 {/* Gradiente de fusão */}
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(90deg, #8C1109 0%, rgba(140,17,9,0.6) 35%, transparent 75%)' }} />
@@ -296,7 +328,12 @@ function DirecionamentoContent() {
                     <h1 className="text-white font-black leading-[1.08] mb-4"
                       style={{ fontSize: 'clamp(2rem, 4vw, 3.25rem)', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
                       {primeiroNome ? `${primeiroNome}, o seu` : 'O seu'}<br />
-                      <span style={{ color: '#FFD0D0' }}>imóvel dos sonhos</span><br />
+                      <span style={{ color: '#FFD0D0' }}>
+                        {produto === 'carro' || produto === 'moto' ? 'veículo dos sonhos' :
+                         produto === 'investidor' ? 'patrimônio crescendo' :
+                         produto === 'negocio' ? 'negócio próprio' :
+                         'imóvel dos sonhos'}
+                      </span><br />
                       está mais perto<br />
                       do que você pensa.
                     </h1>
@@ -343,10 +380,10 @@ function DirecionamentoContent() {
               <div className="block md:hidden w-full" style={{ height: 220 }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80&fit=crop&crop=center"
-                  alt="Imóvel"
+                  src={heroImg.url}
+                  alt={produtoLabel}
                   className="w-full h-full object-cover"
-                  style={{ objectPosition: 'center 60%' }}
+                  style={{ objectPosition: heroImg.position }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 h-20 md:hidden" style={{ background: 'linear-gradient(180deg, transparent, #8C1109)' }} />
               </div>
