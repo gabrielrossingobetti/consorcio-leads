@@ -150,8 +150,8 @@ export default function LandingPage() {
     {
       num: '03', emoji: '🎯', cor: '#16A34A',
       titulo: 'Vários são contemplados todo mês',
-      desc: 'Todo mês, múltiplos participantes recebem a carta de crédito — por sorteio ou por lance. Quem oferecer um lance maior tem prioridade na contemplação.',
-      detalhe: 'Você pode ser contemplado no 1º mês ou em qualquer mês até o fim do prazo.',
+      desc: 'Todo mês, múltiplos participantes recebem a carta de crédito — por sorteio ou por lance. O lance embutido já vem incluído na sua parcela mensal, sem precisar de dinheiro extra. Quem quiser antecipar ainda mais pode ofertar um lance adicional.',
+      detalhe: 'Você pode ser contemplado no 1º mês ou em qualquer mês até o fim do prazo — com ou sem dinheiro extra.',
     },
     {
       num: '04', emoji: '🏆', cor: '#7C3AED',
