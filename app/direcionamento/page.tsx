@@ -16,14 +16,16 @@ const PRODUTO_LABEL: Record<string, string> = {
 }
 
 const ADMINS = [
-  { nome: 'Embracon',      cor: '#1B3A6B', logo: 'https://logo.clearbit.com/embracon.com.br' },
-  { nome: 'Porto Bank',    cor: '#004B93', logo: 'https://logo.clearbit.com/portoseguro.com.br' },
-  { nome: 'BB Consórcio',  cor: '#F8C200', logo: 'https://logo.clearbit.com/bb.com.br', textDark: true },
-  { nome: 'Magalu',        cor: '#0086FF', logo: 'https://logo.clearbit.com/magazineluiza.com.br' },
-  { nome: 'Bradesco',      cor: '#CC0000', logo: 'https://logo.clearbit.com/bradesco.com.br' },
-  { nome: 'Itaú',          cor: '#EC7000', logo: 'https://logo.clearbit.com/itau.com.br' },
-  { nome: 'Caixa',         cor: '#005CA9', logo: 'https://logo.clearbit.com/caixa.gov.br' },
-  { nome: 'Sicredi',       cor: '#00843D', logo: 'https://logo.clearbit.com/sicredi.com.br' },
+  { nome: 'Embracon',      cor: '#1B3A6B', logo: 'https://www.google.com/s2/favicons?domain=embracon.com.br&sz=128' },
+  { nome: 'Porto Bank',    cor: '#004B93', logo: 'https://www.google.com/s2/favicons?domain=portoseguro.com.br&sz=128' },
+  { nome: 'BB Consórcio',  cor: '#F8C200', logo: 'https://www.google.com/s2/favicons?domain=bb.com.br&sz=128', textDark: true },
+  { nome: 'Magalu',        cor: '#0086FF', logo: 'https://www.google.com/s2/favicons?domain=magazineluiza.com.br&sz=128' },
+  { nome: 'Bradesco',      cor: '#CC0000', logo: 'https://www.google.com/s2/favicons?domain=bradesco.com.br&sz=128' },
+  { nome: 'Itaú',          cor: '#EC7000', logo: 'https://www.google.com/s2/favicons?domain=itau.com.br&sz=128' },
+  { nome: 'Caixa',         cor: '#005CA9', logo: 'https://www.google.com/s2/favicons?domain=caixa.gov.br&sz=128' },
+  { nome: 'Sicredi',       cor: '#00843D', logo: 'https://www.google.com/s2/favicons?domain=sicredi.com.br&sz=128' },
+  { nome: 'Santander',     cor: '#EC0000', logo: 'https://www.google.com/s2/favicons?domain=santander.com.br&sz=128' },
+  { nome: 'Volkswagen',    cor: '#001E50', logo: 'https://www.google.com/s2/favicons?domain=vwfs.com.br&sz=128' },
 ]
 
 const STATS = [
@@ -388,6 +390,52 @@ function DirecionamentoContent() {
                 <div className="absolute bottom-0 left-0 right-0 h-20 md:hidden" style={{ background: 'linear-gradient(180deg, transparent, #8C1109)' }} />
               </div>
             </div>
+
+            {/* ── LOGOS ADMINISTRADORAS ───────────────────── */}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.42 }}
+              className="px-6 py-10" style={{ background: '#F8F8F8', borderBottom: '1px solid #eee' }}>
+              <div className="max-w-4xl mx-auto">
+                <p className="text-xs font-bold uppercase tracking-[0.25em] text-center mb-8" style={{ color: '#999' }}>
+                  Comparamos com as principais administradoras do Brasil
+                </p>
+                <div className="flex flex-wrap justify-center items-center gap-4">
+                  {ADMINS.map((a, i) => (
+                    <motion.div key={i}
+                      initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.45 + i * 0.05 }}
+                      className="flex flex-col items-center gap-2">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center overflow-hidden shadow-md"
+                        style={{ background: a.cor }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={a.logo} alt={a.nome} className="w-10 h-10 object-contain"
+                          onError={(e) => {
+                            const el = e.currentTarget
+                            el.style.display = 'none'
+                            if (el.parentElement) {
+                              el.parentElement.innerHTML = `<span style="color:${(a as {textDark?:boolean}).textDark ? '#111' : '#fff'};font-weight:900;font-size:20px">${a.nome[0]}</span>`
+                            }
+                          }} />
+                      </div>
+                      <span className="text-xs font-semibold text-center" style={{ color: '#666', maxWidth: 64 }}>{a.nome}</span>
+                    </motion.div>
+                  ))}
+                  {/* Ademicon — destaque */}
+                  <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.95 }}
+                    className="flex flex-col items-center gap-2">
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-md relative"
+                      style={{ background: '#E52D27' }}>
+                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                        <span style={{ fontSize: 9, color: '#fff', fontWeight: 900 }}>✓</span>
+                      </div>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src="/logos/ademicon.svg" alt="Ademicon" className="w-10 h-10 object-contain"
+                        style={{ filter: 'brightness(0) invert(1)' }} />
+                    </div>
+                    <span className="text-xs font-black text-center" style={{ color: '#E52D27', maxWidth: 64 }}>Ademicon ✓</span>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
 
             {/* ── STATS ────────────────────────────────────── */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }}
