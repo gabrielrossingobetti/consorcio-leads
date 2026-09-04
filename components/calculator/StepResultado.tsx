@@ -1,19 +1,19 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { TrendingDown, TrendingUp, MessageCircle } from 'lucide-react'
+import { TrendingDown, TrendingUp, CalendarCheck } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
 import { trackEvent } from '@/lib/gtag'
 
 interface Props {
   resultado: ResultadoCalculo
   nome?: string
+  /** Avança para a escolha do horário — única saída para frente desta etapa */
   onContinuar: () => void
-  onContrato: () => void
   onBack: () => void
 }
 
-export default function StepResultado({ resultado, nome, onContinuar, onContrato, onBack }: Props) {
+export default function StepResultado({ resultado, nome, onContinuar, onBack }: Props) {
   const bemLabel = resultado.bem === 'imovel' ? 'imóvel' : resultado.bem === 'carro' ? 'veículo' : resultado.bem
 
   return (
@@ -27,9 +27,14 @@ export default function StepResultado({ resultado, nome, onContinuar, onContrato
           ✅ Simulação concluída
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-          Veja a diferença<br />
-          <span className="text-red-500">no total que você paga.</span>
+          {nome ? `${nome.split(' ')[0]}, seu ` : 'Seu '}
+          {bemLabel.toLowerCase()} sai<br />
+          <span className="text-[#1D63D8]">por menos da metade.</span>
         </h2>
+        <p className="mt-3 text-sm text-gray-500 leading-relaxed max-w-sm mx-auto">
+          O próximo passo é escolher um horário com o consultor — é ele quem calcula
+          em quanto tempo você pode ser contemplado.
+        </p>
       </motion.div>
 
       {/* Total pago lado a lado — o argumento principal */}
@@ -100,17 +105,23 @@ export default function StepResultado({ resultado, nome, onContinuar, onContrato
         transition={{ delay: 0.35 }}
         className="flex flex-col items-center gap-2"
       >
+        {/* Ação principal: escolher o horário da reunião. É onde o consultor fecha. */}
         <button
-          onClick={() => { trackEvent('contrato_click', { bem: resultado.bem, valor: resultado.valor }); onContrato() }}
-          className="w-full flex items-center justify-center gap-2.5 bg-[#25d366] hover:bg-[#1ebe5d] text-white font-black py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
+          onClick={() => { trackEvent('agendamento_clicado', { bem: resultado.bem, valor: resultado.valor }); onContinuar() }}
+          className="w-full flex items-center justify-center gap-2.5 bg-[#1D63D8] hover:bg-[#1652bb] text-white font-black py-4 rounded-xl transition-all hover:shadow-lg active:scale-95 text-base"
         >
-          <MessageCircle className="w-5 h-5" />
-          Ver minha proposta personalizada →
+          <CalendarCheck className="w-5 h-5" />
+          Escolher horário da minha reunião →
         </button>
-        <p className="text-xs text-gray-400 text-center">⭐ Gratuito · Sem compromisso · Resposta em minutos</p>
+        <p className="text-xs text-gray-500 text-center leading-relaxed">
+          20 minutos com um consultor · Ele calcula em quanto tempo você pode ser
+          contemplado e qual lance cabe no seu bolso
+        </p>
       </motion.div>
 
-      <button onClick={onBack} className="mt-3 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors">
+      {/* Sem saída alternativa aqui de propósito: neste ponto o lead já foi salvo,
+          então uma opção de menor esforço só desviaria da reunião — que converte 12x mais. */}
+      <button onClick={onBack} className="mt-5 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors">
         ← Refazer simulação
       </button>
     </div>

@@ -1,26 +1,255 @@
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Consórcio Lidera
+   Dark-first. A LP inteira vive neste sistema.
+   ══════════════════════════════════════════════════════════════ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Grounds — navy abissal, nunca preto puro */
+  --c-abyssal:    #070C18;
+  --c-deep:       #0D1525;
+  --c-lift:       #131F35;
+  --c-rule:       #1E2E48;
+  --c-rule-soft:  #16233A;
+
+  /* Acentos */
+  --c-electric:    #3D8EFF;
+  --c-electric-dk: #2B5CFF;
+  --c-electric-gl: rgba(61, 142, 255, 0.35);
+
+  /* Gold — exclusivo para números de economia */
+  --c-gold:     #C8932A;
+  --c-gold-lt:  #E8B94A;
+  --c-gold-gl:  rgba(200, 147, 42, 0.3);
+
+  /* Semânticas */
+  --c-green: #2ECC8A;
+  --c-red:   #E05C5C;
+
+  /* Texto */
+  --c-ink:       #DDE5F0;
+  --c-ink-mid:   #8BA0BC;
+  --c-ink-faint: #4A6080;
+
+  /* Tipografia */
+  --font-display: var(--font-display), 'Syne', system-ui, sans-serif;
+  --font-body:    var(--font-body), 'DM Sans', system-ui, sans-serif;
+  --font-numeric: var(--font-mono), 'JetBrains Mono', monospace;
+
+  /* Compat com o resto do app */
+  --background: var(--c-abyssal);
+  --foreground: var(--c-ink);
 }
 
 @theme inline {
+  --color-abyssal:    var(--c-abyssal);
+  --color-deep:       var(--c-deep);
+  --color-lift:       var(--c-lift);
+  --color-rule:       var(--c-rule);
+  --color-electric:   var(--c-electric);
+  --color-gold:       var(--c-gold);
+  --color-ink:        var(--c-ink);
+  --color-ink-mid:    var(--c-ink-mid);
+  --color-ink-faint:  var(--c-ink-faint);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:        var(--font-body);
+  --font-mono:        var(--font-numeric);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--c-abyssal);
+  color: var(--c-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Utilitários do sistema ─────────────────────────────────── */
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+
+/* Dados pequenos em tabela — mono garante alinhamento de coluna */
+.font-numeric { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; }
+
+/* Número herói — valor em destaque usa a fonte de marca, nunca mono.
+   Mono grande lê como painel de dev; aqui o número precisa ler como dinheiro. */
+.num-hero {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+}
+
+/* Eyebrow — label pequeno acima de títulos */
+.eyebrow {
+  font-family: var(--font-numeric);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* CTA primária — electric, com glow respirando */
+.cta-primary {
+  background: linear-gradient(135deg, var(--c-electric) 0%, var(--c-electric-dk) 100%);
+  color: #fff;
+  box-shadow: 0 4px 24px var(--c-electric-gl);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+.cta-primary:hover {
+  box-shadow: 0 8px 40px var(--c-electric-gl), 0 0 0 1px rgba(61, 142, 255, 0.4);
+  transform: translateY(-2px);
+}
+.cta-primary:active { transform: translateY(0); }
+
+@keyframes ctaBreathe {
+  0%, 100% { box-shadow: 0 4px 24px var(--c-electric-gl); }
+  50%      { box-shadow: 0 8px 44px rgba(61, 142, 255, 0.55); }
+}
+.cta-breathe { animation: ctaBreathe 3.5s ease-in-out infinite; }
+
+/* Superfícies */
+.surface {
+  background: var(--c-deep);
+  border: 1px solid var(--c-rule);
+}
+.surface-lift {
+  background: var(--c-lift);
+  border: 1px solid var(--c-rule);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ZONA CLARA — onde o cliente lê números e decide.
+   Texto escuro sobre claro elimina halation e dá acuidade máxima.
+   Escuro fica para a emoção; aqui é cognição.
+   ══════════════════════════════════════════════════════════════ */
+.zona-clara {
+  --c-ink:       #101B2D;
+  --c-ink-mid:   #4A5B72;
+  --c-ink-faint: #7B8CA3;
+  --c-rule:      #DFE5EC;
+  --c-deep:      #FFFFFF;
+  --c-lift:      #F4F7FB;
+  --c-gold:      #9A6E12;
+  --c-gold-lt:   #7D5A0E;
+  --c-electric:  #1D63D8;
+  --c-red:       #C23B3B;
+  --c-green:     #12855A;
+
+  background: #FBFCFE;
+  color: var(--c-ink);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CINEMA — movimento lento que dá vida à imagem parada.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Ken Burns: a câmera atravessa o ambiente devagar */
+@keyframes kenBurns {
+  0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+  50%  { transform: scale(1.16) translate3d(-1.5%, -1.2%, 0); }
+  100% { transform: scale(1.06) translate3d(0, 0, 0); }
+}
+.ken-burns { animation: kenBurns 26s ease-in-out infinite; will-change: transform; }
+
+/* Brilho que percorre a borda — sensação de interface viva */
+@keyframes varredura {
+  0%   { opacity: 0;   transform: translateX(-100%); }
+  50%  { opacity: 0.5; }
+  100% { opacity: 0;   transform: translateX(100%); }
+}
+.varredura::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+  animation: varredura 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Grade de fundo — textura tecnológica discreta */
+.grade-tec {
+  background-image:
+    linear-gradient(rgba(61,142,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61,142,255,0.05) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ken-burns { animation: none; transform: scale(1.04); }
+  .varredura::after { animation: none; opacity: 0; }
+}
+
+/* Foco visível — acessibilidade */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--c-electric);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Scrollbar dark */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--c-abyssal); }
+::-webkit-scrollbar-thumb {
+  background: var(--c-rule);
+  border-radius: 5px;
+  border: 2px solid var(--c-abyssal);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--c-ink-faint); }
+
+/* Esconde scrollbar em carrosséis horizontais */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Range slider — estilizado para o simulador */
+input[type="range"].slider-gold {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"].slider-gold::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--c-rule);
+}
+input[type="range"].slider-gold::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--c-rule);
+}
+input[type="range"].slider-gold::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--c-electric);
+  border: 3px solid var(--c-abyssal);
+  box-shadow: 0 0 0 1px var(--c-electric), 0 2px 12px var(--c-electric-gl);
+  transition: transform 0.15s ease;
+}
+input[type="range"].slider-gold::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c-electric);
+  border: 3px solid var(--c-abyssal);
+  box-shadow: 0 0 0 1px var(--c-electric), 0 2px 12px var(--c-electric-gl);
+}
+input[type="range"].slider-gold:active::-webkit-slider-thumb { transform: scale(1.15); }
+
+/* Respeita preferência de movimento reduzido */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

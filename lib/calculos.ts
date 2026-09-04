@@ -12,19 +12,19 @@ interface ConfigBem {
 export const CONFIG_BENS: Record<BemType, ConfigBem> = {
   imovel: {
     label: 'Imóvel',
-    taxaFinanciamentoMensal: 1.0,      // 1% ao mês (taxa real CEF/bancos)
+    taxaFinanciamentoMensal: 1.1,      // 1,1% a.m. — taxa nominal + MIP/DFI + taxa adm. (≈R$1.100 a cada R$100k)
     prazoFinanciamentoMeses: 360,      // 30 anos
     taxaAdminConsorcio: 24,            // 24% total Ademicon
     prazoConsorcioMeses: 225,          // ~18 anos
-    taxaParcelaCheia: 0.00337,         // R$337 a cada R$100k (parcela até a contemplação)
+    taxaParcelaCheia: 0.0056,          // PARCELA CHEIA: R$560 a cada R$100k (taxa real Ademicon)
   },
   carro: {
     label: 'Veículo',
-    taxaFinanciamentoMensal: 1.5,      // ~1,5% ao mês (média banco/financeira)
+    taxaFinanciamentoMensal: 2.0,      // 2% a.m. — taxa real praticada em financiamento de veículo
     prazoFinanciamentoMeses: 60,       // 5 anos
     taxaAdminConsorcio: 16,            // 16% total Ademicon
     prazoConsorcioMeses: 90,           // 7,5 anos
-    taxaParcelaCheia: 0.0131,          // R$1.310 a cada R$100k (taxa real Ademicon)
+    taxaParcelaCheia: 0.0129,          // PARCELA CHEIA: R$1.290 a cada R$100k (taxa real Ademicon)
   },
   negocio: {
     label: 'Negócio/Empresa',
@@ -93,12 +93,14 @@ export function calcular(bem: BemType, valor: number): ResultadoCalculo {
 
   // Consórcio Ademicon
   const taxaAdminTotal = valor * (taxaAdminConsorcio / 100)
-  const totalConsorcio = valor + taxaAdminTotal
-  // Parcela cheia (até contemplação): usa taxa real Ademicon se disponível
+  // Parcela CHEIA — é esta que a LP exibe. A reduzida fica como margem de negociação na reunião.
   const parcelaConsorcio = taxaParcelaCheia
     ? valor * taxaParcelaCheia
-    : totalConsorcio / prazoConsorcioMeses
-  // Parcela reduzida pós-contemplação — uso interno, não exibida
+    : (valor + taxaAdminTotal) / prazoConsorcioMeses
+  // Total contratual = crédito + taxa administrativa (24% imóvel / 16% veículo).
+  // É este o número que bate com o contrato e com o que o consultor apresenta.
+  const totalConsorcio = valor + taxaAdminTotal
+  // Parcela reduzida — uso interno do consultor, NUNCA exibida na landing page
   const TAXA_REDUZIDA: Partial<Record<BemType, number>> = { imovel: 0.00337, carro: 0.0073 }
   const parcelaReduzida = valor * (TAXA_REDUZIDA[bem] ?? parcelaConsorcio / valor)
 

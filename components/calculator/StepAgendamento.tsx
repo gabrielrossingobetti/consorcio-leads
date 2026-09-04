@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Clock, CheckCircle, ChevronLeft, Loader2, MessageCircle } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
+import { registrarReuniaoAgendada } from '@/lib/gtag'
 
 interface Props {
   resultado: ResultadoCalculo
   nome: string
   whatsapp: string
   onBack: () => void
-  onSuccess: () => void
+  /** Recebe o horário confirmado (ISO) para a página de confirmação exibir */
+  onSuccess: (slotIso: string) => void
 }
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -103,13 +105,12 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         body: JSON.stringify({ nome, whatsapp, bem: resultado.bem, valor: resultado.valor, slotIso: selectedSlot }),
       })
       if (res.ok) {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-          ;(window as any).gtag('event', 'meeting_scheduled', { bem: resultado.bem, valor: resultado.valor })
-          ;(window as any).gtag('event', 'reuniao_confirmada', { bem: resultado.bem, valor: resultado.valor })
-        }
+        // Único ponto do funil que envia conversão ao Google Ads.
+        // A reunião está na agenda: é este o lead que vale a pena o algoritmo buscar.
+        registrarReuniaoAgendada({ bem: resultado.bem, valor: resultado.valor })
         logFunil('reuniao_confirmada', ctx)
         setStep('sucesso')
-        setTimeout(onSuccess, 4000)
+        setTimeout(() => onSuccess(selectedSlot), 2200)
       }
     } catch { }
     finally { setSubmitting(false) }

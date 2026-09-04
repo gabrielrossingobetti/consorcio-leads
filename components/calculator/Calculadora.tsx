@@ -30,13 +30,23 @@ function getUTMs() {
 const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'contato', 'resultado', 'agendamento']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'contato', 'resultado_investidor']
 
-export default function Calculadora({ onClose }: { onClose?: () => void } = {}) {
+interface CalculadoraProps {
+  onClose?: () => void
+  /** Bem já escolhido no simulador inline — pula a etapa de seleção */
+  bemInicial?: BemType | null
+  /** Valor já definido no simulador inline — pula a etapa de valor */
+  valorInicial?: number | null
+}
+
+export default function Calculadora({ onClose, bemInicial, valorInicial }: CalculadoraProps = {}) {
   const router = useRouter()
-  const [step, setStep] = useState<Step>('bem')
-  const [bem, setBem] = useState<BemType | null>(null)
+  // Quando o lead já simulou inline, entra direto no perfil — não repete o que já respondeu
+  const temPreSelecao = Boolean(bemInicial && valorInicial)
+  const [step, setStep] = useState<Step>(temPreSelecao ? 'perfil' : 'bem')
+  const [bem, setBem] = useState<BemType | null>(bemInicial ?? null)
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
-  const [valor, setValor] = useState<number | null>(null)
+  const [valor, setValor] = useState<number | null>(valorInicial ?? null)
   const [jaTentouFinanciar, setJaTentouFinanciar] = useState('')
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null)
   const [resultadoInvestidor, setResultadoInvestidor] = useState<ResultadoInvestidor | null>(null)
@@ -45,7 +55,9 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
   const [leadId, setLeadId] = useState<string | null>(null)
   const [direction, setDirection] = useState(1)
 
-  const STEPS = bem === 'investidor' ? STEPS_INVESTIDOR : STEPS_NORMAL
+  // Com pré-seleção, as etapas 'bem' e 'valor' não existem no fluxo
+  const STEPS_BASE = bem === 'investidor' ? STEPS_INVESTIDOR : STEPS_NORMAL
+  const STEPS = temPreSelecao ? STEPS_BASE.filter((s) => s !== 'bem' && s !== 'valor') : STEPS_BASE
   const stepIndex = STEPS.indexOf(step)
   const progress = ((stepIndex + 1) / STEPS.length) * 100
 
@@ -70,7 +82,10 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
       const data = await res.json()
       if (data.id) {
         setLeadId(data.id)
-        trackEvent('generate_lead', { bem: b })
+        // Registro de funil, não conversão. O nome é custom de propósito:
+        // 'generate_lead' é evento recomendado do GA4 e o Ads o importa
+        // sozinho como conversão — era isso que treinava o lance no passo errado.
+        trackEvent('contato_preenchido', { bem: b })
         trackEvent('simulacao_contato_enviado', { bem: b })
         return data.id
       }
@@ -107,13 +122,14 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
     }
   }
 
-  function redirectObrigado(r: ResultadoCalculo) {
+  /** Reunião marcada: a página seguinte só confirma e reduz no-show — não vende mais nada. */
+  function redirectConfirmacao(r: ResultadoCalculo, slotIso: string) {
     router.push(
-      `/direcionamento?nome=${encodeURIComponent(nome)}` +
+      `/reuniao-confirmada?nome=${encodeURIComponent(nome)}` +
       `&produto=${bem}` +
       `&credito=${r.valor}` +
       `&parcela=${r.parcelaConsorcio}` +
-      `&whatsapp=${encodeURIComponent(whatsapp)}`
+      `&slot=${encodeURIComponent(slotIso)}`
     )
   }
 
@@ -205,7 +221,8 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                   setResultado(calc)
                   goNext('contato')
                 }}
-                onBack={() => goBack('valor')}
+                // Com pré-seleção não há etapa anterior: voltar fecha e devolve ao simulador da página
+                onBack={temPreSelecao ? () => onClose?.() : () => goBack('valor')}
               />
             )}
 
@@ -237,8 +254,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
               <StepResultado
                 resultado={resultado}
                 nome={nome}
-                onContrato={() => redirectObrigado(resultado)}
-                onContinuar={() => { trackEvent('agendamento_clicado', { bem: resultado.bem, valor: resultado.valor }); goNext('agendamento') }}
+                onContinuar={() => goNext('agendamento')}
                 onBack={() => goBack('contato')}
               />
             )}
@@ -249,7 +265,7 @@ export default function Calculadora({ onClose }: { onClose?: () => void } = {}) 
                 nome={nome}
                 whatsapp={whatsapp}
                 onBack={() => goBack('resultado')}
-                onSuccess={() => redirectObrigado(resultado)}
+                onSuccess={(slotIso) => redirectConfirmacao(resultado, slotIso)}
               />
             )}
           </motion.div>
