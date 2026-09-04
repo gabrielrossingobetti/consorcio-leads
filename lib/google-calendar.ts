@@ -24,11 +24,11 @@ const BRT_OFFSET_HOURS = 3
  * verdadeira — são os horários em que realmente há atendimento — mas o efeito
  * é uma agenda que parece concorrida, porque de fato tem poucas vagas.
  *
- * 9h e 19h ficam sempre abertos: são as pontas que atendem quem trabalha.
- * Os do meio variam por dia para a agenda não parecer um carimbo.
+ * Três horários ficam sempre abertos porque são as janelas de quem trabalha:
+ * antes do expediente (9h), almoço (12h) e depois do expediente (19h).
+ * Os demais variam por dia para a agenda não parecer um carimbo.
  */
-const HORA_ABERTURA = 9   // sempre disponível — antes do expediente
-const HORA_FECHAMENTO = 19 // sempre disponível — depois do expediente
+const HORAS_FIXAS = [9, 12, 19]
 const HORAS_INTERMEDIARIAS = [10, 11, 14, 15, 16, 17, 18]
 const QUANTAS_INTERMEDIARIAS = 3
 
@@ -53,7 +53,7 @@ function horasDoDia(date: Date): number[] {
     escolhidas.push(disponiveis.splice(s % disponiveis.length, 1)[0])
   }
 
-  return [HORA_ABERTURA, ...escolhidas, HORA_FECHAMENTO].sort((a, b) => a - b)
+  return [...HORAS_FIXAS, ...escolhidas].sort((a, b) => a - b)
 }
 
 /** Domingo não tem atendimento. */
