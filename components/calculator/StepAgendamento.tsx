@@ -18,6 +18,7 @@ interface Props {
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
 const MESES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez']
 
+/** Próximos 14 dias, pulando domingo — não há atendimento. */
 function getNext14Days(): Date[] {
   const days: Date[] = []
   const today = new Date()
@@ -25,6 +26,7 @@ function getNext14Days(): Date[] {
   for (let i = 0; i < 14; i++) {
     const d = new Date(today)
     d.setDate(today.getDate() + i)
+    if (d.getDay() === 0) continue
     days.push(d)
   }
   return days
@@ -36,24 +38,9 @@ function formatSlot(iso: string) {
   return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: 'America/Sao_Paulo' })
 }
 
-function getAllSlots(date: Date): string[] {
-  const slots: string[] = []
-  for (let m = 9 * 60 + 30; m < 19 * 60; m += 30) {
-    const d = new Date(date)
-    d.setUTCHours(Math.floor(m / 60) + 3, m % 60, 0, 0)
-    slots.push(d.toISOString())
-  }
-  return slots
-}
-
-function getBlockedSlots(date: Date, allSlots: string[]): Set<string> {
-  const seed = date.getDate() + date.getMonth() * 31
-  const blocked = new Set<string>()
-  allSlots.forEach((slot, i) => {
-    if ((seed * 31 + i * 17) % 100 < 35) blocked.add(slot)
-  })
-  return blocked
-}
+// A grade de horários vem inteiramente da API, que já devolve só os slots
+// realmente atendidos naquele dia e ainda livres na agenda do consultor.
+// Não há bloqueio artificial: o que aparece ocupado está ocupado de verdade.
 
 function logFunil(evento: string, extra: Record<string, unknown> = {}) {
   fetch('/api/funil', {
@@ -349,9 +336,6 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
 
   // ─── HORA ─────────────────────────────────────────────────────────────────
   if (step === 'hora') {
-    const allDaySlots = selectedDay ? getAllSlots(selectedDay) : []
-    const blockedSlots = selectedDay ? getBlockedSlots(selectedDay, allDaySlots) : new Set<string>()
-
     return (
       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full">
         <button onClick={() => setStep('dia')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
@@ -362,7 +346,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
           <h2 className="text-xl font-bold text-gray-900">
             {selectedDay && `${DIAS_SEMANA[selectedDay.getDay()]}, ${selectedDay.getDate()} de ${MESES[selectedDay.getMonth()]}`}
           </h2>
-          <p className="text-gray-500 text-sm">Horários disponíveis</p>
+          <p className="text-gray-500 text-sm">Horários livres</p>
         </div>
 
         {loadingSlots ? (
@@ -372,22 +356,14 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         ) : (
           <>
             <div className="grid grid-cols-3 gap-2">
-              {allDaySlots.map((slot, i) => {
-                const available = slots.includes(slot) && !blockedSlots.has(slot)
-                return available ? (
-                  <button key={i} onClick={() => { setSelectedSlot(slot); setStep('confirmar') }}
-                    className="py-3 px-2 rounded-xl border-2 border-gray-200 text-center font-bold text-gray-800 hover:border-blue-500 hover:bg-blue-50 transition-all">
-                    {formatSlot(slot)}
-                  </button>
-                ) : (
-                  <div key={i} className="py-3 px-2 rounded-xl border-2 border-red-100 bg-red-50 text-center cursor-not-allowed">
-                    <div className="font-bold text-red-300 text-sm">{formatSlot(slot)}</div>
-                    <div className="text-xs text-red-200 mt-0.5">Ocupado</div>
-                  </div>
-                )
-              })}
+              {slots.map((slot, i) => (
+                <button key={i} onClick={() => { setSelectedSlot(slot); setStep('confirmar') }}
+                  className="py-3 px-2 rounded-xl border-2 border-gray-200 text-center font-bold text-gray-800 hover:border-blue-500 hover:bg-blue-50 transition-all">
+                  {formatSlot(slot)}
+                </button>
+              ))}
             </div>
-            {allDaySlots.length === 0 && (
+            {slots.length === 0 && (
               <div className="text-center py-8 text-gray-400">
                 <p>Sem horários neste dia.</p>
                 <button onClick={() => setStep('dia')} className="mt-3 text-blue-500 text-sm font-medium">Escolher outro dia</button>
