@@ -374,7 +374,7 @@ function DirecionamentoContent() {
                       Agendar minha reunião gratuita
                     </a>
                     <p className="text-white/50 text-xs text-center">
-                      20 minutos · O consultor calcula sua estratégia de lance
+                      15 minutos por vídeo · O consultor calcula sua estratégia de lance
                     </p>
                     {/* WhatsApp fica como saída secundária, para quem não quer agendar agora */}
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"

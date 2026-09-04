@@ -73,7 +73,7 @@ function Conteudo() {
     ? linkGoogleAgenda(
         quando.date,
         'Reunião — Consórcio Lidera',
-        `Reunião de 20 minutos sobre consórcio de ${bemLabel}${credito ? ` de ${formatCurrency(credito)}` : ''}.`
+        `Chamada de vídeo pelo WhatsApp, 15 minutos, sobre consórcio de ${bemLabel}${credito ? ` de ${formatCurrency(credito)}` : ''}.`
       )
     : null
 
@@ -114,7 +114,7 @@ function Conteudo() {
               </p>
               <p className="mt-4 flex items-center gap-2 text-[13.5px] text-[var(--c-ink-mid)]">
                 <Clock className="h-4 w-4 shrink-0" />
-                Duração de 20 minutos, online
+                Chamada de vídeo pelo WhatsApp · 15 minutos
               </p>
 
               {agendaUrl && (
@@ -170,8 +170,8 @@ function Conteudo() {
                 },
                 {
                   Icon: Clock,
-                  titulo: 'Na reunião, 20 minutos diretos',
-                  desc: 'Você descobre em quantos meses pode ser contemplado, qual lance cabe no que você tem hoje e quanto a parcela ainda pode baixar.',
+                  titulo: 'Na chamada, 15 minutos diretos',
+                  desc: `O consultor apresenta os valores e como funciona o consórcio na administradora, analisa o seu cenário e mostra o melhor lance para o seu caso, com uma estimativa de quanto tempo levaria até a contemplação do seu ${bemLabel}.`,
                 },
               ].map(({ Icon, titulo, desc }) => (
                 <div key={titulo} className="flex gap-4">

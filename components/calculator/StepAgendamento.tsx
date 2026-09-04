@@ -161,12 +161,13 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
-              <span className="font-bold text-lg">Agendar conversa grátis</span>
+              <span className="font-bold text-lg">Falar com um especialista</span>
             </div>
             <span className="text-xs bg-white/20 px-2 py-1 rounded-full font-semibold">Recomendado</span>
           </div>
           <p className="text-blue-100 text-sm leading-relaxed mb-3">
-            10 minutos pelo WhatsApp. Tiro todas as suas dúvidas e apresento a proposta personalizada.
+            Chamada de vídeo de 15 minutos pelo WhatsApp. Analiso o seu perfil, monto a melhor
+            estratégia de lance e mostro em quanto tempo dá para conquistar seu {bemLabel.toLowerCase()}.
           </p>
           <div className="flex items-center gap-4 text-xs text-blue-200">
             <span className="flex items-center gap-1">✓ Sem compromisso</span>
@@ -318,7 +319,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         <div className="text-center mb-5">
           <Calendar className="w-8 h-8 text-blue-500 mx-auto mb-2" />
           <h2 className="text-xl font-bold text-gray-900">Escolha o melhor dia</h2>
-          <p className="text-gray-500 text-sm">Bate-papo de 10 minutos · Seg a Dom · 9h30 às 19h</p>
+          <p className="text-gray-500 text-sm">Chamada de vídeo de 15 min · Seg a Sáb</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {days.map((day, i) => (

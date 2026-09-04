@@ -114,7 +114,7 @@ export default function StepResultado({ resultado, nome, onContinuar, onBack }: 
           Escolher horário da minha reunião →
         </button>
         <p className="text-xs text-gray-500 text-center leading-relaxed">
-          20 minutos com um consultor · Ele calcula em quanto tempo você pode ser
+          Chamada de vídeo de 15 min · O consultor calcula em quanto tempo você pode ser
           contemplado e qual lance cabe no seu bolso
         </p>
       </motion.div>

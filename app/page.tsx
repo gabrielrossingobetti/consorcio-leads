@@ -699,7 +699,7 @@ export default function LandingPage() {
                       Agendar minha reunião gratuita
                     </button>
                     <p className="mt-3 text-center text-[12px] text-[var(--c-ink-faint)] lg:text-right">
-                      20 minutos · Sem compromisso · Você decide depois
+                      Chamada de vídeo de 15 min · Sem compromisso
                     </p>
                   </div>
                 </div>
@@ -887,8 +887,8 @@ export default function LandingPage() {
               <span className="text-[var(--c-gold-lt)]">um centavo de juros.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-md text-[15px] leading-relaxed text-white/70 md:text-base">
-              Em 20 minutos o consultor calcula sua estratégia de lance e mostra em quanto tempo você
-              pode ser contemplado. Sem pressão, sem compromisso.
+              Numa chamada de vídeo de 15 minutos o consultor calcula sua estratégia de lance e mostra
+              em quanto tempo você pode ser contemplado. Sem pressão, sem compromisso.
             </p>
             <div className="mt-10">
               <button
@@ -926,7 +926,7 @@ export default function LandingPage() {
             </div>
             <div className="text-[12.5px] text-white/40">
               <p className="eyebrow mb-3 text-white/55">Atendimento</p>
-              <p>Reunião online de 20 minutos</p>
+              <p>Chamada de vídeo de 15 minutos</p>
               <p className="mt-1">Resposta em até 2 horas úteis</p>
               <button onClick={() => abrirAgendamento('footer')} className="mt-4 font-semibold text-[var(--c-electric)] hover:underline">
                 Agendar reunião →
