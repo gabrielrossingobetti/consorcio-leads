@@ -40,3 +40,31 @@ export function registrarReuniaoAgendada(params?: {
     currency: 'BRL',
   })
 }
+
+/**
+ * A SEGUNDA conversão que vai para o Google Ads.
+ *
+ * Dispara quando a pessoa abre a conversa no WhatsApp já com a simulação
+ * feita — não é um clique qualquer no botão flutuante, é a saída do bloco
+ * de contemplação, depois de ela ter visto a parcela e o comparativo.
+ *
+ * Existe porque o público de carta contemplada teme golpe: falar com um
+ * humano na hora é o que destrava a desconfiança. Contar só reunião marcada
+ * ensinaria o Smart Bidding a desprezar metade dos leads bons.
+ *
+ * Nome custom de propósito. Nenhum evento recomendado do GA4 aqui — foi
+ * 'generate_lead' importado sozinho que treinou o lance no passo errado.
+ */
+export function registrarWhatsappIniciado(params?: {
+  bem?: string
+  valor?: number
+  porta?: string
+}) {
+  if (typeof window === 'undefined' || !window.gtag) return
+
+  window.gtag('event', 'whatsapp_qualificado', {
+    ...params,
+    value: params?.valor ?? 0,
+    currency: 'BRL',
+  })
+}

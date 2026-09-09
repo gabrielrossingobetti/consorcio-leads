@@ -72,8 +72,8 @@ function Conteudo() {
   const agendaUrl = quando
     ? linkGoogleAgenda(
         quando.date,
-        'Reunião — Consórcio Lidera',
-        `Chamada de vídeo pelo WhatsApp, 15 minutos, sobre consórcio de ${bemLabel}${credito ? ` de ${formatCurrency(credito)}` : ''}.`
+        'Consultoria de lance — Consórcio Lidera',
+        `Chamada de vídeo pelo WhatsApp, 15 minutos. Análise da estratégia de lance para consórcio de ${bemLabel}${credito ? ` de ${formatCurrency(credito)}` : ''}.`
       )
     : null
 
@@ -97,7 +97,7 @@ function Conteudo() {
           transition={{ duration: 0.5, delay: 0.12 }}
         >
           <h1 className="font-display mt-6 text-[2rem] font-extrabold leading-[1.1] text-[var(--c-ink)] md:text-[2.6rem]">
-            {primeiroNome ? `${primeiroNome}, sua reunião` : 'Sua reunião'}
+            {primeiroNome ? `${primeiroNome}, sua consultoria` : 'Sua consultoria'}
             <br />
             está confirmada.
           </h1>
@@ -159,19 +159,19 @@ function Conteudo() {
             <div className="mt-5 flex flex-col gap-5">
               {[
                 {
-                  Icon: UserCheck,
-                  titulo: 'Você recebe uma confirmação',
-                  desc: 'A secretária do consultor entra em contato antes da reunião para confirmar que está tudo certo com o seu horário.',
+                  Icon: FileText,
+                  titulo: 'O especialista já começou a sua análise',
+                  desc: `Ele parte da simulação que você fez e monta a estratégia de lance para o seu ${bemLabel} antes de falar com você.`,
                 },
                 {
-                  Icon: FileText,
-                  titulo: 'O consultor prepara o seu caso',
-                  desc: `Ele analisa a simulação que você fez e monta a estratégia de lance para o seu ${bemLabel} antes de falar com você.`,
+                  Icon: UserCheck,
+                  titulo: 'Você recebe uma confirmação',
+                  desc: 'A secretária entra em contato antes do horário para confirmar que está tudo certo com você.',
                 },
                 {
                   Icon: Clock,
-                  titulo: 'Na chamada, 15 minutos diretos',
-                  desc: `O consultor apresenta os valores e como funciona o consórcio na administradora, analisa o seu cenário e mostra o melhor lance para o seu caso, com uma estimativa de quanto tempo levaria até a contemplação do seu ${bemLabel}.`,
+                  titulo: 'Na chamada, 15 minutos de consultoria',
+                  desc: `Ele apresenta a análise: quanto de lance faz sentido para o seu capital, em quanto tempo dá para ser contemplado e como funciona o consórcio na administradora. Sem compromisso de contratar nada.`,
                 },
               ].map(({ Icon, titulo, desc }) => (
                 <div key={titulo} className="flex gap-4">

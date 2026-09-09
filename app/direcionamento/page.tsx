@@ -371,10 +371,10 @@ function DirecionamentoContent() {
                     <a href={agendarUrl}
                       className="flex items-center justify-center gap-3 py-4 px-6 rounded-2xl font-black text-base transition-all active:scale-[0.98]"
                       style={{ background: '#fff', color: '#C1272D', boxShadow: '0 8px 32px rgba(0,0,0,0.25)' }}>
-                      Agendar minha reunião gratuita
+                      Receber consultoria gratuita
                     </a>
                     <p className="text-white/50 text-xs text-center">
-                      15 minutos por vídeo · O consultor calcula sua estratégia de lance
+                      O especialista calcula sua estratégia de lance · Vídeo de 15 min · Sem custo
                     </p>
                     {/* WhatsApp fica como saída secundária, para quem não quer agendar agora */}
                     <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
