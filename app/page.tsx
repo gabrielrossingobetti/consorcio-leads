@@ -107,7 +107,7 @@ const FAQ = [
   },
   {
     q: 'E se eu quiser sair depois de entrar?',
-    a: 'Você pode desistir a qualquer momento. O valor pago é devolvido conforme as regras do contrato e do grupo — normalmente após o encerramento do grupo ou por sorteio de desistentes. Explicamos exatamente como funciona na reunião, sem letra miúda.',
+    a: 'Você pode desistir a qualquer momento. O valor pago é devolvido conforme as regras do contrato e do grupo — normalmente após o encerramento do grupo ou por sorteio de desistentes. O especialista explica exatamente como funciona na consultoria, sem letra miúda.',
   },
   {
     q: 'É seguro? Tem regulação oficial?',
@@ -181,6 +181,7 @@ export default function LandingPage() {
   const [valorSim, setValorSim] = useState(400_000)
   const [modalAberto, setModalAberto] = useState(false)
   const [porta, setPorta] = useState<PortaId>('sonho')
+  const [pulaEscolha, setPulaEscolha] = useState(false)
   const [faqAberta, setFaqAberta] = useState<number | null>(0)
 
   const produto = PRODUTOS[produtoIdx]
@@ -210,6 +211,10 @@ export default function LandingPage() {
   }
 
   function abrirAgendamento(origem: string) {
+    // Quem clica no bloco de contemplação já viu WhatsApp e consultoria lado a
+    // lado — repetir a escolha seria redundante. Nos outros CTAs a única opção
+    // visível é a consultoria, então o modal abre deixando os dois caminhos.
+    setPulaEscolha(origem === 'bloco-contemplacao')
     trackEvent('agendamento_aberto', {
       origem,
       produto: produto.id,
@@ -455,7 +460,7 @@ export default function LandingPage() {
                 <p className="eyebrow relative mb-6 text-[var(--c-gold-lt)]">Consórcio · parcela cheia</p>
                 <div className="relative flex flex-col gap-5">
                   <div>
-                    <p className="text-[12.5px] text-white/40">Imóvel · 225 meses</p>
+                    <p className="text-[12.5px] text-white/40">Imóvel · 220 meses</p>
                     <p className="num-hero mt-1 text-[2.4rem] leading-none text-[var(--c-gold-lt)] md:text-[2.9rem]">
                       R$ 560<span className="text-base font-normal text-white/35">/mês</span>
                     </p>
@@ -641,7 +646,7 @@ export default function LandingPage() {
                 <div className="p-7 md:p-9">
                   <p className="eyebrow mb-5 text-[var(--c-gold)]">No consórcio</p>
                   <p className="text-[12.5px] text-[var(--c-ink-faint)]">Parcela mensal</p>
-                  <p className="num-hero mt-1 text-[2.5rem] leading-none text-[var(--c-gold-lt)] md:text-[3rem]">
+                  <p className="num-hero mt-1 text-[2.5rem] leading-none text-[var(--c-green)] md:text-[3rem]">
                     {formatCurrency(resultado.parcelaConsorcio)}
                   </p>
                   <div className="mt-6 flex flex-col gap-2.5 text-[13.5px]">
@@ -671,7 +676,7 @@ export default function LandingPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.25 }}
-                    className="num-hero text-[3.2rem] leading-none text-[var(--c-gold)] md:text-[4.2rem]"
+                    className="num-hero text-[3.2rem] leading-none text-[var(--c-green)] md:text-[4.2rem]"
                   >
                     {formatCurrency(resultado.economiaMensal)}
                   </motion.p>
@@ -679,12 +684,12 @@ export default function LandingPage() {
                 <p className="mt-3 max-w-lg text-[14px] leading-relaxed text-[var(--c-ink-mid)]">
                   Todo mês, comparado à parcela do financiamento do mesmo {produto.label.toLowerCase()}. Ao
                   longo de todo o contrato, são{' '}
-                  <strong className="font-numeric text-[var(--c-gold-lt)]">{formatCurrency(resultado.economiaTotal)}</strong>{' '}
+                  <strong className="font-numeric text-[var(--c-green)]">{formatCurrency(resultado.economiaTotal)}</strong>{' '}
                   que ficariam com o banco.
                 </p>
               </div>
 
-              {/* O que só a reunião responde */}
+              {/* O que só a consultoria responde */}
               <div className="border-t-2 border-[var(--c-rule)] bg-white p-7 md:p-9">
                 <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-md">
@@ -808,7 +813,7 @@ export default function LandingPage() {
                     <p className="mt-3 text-[12.5px] text-[var(--c-ink-mid)]">{d.bem}</p>
                     <p className="text-[12.5px] text-[var(--c-ink-faint)]">{d.tempo}</p>
                     <p className="mt-3 text-[12px] text-[var(--c-ink-faint)]">Economia vs financiamento</p>
-                    <CountUp to={d.economia} className="num-hero text-[1.5rem] text-[var(--c-gold)]" />
+                    <CountUp to={d.economia} className="num-hero text-[1.5rem] text-[var(--c-green)]" />
                   </div>
                 </div>
               </Reveal>
@@ -1020,13 +1025,18 @@ export default function LandingPage() {
                     </p>
                     <p className="truncate text-[14px] font-bold text-gray-900">
                       {produto.label} de {formatCurrency(valorSim)} ·{' '}
-                      <span className="text-[#9A6E12]">{formatCurrency(resultado.parcelaConsorcio)}/mês</span>
+                      <span className="text-[var(--c-green,#12855A)]">{formatCurrency(resultado.parcelaConsorcio)}/mês</span>
                     </p>
                   </div>
                 </div>
 
                 <div className="p-6 md:p-8">
-                  <Calculadora bemInicial={produto.id} valorInicial={valorSim} onClose={() => setModalAberto(false)} />
+                  <Calculadora
+                    bemInicial={produto.id}
+                    valorInicial={valorSim}
+                    pulaEscolha={pulaEscolha}
+                    onClose={() => setModalAberto(false)}
+                  />
                 </div>
               </div>
             </motion.div>

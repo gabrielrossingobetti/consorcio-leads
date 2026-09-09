@@ -339,7 +339,7 @@ export default function StepAgendamento({
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           placeholder="Como podemos te chamar?"
-          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-4 outline-none transition-colors"
+          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-4 outline-none transition-colors text-gray-900 placeholder:text-gray-400"
         />
 
         <label className="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp</label>
@@ -348,7 +348,7 @@ export default function StepAgendamento({
           onChange={(e) => setWhatsapp(e.target.value)}
           inputMode="tel"
           placeholder="(00) 00000-0000"
-          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-5 outline-none transition-colors"
+          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-5 outline-none transition-colors text-gray-900 placeholder:text-gray-400"
         />
 
         <button
@@ -392,7 +392,7 @@ export default function StepAgendamento({
           value={nome}
           onChange={(e) => setNome(e.target.value)}
           placeholder="Como podemos te chamar?"
-          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-4 outline-none transition-colors"
+          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-4 outline-none transition-colors text-gray-900 placeholder:text-gray-400"
         />
 
         <label className="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp</label>
@@ -401,7 +401,7 @@ export default function StepAgendamento({
           onChange={(e) => setWhatsapp(e.target.value)}
           inputMode="tel"
           placeholder="(00) 00000-0000"
-          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-5 outline-none transition-colors"
+          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-5 outline-none transition-colors text-gray-900 placeholder:text-gray-400"
         />
 
         <button

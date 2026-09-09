@@ -15,7 +15,7 @@ export const CONFIG_BENS: Record<BemType, ConfigBem> = {
     taxaFinanciamentoMensal: 1.1,      // 1,1% a.m. — taxa nominal + MIP/DFI + taxa adm. (≈R$1.100 a cada R$100k)
     prazoFinanciamentoMeses: 360,      // 30 anos
     taxaAdminConsorcio: 24,            // 24% total Ademicon
-    prazoConsorcioMeses: 225,          // ~18 anos
+    prazoConsorcioMeses: 220,          // prazo real Ademicon imóvel
     taxaParcelaCheia: 0.0056,          // PARCELA CHEIA: R$560 a cada R$100k (taxa real Ademicon)
   },
   carro: {

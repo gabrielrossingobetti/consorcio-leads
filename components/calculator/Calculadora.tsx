@@ -26,9 +26,11 @@ interface CalculadoraProps {
   bemInicial?: BemType | null
   /** Valor já definido no simulador inline — pula a etapa de valor */
   valorInicial?: number | null
+  /** True quando o CTA de origem já mostrava WhatsApp e consultoria lado a lado */
+  pulaEscolha?: boolean
 }
 
-export default function Calculadora({ onClose, bemInicial, valorInicial }: CalculadoraProps = {}) {
+export default function Calculadora({ onClose, bemInicial, valorInicial, pulaEscolha = false }: CalculadoraProps = {}) {
   const router = useRouter()
   // Quando o lead já simulou inline, entra direto no perfil — não repete o que já respondeu
   const temPreSelecao = Boolean(bemInicial && valorInicial)
@@ -161,8 +163,9 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Progress */}
-      <div className="mb-8">
+      {/* Progresso só quando há mais de um passo — "Etapa 1 de 1 · 100%" com a
+          barra cheia não informa nada e ainda dá impressão de fim de fluxo. */}
+      <div className={STEPS.length > 1 ? 'mb-8' : 'hidden'}>
         <div className="flex justify-between items-center mb-2">
           <span className="text-xs text-gray-400 font-medium">Etapa {stepIndex + 1} de {STEPS.length}</span>
           <span className="text-xs text-red-600 font-bold">{Math.round(progress)}%</span>
@@ -276,7 +279,7 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
                 whatsapp={whatsapp || undefined}
                 // Quem veio da página já escolheu falar: abre direto no calendário,
                 // sem a tela de opções que competia com o agendamento.
-                inicio={temPreSelecao ? 'dia' : 'escolha'}
+                inicio={temPreSelecao && pulaEscolha ? 'dia' : 'escolha'}
                 onBack={temPreSelecao ? () => onClose?.() : () => goBack('resultado')}
                 onSuccess={(slotIso, contato) => {
                   setNome(contato.nome)
