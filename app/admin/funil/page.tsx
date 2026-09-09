@@ -50,17 +50,25 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d atrás`
 }
 
+const PERIODOS = [
+  { id: 'hoje', label: 'Hoje' },
+  { id: '7d',   label: '7 dias' },
+  { id: '30d',  label: '30 dias' },
+  { id: 'tudo', label: 'Tudo' },
+]
+
 export default function AdminFunil() {
   const [counts, setCounts] = useState<FunnelRow[]>([])
   const [recentes, setRecentes] = useState<LeadRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [periodo, setPeriodo] = useState('7d')
 
-  async function load() {
+  async function load(p = periodo) {
     setLoading(true)
     try {
       const [r1, r2] = await Promise.all([
-        fetch('/api/admin/funil/stats'),
-        fetch('/api/admin/funil/recentes'),
+        fetch(`/api/admin/funil/stats?periodo=${p}`),
+        fetch(`/api/admin/funil/recentes?periodo=${p}`),
       ])
       const d1 = await r1.json()
       const d2 = await r2.json()
@@ -71,7 +79,7 @@ export default function AdminFunil() {
     }
   }
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load(periodo) }, [periodo])
 
   // Duas portas de entrada: quem viu as opções e quem caiu direto no
   // calendário vindo do bloco de contemplação.
@@ -81,13 +89,15 @@ export default function AdminFunil() {
   const agendaram = counts.find(r => r.evento === 'reuniao_confirmada')?.count ?? 0
   const whats = counts.find(r => r.evento === 'whatsapp_projeto_enviado')?.count ?? 0
 
-  const ORDEM = [
-    'step_escolha',
-    'abriu_agenda',
+  // O funil se divide depois que a pessoa vê as opções. Medir os dois
+  // caminhos numa lista só faz a queda entre eles virar número sem sentido.
+  const RAMO_AGENDA = [
     'clicou_agendar',
     'horario_escolhido',
     'contato_no_agendamento',
     'reuniao_confirmada',
+  ]
+  const RAMO_WHATS = [
     'clicou_whats_projeto',
     'whatsapp_projeto_enviado',
   ]
@@ -98,14 +108,28 @@ export default function AdminFunil() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Funil de leads</h1>
-            <p className="text-sm text-gray-400">Últimos 30 dias</p>
+            <p className="text-sm text-gray-400">Pessoas, não cliques</p>
           </div>
-          <button
-            onClick={load}
-            className="text-sm text-blue-600 hover:underline"
-          >
+          <button onClick={() => load(periodo)} className="text-sm text-blue-600 hover:underline">
             Atualizar
           </button>
+        </div>
+
+        {/* Período */}
+        <div className="flex gap-2 mb-6">
+          {PERIODOS.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setPeriodo(id)}
+              className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                periodo === id
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-white text-gray-500 border border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Cards resumo */}
@@ -127,28 +151,18 @@ export default function AdminFunil() {
           <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">Etapas do funil</h2>
           {loading ? (
             <div className="text-gray-400 text-sm">Carregando...</div>
+          ) : total === 0 ? (
+            <div className="text-gray-400 text-sm">Ninguém entrou no funil neste período.</div>
           ) : (
-            <div className="space-y-3">
-              {ORDEM.map(evento => {
-                const row = counts.find(r => r.evento === evento)
-                const count = row?.count ?? 0
-                const pct = total > 0 ? Math.round((count / total) * 100) : 0
-                return (
-                  <div key={evento}>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span className="text-gray-700">{EVENTO_LABEL[evento] ?? evento}</span>
-                      <span className="font-bold text-gray-900">{count} <span className="text-gray-400 font-normal">({pct}%)</span></span>
-                    </div>
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-blue-500 rounded-full transition-all"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
+            <>
+              {/* Entrada — comum aos dois caminhos */}
+              <Etapa rotulo="Entraram no funil" count={total} total={total} cor="bg-gray-800" />
+
+              <div className="grid gap-6 md:grid-cols-2 mt-6">
+                <Ramo titulo="Caminho da consultoria" etapas={RAMO_AGENDA} counts={counts} total={total} cor="bg-blue-500" labels={EVENTO_LABEL} />
+                <Ramo titulo="Caminho do WhatsApp" etapas={RAMO_WHATS} counts={counts} total={total} cor="bg-green-600" labels={EVENTO_LABEL} />
+              </div>
+            </>
           )}
         </div>
 
@@ -179,6 +193,66 @@ export default function AdminFunil() {
             </div>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
+
+
+/** Uma etapa do funil: rótulo, quantas pessoas e a barra proporcional. */
+function Etapa({ rotulo, count, total, cor, perdeu }: {
+  rotulo: string; count: number; total: number; cor: string; perdeu?: number
+}) {
+  const pct = total > 0 ? Math.round((count / total) * 100) : 0
+  return (
+    <div>
+      {perdeu ? (
+        <div className="flex items-center gap-1.5 pl-1 py-1 text-[11px] text-red-400">
+          <span>↓</span>
+          <span>{perdeu} {perdeu === 1 ? 'saiu' : 'saíram'} aqui</span>
+        </div>
+      ) : null}
+      <div className="flex justify-between text-sm mb-1">
+        <span className="text-gray-700">{rotulo}</span>
+        <span className="font-bold text-gray-900">
+          {count} <span className="text-gray-400 font-normal">({pct}%)</span>
+        </span>
+      </div>
+      <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className={`h-full ${cor} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  )
+}
+
+/** Um dos dois caminhos possíveis depois que a pessoa escolhe como falar. */
+function Ramo({ titulo, etapas, counts, total, cor, labels }: {
+  titulo: string
+  etapas: string[]
+  counts: FunnelRow[]
+  total: number
+  cor: string
+  labels: Record<string, string>
+}) {
+  return (
+    <div>
+      <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{titulo}</h3>
+      <div className="space-y-3">
+        {etapas.map((evento, i) => {
+          const count = counts.find(r => r.evento === evento)?.count ?? 0
+          const anterior = i > 0 ? (counts.find(r => r.evento === etapas[i - 1])?.count ?? 0) : null
+          const perdeu = anterior !== null && anterior > count ? anterior - count : 0
+          return (
+            <Etapa
+              key={evento}
+              rotulo={labels[evento] ?? evento}
+              count={count}
+              total={total}
+              cor={cor}
+              perdeu={perdeu}
+            />
+          )
+        })}
       </div>
     </div>
   )

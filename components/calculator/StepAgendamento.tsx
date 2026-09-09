@@ -6,6 +6,7 @@ import { Calendar, Clock, CheckCircle, ChevronLeft, Loader2, MessageCircle } fro
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
 import { registrarReuniaoAgendada, registrarWhatsappIniciado } from '@/lib/gtag'
 import { getUTMs } from '@/lib/utm'
+import { getSessao } from '@/lib/sessao'
 
 const WHATSAPP_CONSULTOR = '5511993929660'
 
@@ -52,7 +53,7 @@ function logFunil(evento: string, extra: Record<string, unknown> = {}) {
   fetch('/api/funil', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ evento, ...extra }),
+    body: JSON.stringify({ evento, sessao: getSessao(), ...extra }),
   }).catch(() => {})
 }
 
