@@ -38,12 +38,12 @@ const STATS = [
 ]
 
 const DIFERENCIAIS = [
-  { icon: '🏠', texto: 'Sem entrada — começa do zero' },
+  { icon: '🏠', texto: 'Contemplação direto na administradora' },
   { icon: '💰', texto: 'Zero juros — só taxa administrativa' },
   { icon: '📲', texto: 'Parcela em conta corrente' },
   { icon: '🏆', texto: 'Pioneira do consórcio imobiliário no Brasil' },
   { icon: '⚡', texto: 'Diversas formas de acelerar a contemplação' },
-  { icon: '✅', texto: 'Sem score mínimo exigido' },
+  { icon: '✅', texto: 'Contrato registrado, sem ágio de terceiros' },
 ]
 
 const PATROCINADORES = [
@@ -133,7 +133,7 @@ function DirecionamentoContent() {
 
   const whatsappMsg = [
     `Olá! Me chamo ${nome}.`,
-    `Fiz a simulação no Indica Consórcio e quero contratar um consórcio de ${produtoLabel} pela Ademicon.`,
+    `Fiz a simulação no Consórcio Lidera e quero contratar um consórcio de ${produtoLabel} pela Ademicon.`,
     credito > 0 ? `Carta de crédito: ${fmt(credito)}` : '',
     parcela > 0 ? `Parcela estimada: ${fmt(parcela)}/mês` : '',
     whatsapp ? `Meu WhatsApp: ${whatsapp}` : '',
@@ -176,7 +176,7 @@ function DirecionamentoContent() {
           >
             <motion.p initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }}
               className="text-white/40 text-xs font-bold uppercase tracking-[0.2em] mb-4">
-              Indica Consórcio · Seleção Inteligente
+              Consórcio Lidera · Seleção Inteligente
             </motion.p>
 
             <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
@@ -587,7 +587,7 @@ function DirecionamentoContent() {
                   Falar com especialista Ademicon
                 </a>
                 <p className="text-white/40 text-xs mt-6">
-                  Indica Consórcio · Conectando você à melhor administradora
+                  Consórcio Lidera · Conectando você à melhor administradora
                 </p>
               </div>
             </motion.div>

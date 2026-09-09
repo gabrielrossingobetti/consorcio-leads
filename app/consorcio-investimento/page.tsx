@@ -426,7 +426,7 @@ export default function ConsorcioInvestimentoPage() {
             </div>
           </div>
           <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-600">
-            <p>© {new Date().getFullYear()} Indica Consórcio. Todos os direitos reservados.</p>
+            <p>© {new Date().getFullYear()} Consórcio Lidera. Todos os direitos reservados.</p>
             <p className="text-center">As simulações são estimativas com base em taxas médias de mercado e não constituem proposta formal de contrato.</p>
           </div>
         </div>
