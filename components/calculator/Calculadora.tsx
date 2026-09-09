@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
@@ -42,13 +42,21 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
   const router = useRouter()
   // Quando o lead já simulou inline, entra direto no perfil — não repete o que já respondeu
   const temPreSelecao = Boolean(bemInicial && valorInicial)
-  const [step, setStep] = useState<Step>(temPreSelecao ? 'perfil' : 'bem')
+  // Quem já simulou na página e clicou em agendar vai DIRETO para a agenda.
+  // As perguntas de qualificação e o formulário saíram do meio do caminho:
+  // custavam quatro telas no pico de intenção e não devolviam nada que a
+  // pessoa já não tivesse visto de graça.
+  const [step, setStep] = useState<Step>(temPreSelecao ? 'agendamento' : 'bem')
   const [bem, setBem] = useState<BemType | null>(bemInicial ?? null)
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [valor, setValor] = useState<number | null>(valorInicial ?? null)
   const [jaTentouFinanciar, setJaTentouFinanciar] = useState('')
-  const [resultado, setResultado] = useState<ResultadoCalculo | null>(null)
+  // Com pré-seleção o cálculo já existe (a pessoa viu na página) — entra pronto,
+  // senão a agenda abriria sem resultado e o passo ficaria em branco.
+  const [resultado, setResultado] = useState<ResultadoCalculo | null>(
+    bemInicial && valorInicial ? calcular(bemInicial, valorInicial) : null
+  )
   const [resultadoInvestidor, setResultadoInvestidor] = useState<ResultadoInvestidor | null>(null)
   const [mesesInvestidor, setMesesInvestidor] = useState<number>(12)
   const [simulacaoId, setSimulacaoId] = useState<string | null>(null)
@@ -57,9 +65,21 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
 
   // Com pré-seleção, as etapas 'bem' e 'valor' não existem no fluxo
   const STEPS_BASE = bem === 'investidor' ? STEPS_INVESTIDOR : STEPS_NORMAL
-  const STEPS = temPreSelecao ? STEPS_BASE.filter((s) => s !== 'bem' && s !== 'valor') : STEPS_BASE
+  const STEPS = temPreSelecao
+    ? STEPS_BASE.filter((s) => s !== 'bem' && s !== 'valor' && s !== 'perfil' && s !== 'contato' && s !== 'resultado')
+    : STEPS_BASE
   const stepIndex = STEPS.indexOf(step)
   const progress = ((stepIndex + 1) / STEPS.length) * 100
+
+  // Mantém o cálculo colado na simulação da página. Sem isso, mexer no valor
+  // com o modal aberto congela o resultado antigo — o cabeçalho mostra um
+  // número e a reserva é feita com outro.
+  useEffect(() => {
+    if (!bemInicial || !valorInicial) return
+    setBem(bemInicial)
+    setValor(valorInicial)
+    setResultado(calcular(bemInicial, valorInicial))
+  }, [bemInicial, valorInicial])
 
   function goNext(nextStep: Step) {
     setDirection(1)
@@ -123,9 +143,9 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
   }
 
   /** Reunião marcada: a página seguinte só confirma e reduz no-show — não vende mais nada. */
-  function redirectConfirmacao(r: ResultadoCalculo, slotIso: string) {
+  function redirectConfirmacao(r: ResultadoCalculo, slotIso: string, nomeFinal?: string) {
     router.push(
-      `/reuniao-confirmada?nome=${encodeURIComponent(nome)}` +
+      `/reuniao-confirmada?nome=${encodeURIComponent(nomeFinal ?? nome)}` +
       `&produto=${bem}` +
       `&credito=${r.valor}` +
       `&parcela=${r.parcelaConsorcio}` +
@@ -262,10 +282,17 @@ export default function Calculadora({ onClose, bemInicial, valorInicial }: Calcu
             {step === 'agendamento' && resultado && (
               <StepAgendamento
                 resultado={resultado}
-                nome={nome}
-                whatsapp={whatsapp}
-                onBack={() => goBack('resultado')}
-                onSuccess={(slotIso) => redirectConfirmacao(resultado, slotIso)}
+                nome={nome || undefined}
+                whatsapp={whatsapp || undefined}
+                // Quem veio da página já escolheu falar: abre direto no calendário,
+                // sem a tela de opções que competia com o agendamento.
+                inicio={temPreSelecao ? 'dia' : 'escolha'}
+                onBack={temPreSelecao ? () => onClose?.() : () => goBack('resultado')}
+                onSuccess={(slotIso, contato) => {
+                  setNome(contato.nome)
+                  setWhatsapp(contato.whatsapp)
+                  redirectConfirmacao(resultado, slotIso, contato.nome)
+                }}
               />
             )}
           </motion.div>

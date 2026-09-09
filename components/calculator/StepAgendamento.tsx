@@ -8,11 +8,14 @@ import { registrarReuniaoAgendada } from '@/lib/gtag'
 
 interface Props {
   resultado: ResultadoCalculo
-  nome: string
-  whatsapp: string
+  /** Opcionais: no fluxo novo o contato é pedido AQUI, depois do horário. */
+  nome?: string
+  whatsapp?: string
+  /** Onde começar. 'dia' pula a tela de opções para quem já clicou em agendar. */
+  inicio?: 'escolha' | 'dia'
   onBack: () => void
-  /** Recebe o horário confirmado (ISO) para a página de confirmação exibir */
-  onSuccess: (slotIso: string) => void
+  /** Recebe o horário confirmado (ISO) e o contato coletado */
+  onSuccess: (slotIso: string, contato: { nome: string; whatsapp: string }) => void
 }
 
 const DIAS_SEMANA = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb']
@@ -52,11 +55,13 @@ function logFunil(evento: string, extra: Record<string, unknown> = {}) {
 
 type Step =
   | 'escolha'
-  | 'dia' | 'hora' | 'confirmar' | 'sucesso'
+  | 'dia' | 'hora' | 'contato' | 'confirmar' | 'sucesso'
   | 'proposta_form' | 'proposta_sucesso'
 
-export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onSuccess }: Props) {
-  const [step, setStep] = useState<Step>('escolha')
+export default function StepAgendamento({
+  resultado, nome: nomeProp, whatsapp: whatsProp, inicio = 'escolha', onBack, onSuccess,
+}: Props) {
+  const [step, setStep] = useState<Step>(inicio)
   const [selectedDay, setSelectedDay] = useState<Date | null>(null)
   const [slots, setSlots] = useState<string[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
@@ -64,10 +69,15 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
   const [submitting, setSubmitting] = useState(false)
   const [cpf, setCpf] = useState('')
   const [email, setEmail] = useState('')
+  // Contato coletado aqui quando não veio de fora — é a mudança de ordem:
+  // a pessoa escolhe o horário primeiro e só então se identifica.
+  const [nome, setNome] = useState(nomeProp ?? '')
+  const [whatsapp, setWhatsapp] = useState(whatsProp ?? '')
   const days = getNext14Days()
   const ctx = { bem: resultado.bem, valor: resultado.valor, nome, whatsapp }
+  const primeiroNome = nome.trim().split(' ')[0] || 'tudo'
 
-  useEffect(() => { logFunil('step_escolha', ctx) }, [])
+  useEffect(() => { logFunil(inicio === 'dia' ? 'abriu_agenda' : 'step_escolha', ctx) }, [])
 
   const bemLabel = resultado.bem === 'imovel' ? 'imóvel' : resultado.bem === 'carro' ? 'veículo' : resultado.bem
 
@@ -97,7 +107,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         registrarReuniaoAgendada({ bem: resultado.bem, valor: resultado.valor })
         logFunil('reuniao_confirmada', ctx)
         setStep('sucesso')
-        setTimeout(() => onSuccess(selectedSlot), 2200)
+        setTimeout(() => onSuccess(selectedSlot, { nome, whatsapp }), 2200)
       }
     } catch { }
     finally { setSubmitting(false) }
@@ -143,7 +153,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         {/* Cabeçalho */}
         <div className="text-center mb-5">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">
-            Próximo passo, {nome.split(' ')[0]}
+            Próximo passo, {primeiroNome}
           </h2>
           <p className="text-gray-500 text-sm">
             Carta de {formatCurrency(resultado.valor)} · {bemLabel}
@@ -232,7 +242,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
 
         <div className="text-center mb-6">
           <div className="text-4xl mb-3">✅</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Ótimo, {nome.split(' ')[0]}!</h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">Ótimo, {primeiroNome}!</h2>
           <p className="text-gray-500 text-sm">
             Informe CPF e e-mail para montar a proposta.<br />
             Nome e telefone já estão registrados.
@@ -300,7 +310,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         </motion.div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Mensagem enviada!</h2>
         <p className="text-gray-500 mb-4">
-          {nome.split(' ')[0]}, em breve você recebe o retorno<br />com a proposta completa.
+          {primeiroNome}, em breve você recebe o retorno<br />com a proposta completa.
         </p>
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
           📲 Fique de olho no WhatsApp.
@@ -318,8 +328,8 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         </button>
         <div className="text-center mb-5">
           <Calendar className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-          <h2 className="text-xl font-bold text-gray-900">Escolha o melhor dia</h2>
-          <p className="text-gray-500 text-sm">Chamada de vídeo de 15 min · Seg a Sáb</p>
+          <h2 className="text-xl font-bold text-gray-900">Quando prefere a consultoria?</h2>
+          <p className="text-gray-500 text-sm">Sem custo · Vídeo de 15 min · Seg a Sáb</p>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {days.map((day, i) => (
@@ -358,7 +368,12 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
           <>
             <div className="grid grid-cols-3 gap-2">
               {slots.map((slot, i) => (
-                <button key={i} onClick={() => { setSelectedSlot(slot); setStep('confirmar') }}
+                <button key={i} onClick={() => {
+                    setSelectedSlot(slot)
+                    logFunil('horario_escolhido', { ...ctx, slot })
+                    // Se já sabemos quem é, pula direto para a confirmação.
+                    setStep(nome && whatsapp ? 'confirmar' : 'contato')
+                  }}
                   className="py-3 px-2 rounded-xl border-2 border-gray-200 text-center font-bold text-gray-800 hover:border-blue-500 hover:bg-blue-50 transition-all">
                   {formatSlot(slot)}
                 </button>
@@ -381,16 +396,68 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
   }
 
   // ─── CONFIRMAR ────────────────────────────────────────────────────────────
-  if (step === 'confirmar') {
+  // ─── CONTATO — depois do horário escolhido, não antes ──────────────────────
+  // A pessoa já investiu na escolha do horário; aqui ela só formaliza.
+  // Enquanto isso o horário fica visível, para o pedido ter contrapartida.
+  if (step === 'contato') {
     const slotDate = selectedSlot ? new Date(selectedSlot) : null
+    const valido = nome.trim().length >= 2 && whatsapp.replace(/\D/g, '').length >= 10
     return (
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full">
         <button onClick={() => setStep('hora')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
           <ChevronLeft className="w-4 h-4" /> Voltar
         </button>
+
+        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 mb-5 text-center">
+          <p className="text-[11px] uppercase tracking-wider text-blue-500 font-semibold">Horário reservado</p>
+          <p className="text-lg font-bold text-blue-800 mt-1">
+            {slotDate && `${DIAS_SEMANA[slotDate.getDay()]}, ${slotDate.getDate()} de ${MESES[slotDate.getMonth()]}`}
+            {' · '}{selectedSlot && formatSlot(selectedSlot)}
+          </p>
+        </div>
+
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Só falta seu contato</h2>
+        <p className="text-sm text-gray-500 mb-5">É por onde o especialista te chama na hora da consultoria.</p>
+
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Seu nome</label>
+        <input
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          placeholder="Como podemos te chamar?"
+          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-4 outline-none transition-colors"
+        />
+
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp</label>
+        <input
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          inputMode="tel"
+          placeholder="(00) 00000-0000"
+          className="w-full border-2 border-gray-200 focus:border-blue-500 rounded-xl px-4 py-3 mb-5 outline-none transition-colors"
+        />
+
+        <button
+          onClick={() => { logFunil('contato_no_agendamento', { ...ctx, nome, whatsapp }); setStep('confirmar') }}
+          disabled={!valido}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold py-4 rounded-xl transition-all"
+        >
+          Continuar
+        </button>
+        <p className="text-center text-xs text-gray-400 mt-3">Seus dados não são compartilhados com terceiros.</p>
+      </motion.div>
+    )
+  }
+
+  if (step === 'confirmar') {
+    const slotDate = selectedSlot ? new Date(selectedSlot) : null
+    return (
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+        <button onClick={() => setStep(nomeProp ? 'hora' : 'contato')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Voltar
+        </button>
         <div className="text-center mb-6">
           <div className="text-3xl mb-2">📅</div>
-          <h2 className="text-xl font-bold text-gray-900">Confirmar bate-papo</h2>
+          <h2 className="text-xl font-bold text-gray-900">Confirmar consultoria</h2>
         </div>
         <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl p-5 mb-5 space-y-3">
           {[
@@ -418,7 +485,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
         </div>
         <button onClick={confirmarAgendamento} disabled={submitting}
           className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-70 text-white font-bold py-4 rounded-xl transition-all text-lg">
-          {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : '✓ Confirmar bate-papo'}
+          {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : '✓ Confirmar consultoria'}
         </button>
         <p className="text-center text-xs text-gray-400 mt-3">O administrativo confirma pelo WhatsApp</p>
       </motion.div>
@@ -433,7 +500,7 @@ export default function StepAgendamento({ resultado, nome, whatsapp, onBack, onS
       </motion.div>
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Bate-papo confirmado!</h2>
       <p className="text-gray-500 mb-4">
-        {nome.split(' ')[0]}, tudo certo.<br />
+        {primeiroNome}, tudo certo.<br />
         O administrativo vai confirmar pelo WhatsApp.
       </p>
       <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
