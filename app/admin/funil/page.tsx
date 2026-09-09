@@ -16,13 +16,17 @@ interface LeadRow {
   valor: number | null
 }
 
+// Etapas do funil atual. As antigas (ficha, CPF, "quero entrar") saíram do
+// fluxo, então medir por elas mostrava zero e escondia onde a pessoa some.
 const EVENTO_LABEL: Record<string, string> = {
-  step_escolha:        '👀 Chegou na escolha',
-  clicou_agendar:      '📅 Clicou em Agendar reunião',
-  clicou_fechar:       '✊ Clicou em Quero entrar',
-  fechar_form_abriu:   '📝 Abriu a ficha',
-  ficha_enviada:       '✅ Enviou a ficha',
-  reuniao_confirmada:  '🗓️ Confirmou a reunião',
+  step_escolha:            '👀 Viu as duas opções',
+  abriu_agenda:            '📅 Abriu o calendário',
+  clicou_agendar:          '📅 Escolheu consultoria',
+  horario_escolhido:       '🕐 Escolheu o horário',
+  contato_no_agendamento:  '✍️ Deixou o contato',
+  reuniao_confirmada:      '✅ Consultoria confirmada',
+  clicou_whats_projeto:    '💬 Escolheu WhatsApp',
+  whatsapp_projeto_enviado:'💬 Abriu a conversa',
 }
 
 function formatBem(bem: string | null) {
@@ -69,17 +73,23 @@ export default function AdminFunil() {
 
   useEffect(() => { load() }, [])
 
-  const total = counts.find(r => r.evento === 'step_escolha')?.count ?? 0
+  // Duas portas de entrada: quem viu as opções e quem caiu direto no
+  // calendário vindo do bloco de contemplação.
+  const total =
+    (counts.find(r => r.evento === 'step_escolha')?.count ?? 0) +
+    (counts.find(r => r.evento === 'abriu_agenda')?.count ?? 0)
   const agendaram = counts.find(r => r.evento === 'reuniao_confirmada')?.count ?? 0
-  const fecharam = counts.find(r => r.evento === 'ficha_enviada')?.count ?? 0
+  const whats = counts.find(r => r.evento === 'whatsapp_projeto_enviado')?.count ?? 0
 
   const ORDEM = [
     'step_escolha',
+    'abriu_agenda',
     'clicou_agendar',
-    'clicou_fechar',
-    'fechar_form_abriu',
-    'ficha_enviada',
+    'horario_escolhido',
+    'contato_no_agendamento',
     'reuniao_confirmada',
+    'clicou_whats_projeto',
+    'whatsapp_projeto_enviado',
   ]
 
   return (
@@ -101,9 +111,9 @@ export default function AdminFunil() {
         {/* Cards resumo */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           {[
-            { label: 'Chegaram na escolha', value: total, color: 'text-gray-900' },
-            { label: 'Reuniões confirmadas', value: agendaram, color: 'text-blue-700' },
-            { label: 'Fichas enviadas', value: fecharam, color: 'text-green-700' },
+            { label: 'Entraram no funil', value: total, color: 'text-gray-900' },
+            { label: 'Consultorias marcadas', value: agendaram, color: 'text-blue-700' },
+            { label: 'Conversas no WhatsApp', value: whats, color: 'text-green-700' },
           ].map(({ label, value, color }) => (
             <div key={label} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
               <div className={`text-3xl font-bold ${color}`}>{loading ? '…' : value}</div>
