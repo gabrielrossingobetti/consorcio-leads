@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Calendar, Clock, CheckCircle, ChevronLeft, Loader2, MessageCircle } from 'lucide-react'
 import { ResultadoCalculo, formatCurrency } from '@/lib/calculos'
-import { registrarReuniaoAgendada } from '@/lib/gtag'
+import { registrarReuniaoAgendada, registrarWhatsappIniciado } from '@/lib/gtag'
+import { getUTMs } from '@/lib/utm'
+
+const WHATSAPP_CONSULTOR = '5511993929660'
 
 interface Props {
   resultado: ResultadoCalculo
@@ -56,7 +59,8 @@ function logFunil(evento: string, extra: Record<string, unknown> = {}) {
 type Step =
   | 'escolha'
   | 'dia' | 'hora' | 'contato' | 'confirmar' | 'sucesso'
-  | 'proposta_form' | 'proposta_sucesso'
+  | 'whats_contato'
+  | 'proposta_sucesso'
 
 export default function StepAgendamento({
   resultado, nome: nomeProp, whatsapp: whatsProp, inicio = 'escolha', onBack, onSuccess,
@@ -67,15 +71,15 @@ export default function StepAgendamento({
   const [loadingSlots, setLoadingSlots] = useState(false)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [cpf, setCpf] = useState('')
-  const [email, setEmail] = useState('')
   // Contato coletado aqui quando não veio de fora — é a mudança de ordem:
   // a pessoa escolhe o horário primeiro e só então se identifica.
   const [nome, setNome] = useState(nomeProp ?? '')
   const [whatsapp, setWhatsapp] = useState(whatsProp ?? '')
   const days = getNext14Days()
   const ctx = { bem: resultado.bem, valor: resultado.valor, nome, whatsapp }
-  const primeiroNome = nome.trim().split(' ')[0] || 'tudo'
+  // Vazio quando ainda não sabemos o nome — no fluxo novo o contato só vem
+  // depois do horário, então saudação com nome não pode ser assumida.
+  const primeiroNome = nome.trim().split(' ')[0] || ''
 
   useEffect(() => { logFunil(inicio === 'dia' ? 'abriu_agenda' : 'step_escolha', ctx) }, [])
 
@@ -113,37 +117,29 @@ export default function StepAgendamento({
     finally { setSubmitting(false) }
   }
 
-  function enviarProposta() {
-    if (typeof window !== 'undefined' && (window as any).gtag) {
-      ;(window as any).gtag('event', 'direct_close_intent', { bem: resultado.bem, valor: resultado.valor })
-    }
-    logFunil('proposta_enviada', { ...ctx, cpf, email })
+  /**
+   * Saída pelo WhatsApp. Salva o lead ANTES de abrir a conversa — assim o
+   * consultor recebe a simulação mesmo se a pessoa desistir de mandar a
+   * mensagem. Nada de CPF nem ficha: nome e WhatsApp bastam para começar.
+   */
+  async function abrirWhatsappProjeto() {
+    registrarWhatsappIniciado({ bem: resultado.bem, valor: resultado.valor })
+    logFunil('whatsapp_projeto_enviado', ctx)
 
-    // Salva no Supabase via API (não bloqueia)
-    fetch('/api/ficha', {
+    fetch('/api/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ bem: resultado.bem, valor: resultado.valor, nome, telefone: whatsapp, cpf, email }),
+      body: JSON.stringify({ nome, whatsapp, bem: resultado.bem, valor: resultado.valor, ...getUTMs() }),
     }).catch(() => {})
 
-    // Mensagem sai da pessoa, não do sistema
     const msg = [
-      `Olá Gabriel, sou ${nome}.`,
-      `Fiz a simulação de consórcio de ${bemLabel} na Indica Consórcio e gostaria de fazer uma carta de crédito de ${formatCurrency(resultado.valor)}.`,
-      ``,
-      `CPF: ${cpf}`,
-      `E-mail: ${email}`,
-      `WhatsApp: ${whatsapp}`,
+      `Olá! Sou ${nome}.`,
+      `Simulei no site um consórcio de ${bemLabel} de ${formatCurrency(resultado.valor)}, com parcela de ${formatCurrency(resultado.parcelaConsorcio)}.`,
+      `Quero montar o projeto e entender a estratégia de lance para o meu caso.`,
     ].join('\n')
 
-    window.open(`https://wa.me/5547992666948?text=${encodeURIComponent(msg)}`, '_blank')
+    window.open(`https://wa.me/${WHATSAPP_CONSULTOR}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener')
     setStep('proposta_sucesso')
-  }
-
-  function abrirDuvidas() {
-    logFunil('clicou_duvidas', ctx)
-    const msg = `Olá Gabriel! Fiz uma simulação de consórcio de ${bemLabel} no valor de ${formatCurrency(resultado.valor)} na Indica Consórcio e tenho algumas dúvidas.`
-    window.open(`https://wa.me/5547992666948?text=${encodeURIComponent(msg)}`, '_blank')
   }
 
   // ─── ESCOLHA ──────────────────────────────────────────────────────────────
@@ -153,7 +149,7 @@ export default function StepAgendamento({
         {/* Cabeçalho */}
         <div className="text-center mb-5">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">
-            Próximo passo, {primeiroNome}
+            Próximo passo{primeiroNome && `, ${primeiroNome}`}
           </h2>
           <p className="text-gray-500 text-sm">
             Carta de {formatCurrency(resultado.valor)} · {bemLabel}
@@ -168,20 +164,17 @@ export default function StepAgendamento({
           onClick={() => { logFunil('clicou_agendar', ctx); setStep('dia') }}
           className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-2xl p-5 mb-3 text-left transition-all shadow-lg shadow-blue-200"
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              <span className="font-bold text-lg">Falar com um especialista</span>
-            </div>
-            <span className="text-xs bg-white/20 px-2 py-1 rounded-full font-semibold">Recomendado</span>
+          <div className="flex items-center gap-2 mb-3">
+            <Calendar className="w-5 h-5" />
+            <span className="font-bold text-lg">Receber consultoria gratuita</span>
           </div>
           <p className="text-blue-100 text-sm leading-relaxed mb-3">
-            Chamada de vídeo de 15 minutos pelo WhatsApp. Analiso o seu perfil, monto a melhor
-            estratégia de lance e mostro em quanto tempo dá para conquistar seu {bemLabel.toLowerCase()}.
+            O especialista analisa o seu caso, monta a estratégia de lance para o que você tem
+            hoje e mostra em quanto tempo dá para conquistar seu {bemLabel.toLowerCase()}.
           </p>
           <div className="flex items-center gap-4 text-xs text-blue-200">
-            <span className="flex items-center gap-1">✓ Sem compromisso</span>
-            <span className="flex items-center gap-1">✓ Totalmente gratuito</span>
+            <span className="flex items-center gap-1">✓ Sem custo</span>
+            <span className="flex items-center gap-1">✓ Sem compromisso de contratar</span>
           </div>
         </motion.button>
 
@@ -192,35 +185,28 @@ export default function StepAgendamento({
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        {/* Secundária — já sei, quero contratar */}
+        {/* WhatsApp com o MESMO peso. O público de carta contemplada teme golpe:
+            falar com gente de verdade agora é o que destrava. Não é "já quero
+            contratar" — é chamar o consultor para montar o projeto junto. */}
         <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          onClick={() => { logFunil('clicou_proposta', ctx); setStep('proposta_form') }}
-          className="w-full text-left p-4 rounded-2xl border-2 border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 active:scale-[0.98] transition-all mb-2"
+          onClick={() => { logFunil('clicou_whats_projeto', ctx); setStep('whats_contato') }}
+          className="w-full text-left p-5 rounded-2xl border-2 border-[#1FA855] bg-white hover:bg-[#F2FBF6] active:scale-[0.98] transition-all"
         >
-          <div className="flex items-center gap-3">
-            <div className="bg-gray-100 rounded-xl p-2 flex-shrink-0">
-              <CheckCircle className="w-4 h-4 text-gray-600" />
-            </div>
-            <div>
-              <div className="font-semibold text-gray-800 text-sm">Já sei como funciona — quero contratar</div>
-              <div className="text-xs text-gray-400 mt-0.5">Envio os dados pelo WhatsApp agora</div>
-            </div>
+          <div className="flex items-center gap-2 mb-3">
+            <MessageCircle className="w-5 h-5 text-[#1FA855]" />
+            <span className="font-bold text-lg text-[#12784A]">Falar no WhatsApp agora</span>
           </div>
-        </motion.button>
-
-        {/* Terciária — dúvida, texto simples */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.25 }}
-          onClick={abrirDuvidas}
-          className="w-full flex items-center justify-center gap-2 py-3 text-sm text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <MessageCircle className="w-4 h-4" />
-          Tenho uma dúvida antes de decidir
+          <p className="text-gray-600 text-sm leading-relaxed mb-3">
+            O consultor recebe a sua simulação e monta o projeto com você por mensagem,
+            no seu tempo. Sem preencher ficha, sem CPF.
+          </p>
+          <div className="flex items-center gap-4 text-xs text-[#1FA855]">
+            <span>✓ Resposta de uma pessoa real</span>
+            <span>✓ Sem compromisso</span>
+          </div>
         </motion.button>
 
         <button onClick={onBack} className="w-full text-center text-xs text-gray-300 hover:text-gray-500 transition-colors mt-1">
@@ -231,76 +217,6 @@ export default function StepAgendamento({
   }
 
   // ─── PROPOSTA FORM (CPF + Email) ──────────────────────────────────────────
-  if (step === 'proposta_form') {
-    const inputClass = 'w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-green-500 transition-colors'
-
-    return (
-      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full">
-        <button onClick={() => setStep('escolha')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-5 transition-colors">
-          <ChevronLeft className="w-4 h-4" /> Voltar
-        </button>
-
-        <div className="text-center mb-6">
-          <div className="text-4xl mb-3">✅</div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Ótimo, {primeiroNome}!</h2>
-          <p className="text-gray-500 text-sm">
-            Informe CPF e e-mail para montar a proposta.<br />
-            Nome e telefone já estão registrados.
-          </p>
-        </div>
-
-        {/* Resumo da simulação */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-5 flex justify-between text-sm">
-          <div>
-            <p className="text-xs text-gray-400">Produto</p>
-            <p className="font-semibold text-gray-800">Consórcio {bemLabel}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-400">Carta de crédito</p>
-            <p className="font-bold text-green-700">{formatCurrency(resultado.valor)}</p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 mb-5">
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">CPF</label>
-            <input
-              className={inputClass}
-              value={cpf}
-              onChange={e => {
-                const nums = e.target.value.replace(/\D/g, '').slice(0, 11)
-                const f = nums.length <= 3 ? nums : nums.length <= 6 ? `${nums.slice(0,3)}.${nums.slice(3)}` : nums.length <= 9 ? `${nums.slice(0,3)}.${nums.slice(3,6)}.${nums.slice(6)}` : `${nums.slice(0,3)}.${nums.slice(3,6)}.${nums.slice(6,9)}-${nums.slice(9)}`
-                setCpf(f)
-              }}
-              placeholder="000.000.000-00"
-              inputMode="numeric"
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">E-mail</label>
-            <input
-              className={inputClass}
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              inputMode="email"
-            />
-          </div>
-        </div>
-
-        <button
-          onClick={enviarProposta}
-          disabled={cpf.replace(/\D/g, '').length < 11 || !email.includes('@')}
-          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 text-white font-bold py-4 rounded-xl text-base transition-all"
-        >
-          Enviar pelo WhatsApp →
-        </button>
-        <p className="text-center text-xs text-gray-400 mt-2">Abre o WhatsApp com a mensagem pronta para enviar</p>
-      </motion.div>
-    )
-  }
-
   // ─── PROPOSTA SUCESSO ─────────────────────────────────────────────────────
   if (step === 'proposta_sucesso') {
     return (
@@ -308,9 +224,9 @@ export default function StepAgendamento({
         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}>
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
         </motion.div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Mensagem enviada!</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Conversa aberta!</h2>
         <p className="text-gray-500 mb-4">
-          {primeiroNome}, em breve você recebe o retorno<br />com a proposta completa.
+          {primeiroNome ? `${primeiroNome}, o` : 'O'} consultor já recebeu sua simulação<br />e responde no WhatsApp.
         </p>
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
           📲 Fique de olho no WhatsApp.
@@ -395,7 +311,59 @@ export default function StepAgendamento({
     )
   }
 
-  // ─── CONFIRMAR ────────────────────────────────────────────────────────────
+  // ─── WHATSAPP — nome e contato, nada de ficha nem CPF ─────────────────────
+  if (step === 'whats_contato') {
+    const valido = nome.trim().length >= 2 && whatsapp.replace(/\D/g, '').length >= 10
+    return (
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="w-full">
+        <button onClick={() => setStep('escolha')} className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 mb-4 transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Voltar
+        </button>
+
+        <div className="bg-[#F2FBF6] border-2 border-[#1FA855]/30 rounded-2xl p-4 mb-5">
+          <p className="text-[11px] uppercase tracking-wider text-[#12784A] font-semibold mb-1">
+            O consultor já recebe
+          </p>
+          <p className="text-[14px] font-bold text-gray-900">
+            Consórcio de {bemLabel} · {formatCurrency(resultado.valor)} · {formatCurrency(resultado.parcelaConsorcio)}/mês
+          </p>
+        </div>
+
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Como ele te chama?</h2>
+        <p className="text-sm text-gray-500 mb-5">
+          Só isso. A conversa continua no WhatsApp, sem ficha e sem CPF.
+        </p>
+
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Seu nome</label>
+        <input
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          placeholder="Como podemos te chamar?"
+          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-4 outline-none transition-colors"
+        />
+
+        <label className="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp</label>
+        <input
+          value={whatsapp}
+          onChange={(e) => setWhatsapp(e.target.value)}
+          inputMode="tel"
+          placeholder="(00) 00000-0000"
+          className="w-full border-2 border-gray-200 focus:border-[#1FA855] rounded-xl px-4 py-3 mb-5 outline-none transition-colors"
+        />
+
+        <button
+          onClick={abrirWhatsappProjeto}
+          disabled={!valido}
+          className="w-full flex items-center justify-center gap-2 bg-[#1FA855] hover:bg-[#179046] disabled:opacity-40 text-white font-bold py-4 rounded-xl transition-all"
+        >
+          <MessageCircle className="w-5 h-5" />
+          Abrir conversa no WhatsApp
+        </button>
+        <p className="text-center text-xs text-gray-400 mt-3">Seus dados não são compartilhados com terceiros.</p>
+      </motion.div>
+    )
+  }
+
   // ─── CONTATO — depois do horário escolhido, não antes ──────────────────────
   // A pessoa já investiu na escolha do horário; aqui ela só formaliza.
   // Enquanto isso o horário fica visível, para o pedido ter contrapartida.
@@ -500,7 +468,7 @@ export default function StepAgendamento({
       </motion.div>
       <h2 className="text-2xl font-bold text-gray-900 mb-2">Bate-papo confirmado!</h2>
       <p className="text-gray-500 mb-4">
-        {primeiroNome}, tudo certo.<br />
+        {primeiroNome ? `${primeiroNome}, tudo certo.` : 'Tudo certo.'}<br />
         O administrativo vai confirmar pelo WhatsApp.
       </p>
       <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">

@@ -1,6 +1,6 @@
 'use client'
 
-import { Trophy, Gavel, ShieldAlert, FileCheck, TrendingDown, CalendarCheck, MessageCircle } from 'lucide-react'
+import { Trophy, Gavel, Wallet, ShieldAlert, FileCheck, TrendingDown, CalendarCheck, MessageCircle } from 'lucide-react'
 import { BemType, formatCurrency } from '@/lib/calculos'
 import { PortaId } from '@/lib/portas'
 import { trackEvent, registrarWhatsappIniciado } from '@/lib/gtag'
@@ -31,8 +31,15 @@ const CAMINHOS = [
   },
   {
     Icon: Gavel,
-    titulo: 'Por lance, quando você quiser',
+    titulo: 'Por lance com recursos próprios',
     desc: 'Com capital disponível dá para antecipar bastante — inclusive logo nos primeiros meses.',
+  },
+  {
+    // O caminho que quase ninguém conhece e que amplia muito quem consegue
+    // antecipar: não exige dinheiro novo, sai da própria carta.
+    Icon: Wallet,
+    titulo: 'Por lance embutido, sem tirar do bolso',
+    desc: 'Parte da própria carta vira o lance. Você recebe um crédito um pouco menor, mas antecipa a contemplação sem precisar de capital extra — só seguindo com as parcelas.',
   },
 ]
 
@@ -105,7 +112,7 @@ export default function BlocoLance({ bem, valor, porta, onAgendar }: Props) {
       <p className="mt-4 max-w-xl text-[14.5px] leading-relaxed text-[var(--c-ink-mid)]">
         {ehCarta
           ? 'Muita gente procura carta já contemplada para não esperar. Antes de pagar ágio a um desconhecido, vale olhar três coisas:'
-          : 'Todo mês o grupo contempla, e existem dois caminhos até a sua vez — você decide qual usar:'}
+          : 'Todo mês o grupo contempla, e existem três caminhos até a sua vez — você decide qual usar:'}
       </p>
 
       <div className="mt-6 flex flex-col gap-4">
@@ -132,9 +139,9 @@ export default function BlocoLance({ bem, valor, porta, onAgendar }: Props) {
             : 'Com a estratégia de lance certa dá para antecipar bastante a sua contemplação.'}
         </p>
         <p className="mt-3 text-[14px] leading-relaxed text-[var(--c-ink-mid)]">
-          Qual estratégia faz sentido depende do seu grupo e do capital que você tem hoje.
-          O especialista analisa o seu caso, calcula quanto de lance cabe no seu bolso e
-          mostra em quanto tempo dá para ser contemplado.
+          Qual dos caminhos faz sentido depende do seu grupo e de quanto você tem disponível
+          hoje — inclusive se for zero. O especialista analisa o seu caso, monta a estratégia
+          e mostra em quanto tempo dá para ser contemplado.
         </p>
 
         <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
@@ -154,8 +161,10 @@ export default function BlocoLance({ bem, valor, porta, onAgendar }: Props) {
           </button>
         </div>
 
+        {/* O formato (vídeo, 15 min) é dito na tela do calendário, antes de qualquer
+            compromisso. Aqui a linha fala do que a pessoa ganha, não do que ela gasta. */}
         <p className="mt-3.5 text-center text-[12.5px] text-[var(--c-ink-faint)]">
-          Consultoria sem custo · Chamada de vídeo de 15 min · Sem compromisso de contratar
+          Análise do seu caso · Sem custo · Sem compromisso de contratar
         </p>
       </div>
     </section>

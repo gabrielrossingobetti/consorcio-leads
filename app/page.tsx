@@ -712,7 +712,7 @@ export default function LandingPage() {
                       Receber consultoria gratuita
                     </button>
                     <p className="mt-3 text-center text-[12px] text-[var(--c-ink-faint)] lg:text-right">
-                      Sem custo · Chamada de vídeo de 15 min · Sem compromisso
+                      Análise do seu caso · Sem custo · Sem compromisso
                     </p>
                   </div>
                 </div>

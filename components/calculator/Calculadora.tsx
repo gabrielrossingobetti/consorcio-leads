@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { BemType, calcular, ResultadoCalculo, calcularInvestidor, ResultadoInvestidor } from '@/lib/calculos'
 import { trackEvent } from '@/lib/gtag'
+import { getUTMs } from '@/lib/utm'
 import StepBem from './StepBem'
 import StepValor from './StepValor'
 import StepPerfil from './StepPerfil'
@@ -15,17 +16,6 @@ import StepContatoSimples from './StepContatoSimples'
 import StepAgendamento from './StepAgendamento'
 
 type Step = 'bem' | 'contato' | 'valor' | 'perfil' | 'resultado' | 'agendamento' | 'meses_investidor' | 'resultado_investidor'
-
-function getUTMs() {
-  if (typeof window === 'undefined') return {}
-  const params = new URLSearchParams(window.location.search)
-  return {
-    utm_source: params.get('utm_source') || undefined,
-    utm_medium: params.get('utm_medium') || undefined,
-    utm_campaign: params.get('utm_campaign') || undefined,
-    utm_content: params.get('utm_content') || undefined,
-  }
-}
 
 const STEPS_NORMAL: Step[] = ['bem', 'valor', 'perfil', 'contato', 'resultado', 'agendamento']
 const STEPS_INVESTIDOR: Step[] = ['bem', 'valor', 'meses_investidor', 'contato', 'resultado_investidor']
