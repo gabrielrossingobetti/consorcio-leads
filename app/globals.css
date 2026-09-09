@@ -139,6 +139,9 @@ body {
   --c-electric:  #1D63D8;
   --c-red:       #C23B3B;
   --c-green:     #12855A;
+  /* Fundos de apoio do bloco de lance — contraste alto sobre a zona clara */
+  --c-gold-bg:   #FBF3E1;
+  --c-green-bg:  #E7F4EE;
 
   background: #FBFCFE;
   color: var(--c-ink);

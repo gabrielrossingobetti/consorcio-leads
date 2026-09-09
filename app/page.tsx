@@ -7,6 +7,8 @@ import PalcoSonho from '@/components/landing/PalcoSonho'
 import { calcular, formatCurrency, type BemType } from '@/lib/calculos'
 import { faixaPara } from '@/lib/sonhos'
 import { credenciais } from '@/lib/marca'
+import { PORTAS, lerPorta, type PortaId } from '@/lib/portas'
+import BlocoLance from '@/components/landing/BlocoLance'
 import { trackEvent } from '@/lib/gtag'
 import { Home, Car, Building2, ArrowRight, ArrowDown, Check, ChevronDown, ShieldCheck } from 'lucide-react'
 
@@ -178,6 +180,7 @@ export default function LandingPage() {
   const [produtoIdx, setProdutoIdx] = useState(0)
   const [valorSim, setValorSim] = useState(400_000)
   const [modalAberto, setModalAberto] = useState(false)
+  const [porta, setPorta] = useState<PortaId>('sonho')
   const [faqAberta, setFaqAberta] = useState<number | null>(0)
 
   const produto = PRODUTOS[produtoIdx]
@@ -228,6 +231,16 @@ export default function LandingPage() {
     }
   }, [modalAberto])
 
+  // Qual porta o visitante usou. Definido no primeiro render do cliente para
+  // não divergir do HTML do servidor.
+  useEffect(() => {
+    const p = lerPorta(window.location.search)
+    if (p !== 'sonho') {
+      setPorta(p)
+      trackEvent('porta_aberta', { porta: p })
+    }
+  }, [])
+
   // Quem chega de /direcionamento com ?agendar=1 já cai no agendamento,
   // com o produto e o valor que ele simulou antes — sem repetir nada.
   useEffect(() => {
@@ -244,7 +257,8 @@ export default function LandingPage() {
     trackEvent('agendamento_aberto', { origem: 'retorno-direcionamento' })
   }, [])
 
-  const palavrasTitulo = ['Compre', 'o', 'que', 'você', 'quer.']
+  const copy = PORTAS[porta]
+  const palavrasTitulo = copy.titulo
 
   return (
     <div className="min-h-screen bg-[var(--c-abyssal)]">
@@ -298,7 +312,7 @@ export default function LandingPage() {
             className="eyebrow mb-6 flex items-center gap-2 text-[var(--c-gold-lt)]"
           >
             <ShieldCheck className="h-3.5 w-3.5" />
-            Regulado pelo Banco Central
+            {copy.selo}
           </motion.p>
 
           {/* Entrada palavra por palavra — cinematográfica, não decorativa */}
@@ -321,7 +335,7 @@ export default function LandingPage() {
               transition={{ duration: 0.8, delay: 0.52, ease: [0.22, 1, 0.36, 1] }}
               className="mt-1 block text-[var(--c-gold-lt)]"
             >
-              Sem dar um centavo de juros.
+              {copy.remate}
             </motion.span>
           </h1>
 
@@ -336,7 +350,8 @@ export default function LandingPage() {
                 transition={{ duration: 0.35 }}
                 className="text-[15px] leading-relaxed text-white/75 md:text-[17px]"
               >
-                {produto.frase} Parcelas mensais sem juros e carta de crédito para comprar à vista.
+                {copy.subtitulo ??
+                  `${produto.frase} Parcelas mensais sem juros e carta de crédito para comprar à vista.`}
               </motion.p>
             </AnimatePresence>
           </div>
@@ -351,12 +366,10 @@ export default function LandingPage() {
               onClick={irParaSimulador}
               className="cta-primary group inline-flex items-center gap-3 rounded-full px-8 py-4 text-[15px] font-bold md:text-base"
             >
-              Ver quanto eu economizo
+              {copy.cta}
               <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
             </button>
-            <p className="mt-4 text-[12.5px] text-white/45">
-              Simulação gratuita · Leva 30 segundos · Sem cadastro para ver o resultado
-            </p>
+            <p className="mt-4 text-[12.5px] text-white/45">{copy.rodape}</p>
           </motion.div>
 
           {/* Trocar de produto transforma a cena inteira */}
@@ -676,7 +689,7 @@ export default function LandingPage() {
                 <div className="flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
                   <div className="max-w-md">
                     <h3 className="font-display text-[17px] font-bold leading-snug text-[var(--c-ink)] md:text-[19px]">
-                      Falta a parte que só um consultor calcula
+                      O que o especialista analisa no seu caso
                     </h3>
                     <ul className="mt-4 flex flex-col gap-2.5">
                       {[
@@ -696,10 +709,10 @@ export default function LandingPage() {
                       onClick={() => abrirAgendamento('simulador')}
                       className="cta-primary w-full rounded-full px-8 py-4 text-[15px] font-bold lg:w-auto"
                     >
-                      Agendar minha reunião gratuita
+                      Receber consultoria gratuita
                     </button>
                     <p className="mt-3 text-center text-[12px] text-[var(--c-ink-faint)] lg:text-right">
-                      Chamada de vídeo de 15 min · Sem compromisso
+                      Sem custo · Chamada de vídeo de 15 min · Sem compromisso
                     </p>
                   </div>
                 </div>
@@ -707,7 +720,23 @@ export default function LandingPage() {
             </div>
           </Reveal>
 
-          <Reveal delay={0.12}>
+          {/* Carta contemplada. Para quem veio da porta "carta" é o argumento que
+              fecha; para quem veio do sonho é a resposta da objeção nº 1 — o
+              "vou esperar anos?" que hoje só era respondido lá no FAQ. */}
+          {(produto.id === 'imovel' || produto.id === 'carro') && (
+            <Reveal delay={0.12}>
+              <div className="mt-8">
+                <BlocoLance
+                  bem={produto.id as BemType}
+                  valor={valorSim}
+                  porta={porta}
+                  onAgendar={() => abrirAgendamento('bloco-contemplacao')}
+                />
+              </div>
+            </Reveal>
+          )}
+
+          <Reveal delay={0.14}>
             <p className="mt-5 text-[12.5px] leading-relaxed text-[var(--c-ink-faint)]">
               Valores de parcela cheia, calculados sobre taxas reais de mercado. Taxa administrativa
               de 24% no imóvel e 16% no veículo. A simulação é uma estimativa e não constitui
@@ -887,19 +916,20 @@ export default function LandingPage() {
               <span className="text-[var(--c-gold-lt)]">um centavo de juros.</span>
             </h2>
             <p className="mx-auto mt-6 max-w-md text-[15px] leading-relaxed text-white/70 md:text-base">
-              Numa chamada de vídeo de 15 minutos o consultor calcula sua estratégia de lance e mostra
-              em quanto tempo você pode ser contemplado. Sem pressão, sem compromisso.
+              O especialista analisa o seu cenário, calcula a estratégia de lance para o capital que
+              você tem hoje e mostra em quanto tempo dá para ser contemplado. Consultoria sem custo,
+              numa chamada de vídeo de 15 minutos.
             </p>
             <div className="mt-10">
               <button
                 onClick={() => abrirAgendamento('cta-final')}
                 className="cta-primary cta-breathe inline-flex items-center gap-3 rounded-full px-10 py-5 text-[16px] font-bold md:text-lg"
               >
-                Agendar minha reunião gratuita
+                Receber consultoria gratuita
                 <ArrowRight className="h-5 w-5" />
               </button>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[12.5px] text-white/45">
-                {['Sem compromisso', 'Pode cancelar quando quiser', 'Tudo explicado na reunião'].map((t) => (
+                {['Sem custo', 'Sem compromisso de contratar', 'Pode cancelar quando quiser'].map((t) => (
                   <span key={t} className="flex items-center gap-1.5">
                     <Check className="h-3.5 w-3.5 text-[var(--c-green)]" />
                     {t}
@@ -929,7 +959,7 @@ export default function LandingPage() {
               <p>Chamada de vídeo de 15 minutos</p>
               <p className="mt-1">Resposta em até 2 horas úteis</p>
               <button onClick={() => abrirAgendamento('footer')} className="mt-4 font-semibold text-[var(--c-electric)] hover:underline">
-                Agendar reunião →
+                Receber consultoria gratuita →
               </button>
             </div>
           </div>
