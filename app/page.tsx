@@ -55,6 +55,18 @@ const PRODUTOS = [
   },
 ]
 
+// Campanha AUTOMÓVEL no Google Ads. O Google acrescenta gad_campaignid a todo
+// clique, então o produto certo abre mesmo sem mexer na URL do anúncio.
+const CAMPANHA_AUTOMOVEL = '24221804869'
+
+function produtoDaUrl(search: string): BemType | null {
+  const p = new URLSearchParams(search)
+  const produto = p.get('produto')
+  if (produto === 'imovel' || produto === 'carro' || produto === 'negocio') return produto
+  if (p.get('gad_campaignid') === CAMPANHA_AUTOMOVEL) return 'carro'
+  return null
+}
+
 const ETAPAS = [
   {
     n: '01',
@@ -236,13 +248,22 @@ export default function LandingPage() {
     }
   }, [modalAberto])
 
-  // Qual porta o visitante usou. Definido no primeiro render do cliente para
-  // não divergir do HTML do servidor.
+  // Qual porta e qual produto o visitante usou. Definido no primeiro render do
+  // cliente para não divergir do HTML do servidor.
   useEffect(() => {
     const p = lerPorta(window.location.search)
     if (p !== 'sonho') {
       setPorta(p)
       trackEvent('porta_aberta', { porta: p })
+    }
+
+    // Quem clicou no anúncio de automóvel chegava numa página aberta em imóvel:
+    // casa no fundo, R$ 400 mil e "o endereço que você quer chamar de seu".
+    // Nas gravações, gente trocando para Automóvel nos primeiros segundos.
+    const idx = PRODUTOS.findIndex((x) => x.id === produtoDaUrl(window.location.search))
+    if (idx > 0) {
+      setProdutoIdx(idx)
+      setValorSim(PRODUTOS[idx].inicial)
     }
   }, [])
 
