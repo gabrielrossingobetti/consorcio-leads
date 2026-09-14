@@ -34,6 +34,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const analyticsEnabled = process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true" ||
+    (process.env.VERCEL_ENV === "production" && process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== "false");
+
   return (
     <html
       lang="pt-BR"

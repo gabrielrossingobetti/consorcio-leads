@@ -1,8 +1,6 @@
 name: Landing validation
 
 on:
-  push:
-    branches: ['codex/lidera-qualificacao-conversao']
   pull_request:
     branches: [main]
 
