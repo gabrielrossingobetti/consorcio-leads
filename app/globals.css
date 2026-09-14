@@ -32,8 +32,6 @@
   --c-ink-faint: #4A6080;
 
   /* Tipografia */
-  --font-display: var(--font-display), 'Syne', system-ui, sans-serif;
-  --font-body:    var(--font-body), 'DM Sans', system-ui, sans-serif;
   --font-numeric: var(--font-mono), 'JetBrains Mono', monospace;
 
   /* Compat com o resto do app */

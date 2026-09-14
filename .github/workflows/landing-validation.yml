@@ -1,0 +1,35 @@
+name: Landing validation
+
+on:
+  push:
+    branches: ['codex/lidera-qualificacao-conversao']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: isolated-build-placeholder
+      NEXT_PUBLIC_ENABLE_ANALYTICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm test
+      - name: Lint modified landing and capture files
+        run: >-
+          npx eslint app/page.tsx app/consorcio-veiculo/page.tsx
+          app/consorcio-imovel/page.tsx app/privacidade/page.tsx
+          app/api/planejamento/route.ts app/layout.tsx next.config.ts
+          components/landing/LideraLanding.tsx components/landing/PlanoForm.tsx
+          lib/planejamento.mjs lib/atribuicao.ts lib/gtag.ts tests/*.test.mjs
+      - run: npm run build
