@@ -2,14 +2,14 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   validarPlanejamento, notasPlanejamento, lerAtribuicao,
-  ORCAMENTOS, PRODUTOS_PLANO,
+  ORCAMENTOS, PRODUTOS_PLANO, linkWhatsApp,
 } from '../lib/planejamento.mjs'
 
 export const pedidoValido = () => ({
   request_id: 'b85dbbce-e7a9-4cba-96d1-094390b19994',
   nome: 'Pessoa de Teste', whatsapp: '(11) 98765-4321',
   bem: 'carro', valor: 100000, orcamento: ORCAMENTOS[1],
-  momento: 'flexivel', lance: 'sem_reserva',
+  momento: 'flexivel', lance: 'sem_reserva', intencao: 'avaliar_plano',
   consentimento: true, ciente_contemplacao: true,
   atribuicao: { gclid: 'click-teste', utm_campaign: 'automoveis' },
 })
@@ -33,6 +33,7 @@ test('não aceita produto, valores ou respostas manipulados', () => {
     { bem: 'emprestimo' }, { valor: 0 }, { valor: Infinity },
     { valor: PRODUTOS_PLANO.carro.max + 1 }, { valor: '100000' },
     { orcamento: 'qualquer' }, { momento: 'garantido' }, { lance: '__proto__' },
+    { intencao: 'qualificado' }, { intencao: undefined },
   ]) assert.equal(validarPlanejamento({ ...pedidoValido(), ...extra }).ok, false)
   assert.equal(validarPlanejamento({ ...pedidoValido(), bem: 'imovel', valor: 800000 }).ok, true)
 })
@@ -71,4 +72,21 @@ test('origem usa lista permitida e limita tamanho', () => {
   assert.deepEqual(lerAtribuicao('?gclid=abc&gbraid=xyz&utm_term=consorcio+carro&nome=Teste'), {
     utm_term: 'consorcio carro', gclid: 'abc', gbraid: 'xyz',
   })
+})
+
+test('as duas intenções vão ao mesmo WhatsApp com contexto, sem dados pessoais na URL', () => {
+  const pronto = new URL(linkWhatsApp(pedidoValido()))
+  const aprender = new URL(linkWhatsApp({ ...pedidoValido(), intencao: 'entender_consorcio' }))
+  assert.equal(pronto.origin, 'https://wa.me')
+  assert.equal(pronto.pathname, aprender.pathname)
+  assert.match(pronto.searchParams.get('text'), /quero avaliar um plano para contratar/)
+  assert.match(aprender.searchParams.get('text'), /Quero entender como funciona/)
+  for (const url of [pronto, aprender]) {
+    const mensagem = url.searchParams.get('text')
+    assert.match(mensagem, /sem data garantida/)
+    assert.match(mensagem, /automóvel/)
+    assert.equal(mensagem.includes('Pessoa de Teste'), false)
+    assert.equal(mensagem.includes('11987654321'), false)
+    assert.equal(mensagem.includes('click-teste'), false)
+  }
 })

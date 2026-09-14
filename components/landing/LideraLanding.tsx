@@ -92,7 +92,7 @@ export default function LideraLanding({
             <a href="#como-funciona">Como funciona</a>
             <a href="#duvidas">Dúvidas</a>
           </nav>
-          <a className="lp-nav-cta" href="#planejar">Planejar minha compra <ArrowRight size={17} aria-hidden="true" /></a>
+          <a className="lp-nav-cta" href="#planejar">Planejar pelo WhatsApp <ArrowRight size={17} aria-hidden="true" /></a>
         </div>
       </header>
 
@@ -111,7 +111,7 @@ export default function LideraLanding({
                 <p className="lp-product-kicker">CONSÓRCIO DE {produto === 'carro' ? 'AUTOMÓVEL' : 'IMÓVEL'}</p>
                 <h1>{atual.titulo}<br /><span>No seu ritmo.</span></h1>
                 <p className="lp-hero-description">{atual.descricao}</p>
-                <a href="#planejar" className="lp-button">Quero planejar minha compra <ArrowRight size={20} aria-hidden="true" /></a>
+                <a href="#planejar" className="lp-button">Quero atendimento no WhatsApp <ArrowRight size={20} aria-hidden="true" /></a>
                 <p className="lp-hero-footnote"><Check size={15} aria-hidden="true" /> Orientação gratuita e sem compromisso</p>
                 {origemCarta && <p className="lp-notice">Você está conhecendo um consórcio ainda não contemplado. Esta página não oferece carta contemplada nem garante crédito imediato.</p>}
               </div>
@@ -157,11 +157,11 @@ export default function LideraLanding({
             <div className="lp-planner-copy">
               <p className="lp-eyebrow"><span className="lp-live-dot" /> O PRÓXIMO PASSO É SEU</p>
               <h2>Seu plano começa<br />com <span>você.</span></h2>
-              <p>Antes de falar em parcelas, vamos entender seu objetivo. Assim, a conversa começa com o que realmente importa para a sua compra.</p>
+              <p>Já conhece consórcio ou quer entender melhor? Conte seu objetivo e continue no WhatsApp. A conversa começa no seu momento, sem exigir agendamento.</p>
               <ul className="lp-benefits">
                 <li><span><Check size={16} aria-hidden="true" /></span>Crédito alinhado ao que você quer comprar</li>
-                <li><span><Check size={16} aria-hidden="true" /></span>Conversa sobre seu orçamento e seu momento</li>
-                <li><span><Check size={16} aria-hidden="true" /></span>Explicação das condições antes de qualquer decisão</li>
+                <li><span><Check size={16} aria-hidden="true" /></span>Seu objetivo chega junto na mensagem</li>
+                <li><span><Check size={16} aria-hidden="true" /></span>Atendimento no WhatsApp, sem reunião obrigatória</li>
               </ul>
               <div className="lp-consultant"><span className="lp-consultant-avatar">G</span><p><strong>Gabriel Rossin Gobetti</strong><span>Atendimento da Consórcio Lidera</span></p></div>
               <p className="lp-planner-note">Precisa comprar imediatamente? Conte isso no formulário. A contemplação no consórcio não tem data garantida.</p>
@@ -181,7 +181,7 @@ export default function LideraLanding({
 
         <section className="lp-faq-section" id="duvidas">
           <div className="lp-container lp-faq-grid">
-            <div><p className="lp-eyebrow">SEM COMPLICAR</p><h2>Suas dúvidas<br />merecem <span>respostas.</span></h2><p>A compra começa com informação.</p><a href="#planejar" className="lp-text-link">Quero conversar sobre meu plano <ArrowRight size={18} aria-hidden="true" /></a></div>
+            <div><p className="lp-eyebrow">SEM COMPLICAR</p><h2>Suas dúvidas<br />merecem <span>respostas.</span></h2><p>A compra começa com informação.</p><a href="#planejar" className="lp-text-link">Quero conversar pelo WhatsApp <ArrowRight size={18} aria-hidden="true" /></a></div>
             <div className="lp-faq-list">
               {[
                 ['Isso é consórcio ou financiamento?', 'É consórcio: uma modalidade de compra planejada em grupo. O crédito só pode ser utilizado após a contemplação e o cumprimento das condições contratuais. Não é um empréstimo ou financiamento com liberação imediata.'],
@@ -201,7 +201,7 @@ export default function LideraLanding({
           <Link className="lp-button lp-button-outline" href={PRODUTOS[outro].caminho}>Conhecer consórcio de {outro === 'imovel' ? 'imóvel' : 'automóvel'} <ArrowRight size={18} aria-hidden="true" /></Link>
         </section>
         <section className="lp-final-cta">
-          <div className="lp-container"><p className="lp-eyebrow">UM NOVO CAPÍTULO COMEÇA COM UMA ESCOLHA</p><h2>O próximo passo<br />tem a sua direção.</h2><a href="#planejar" className="lp-button lp-button-light">Começar meu planejamento <ArrowRight size={20} aria-hidden="true" /></a></div>
+          <div className="lp-container"><p className="lp-eyebrow">UM NOVO CAPÍTULO COMEÇA COM UMA ESCOLHA</p><h2>O próximo passo<br />tem a sua direção.</h2><a href="#planejar" className="lp-button lp-button-light">Começar pelo WhatsApp <ArrowRight size={20} aria-hidden="true" /></a></div>
           <span className="lp-final-ring" aria-hidden="true" />
         </section>
       </main>
@@ -214,7 +214,7 @@ export default function LideraLanding({
           <div className="lp-footer-bottom"><span>© {new Date().getFullYear()} Consórcio Lidera</span><span>Atendimento: Gabriel Rossin Gobetti</span></div>
         </div>
       </footer>
-      <a href="#planejar" className={'lp-mobile-cta' + (formVisivel ? ' is-hidden' : '')} tabIndex={formVisivel ? -1 : undefined} aria-hidden={formVisivel || undefined}>Planejar meu {produto === 'carro' ? 'carro' : 'imóvel'} <ArrowRight size={18} aria-hidden="true" /></a>
+      <a href="#planejar" className={'lp-mobile-cta' + (formVisivel ? ' is-hidden' : '')} tabIndex={formVisivel ? -1 : undefined} aria-hidden={formVisivel || undefined}>Planejar pelo WhatsApp <ArrowRight size={18} aria-hidden="true" /></a>
     </div>
   )
 }

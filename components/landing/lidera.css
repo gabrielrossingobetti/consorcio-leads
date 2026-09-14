@@ -132,7 +132,7 @@
 .lidera-site .lp-form-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
 .lidera-site .lp-form-top .lp-eyebrow { font-size: 9px; color: var(--lp-blue); }
 .lidera-site .lp-step-count { font-size: 10px; color: var(--lp-muted); font-weight: 650; }
-.lidera-site .lp-stepper { margin: 0 0 28px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.lidera-site .lp-stepper { margin: 0 0 28px; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 .lidera-site .lp-stepper li { font-size: 9px; color: var(--lp-muted); }
 .lidera-site .lp-stepper li > span { display: block; height: 3px; border-radius: 4px; background: #e4e9f2; margin-bottom: 9px; }
 .lidera-site .lp-stepper li.is-active { color: var(--lp-blue); }
@@ -298,3 +298,10 @@
   .lidera-site *, .lidera-site *::before, .lidera-site *::after { animation: none !important; transition: none !important; }
   html:has(.lidera-site) { scroll-behavior: auto; }
 }
+
+.lidera-site .lp-intent-options { padding: 0; margin: 22px 0 0; border: 0; min-width: 0; }
+.lidera-site .lp-intent-options legend { padding: 0; margin-bottom: 9px; }
+.lidera-site .lp-intent-options label { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--lp-line); border-radius: 9px; margin-bottom: 8px; cursor: pointer; font-size: 11px; line-height: 1.6; }
+.lidera-site .lp-intent-options label.is-selected { border-color: var(--lp-blue); background: var(--lp-pale); }
+.lidera-site .lp-form .lp-intent-options input[type="radio"] { width: 16px; height: 16px; min-height: 0; padding: 0; margin: 0; accent-color: var(--lp-blue); flex-shrink: 0; }
+.lidera-site .lp-contact-grid { display: grid; gap: 0; }

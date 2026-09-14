@@ -6,23 +6,22 @@ import { ArrowRight, Check } from 'lucide-react'
 import { getAtribuicao } from '@/lib/atribuicao'
 import { trackEvent } from '@/lib/gtag'
 import {
-  LANCES, MOMENTOS, ORCAMENTOS, PRODUTOS_PLANO,
-  validarPlanejamento, type ProdutoPlano,
+  ATENDIMENTOS, MOMENTOS, ORCAMENTOS, PRODUTOS_PLANO,
+  linkWhatsApp, validarPlanejamento, type ProdutoPlano,
 } from '@/lib/planejamento.mjs'
 
-const WHATSAPP_CONSULTOR = '5511993929660'
 const dinheiro = (valor: number) =>
   valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
 
-type Confirmacao = { id: string; valor: number; orcamento: string; momento: string; lance: string }
+type Confirmacao = { id: string; valor: number; orcamento: string; url: string }
 
 export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   const config = PRODUTOS_PLANO[produto]
   const [etapa, setEtapa] = useState(1)
   const [valor, setValor] = useState(config.inicial)
+  const [intencao, setIntencao] = useState('')
   const [orcamento, setOrcamento] = useState('')
   const [momento, setMomento] = useState('')
-  const [lance, setLance] = useState('')
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [consentimento, setConsentimento] = useState(false)
@@ -42,21 +41,19 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
 
   function continuar() {
     setErro('')
-    if (etapa === 2 && (!orcamento || !momento || !lance)) {
-      setErro('Escolha uma resposta em cada campo para continuar.')
-      return
-    }
-    setEtapa(etapa + 1)
+    if (!intencao) { setErro('Escolha como podemos ajudar no WhatsApp.'); return }
+    setEtapa(2)
   }
 
   async function enviar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (etapa < 3) { continuar(); return }
+    if (etapa === 1) { continuar(); return }
     if (bloqueado.current) return
     setErro('')
     const payload = {
-      nome, whatsapp, bem: produto, valor, orcamento, momento, lance,
-      consentimento, ciente_contemplacao: ciente, website, atribuicao: getAtribuicao(),
+      nome, whatsapp, bem: produto, valor, orcamento, momento, intencao,
+      lance: 'nao_informado', consentimento, ciente_contemplacao: ciente,
+      website, atribuicao: getAtribuicao(),
     }
     const assinatura = JSON.stringify(payload)
     if (tentativa.current?.assinatura !== assinatura) {
@@ -79,20 +76,41 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
       })
       const resultado = await resposta.json()
       if (!resposta.ok || resultado.success !== true || typeof resultado.id !== 'string') {
-        throw new Error(resultado.error || 'Não conseguimos confirmar o envio. Tente novamente.')
+        setErro(typeof resultado.error === 'string'
+          ? resultado.error
+          : 'Não conseguimos confirmar o envio. Tente novamente.')
+        return
       }
-      setConfirmacao({ id: resultado.id, valor, orcamento, momento, lance })
+      const url = linkWhatsApp({ ...validacao.data, request_id: resultado.id })
+      setConfirmacao({ id: resultado.id, valor, orcamento, url })
       setNome('')
       setWhatsapp('')
-      // Um pedido salvo ainda precisa ser validado pelo atendimento.
-      // Não enviar dados pessoais nem o crédito como se fosse receita.
-      try {
-        trackEvent('planejamento_enviado', { bem: produto, momento, event_id: resultado.id })
-      } catch { /* Uma falha de analytics não deve invalidar um contato salvo. */ }
-    } catch (error) {
-      setErro(error instanceof Error && error.name !== 'AbortError'
-        ? error.message
-        : 'Não conseguimos confirmar o envio. Seus dados foram mantidos; tente novamente.')
+
+      // Navegar na mesma aba evita depender de popup após uma resposta assíncrona.
+      // O callback dá tempo ao evento confirmado; o limite impede que analytics
+      // bloqueado interrompa o atendimento. A mensagem ainda é enviada pelo usuário.
+      let encaminhado = false
+      const abrir = () => {
+        if (encaminhado) return
+        encaminhado = true
+        try {
+          trackEvent('whatsapp_aberto', { bem: produto, intencao, origem: 'apos_pedido_salvo' })
+        } catch { /* Analytics não bloqueia a conversa. */ }
+        try { window.location.assign(url) } catch { /* O link de apoio permanece visível. */ }
+      }
+      if (window.gtag) {
+        window.setTimeout(abrir, 900)
+        try {
+          trackEvent('planejamento_enviado', {
+            bem: produto, momento, intencao, event_id: resultado.id,
+            event_callback: abrir, event_timeout: 800,
+          })
+        } catch { abrir() }
+      } else {
+        abrir()
+      }
+    } catch {
+      setErro('Não conseguimos confirmar o envio. Seus dados foram mantidos; tente novamente.')
     } finally {
       window.clearTimeout(timeout)
       bloqueado.current = false
@@ -101,37 +119,24 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   }
 
   if (confirmacao) {
-    const mensagem = [
-      'Olá! Enviei meu pedido de planejamento na Lidera.',
-      'Produto: ' + (produto === 'carro' ? 'automóvel' : 'imóvel') + '.',
-      'Crédito desejado: ' + dinheiro(confirmacao.valor) + '.',
-      'Orçamento mensal: ' + confirmacao.orcamento + '.',
-      'Momento: ' + MOMENTOS[confirmacao.momento as keyof typeof MOMENTOS] + '.',
-      'Reserva: ' + LANCES[confirmacao.lance as keyof typeof LANCES] + '.',
-      'Sei que a contemplação depende de sorteio ou lance, sem data garantida.',
-      'Protocolo: ' + confirmacao.id,
-    ].join('\n')
     return (
       <div className="lp-form lp-success" role="status">
         <span className="lp-success-icon"><Check aria-hidden="true" /></span>
-        <p className="lp-eyebrow">PRIMEIRO PASSO DADO</p>
-        <h3 ref={titulo} tabIndex={-1}>Seu pedido foi salvo.</h3>
-        <p>Você já pode conversar com o consultor para avaliar as opções de consórcio e as condições do seu plano.</p>
+        <p className="lp-eyebrow">PEDIDO SALVO</p>
+        <h3 ref={titulo} tabIndex={-1}>Vamos para o WhatsApp.</h3>
+        <p>Estamos abrindo seu atendimento com o contexto do seu plano. Revise a mensagem e envie para iniciar a conversa.</p>
         <div className="lp-summary">
           <span>Seu objetivo</span>
           <strong>{dinheiro(confirmacao.valor)} em {produto === 'carro' ? 'automóvel' : 'imóvel'}</strong>
           <small>Orçamento informado: {confirmacao.orcamento}</small>
         </div>
         <a
-          className="lp-button lp-button-full"
-          href={'https://wa.me/' + WHATSAPP_CONSULTOR + '?text=' + encodeURIComponent(mensagem)}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => trackEvent('whatsapp_aberto', { bem: produto, origem: 'planejamento_salvo' })}
+          className="lp-button lp-button-full" href={confirmacao.url}
+          onClick={() => trackEvent('whatsapp_aberto', { bem: produto, intencao, origem: 'link_de_apoio' })}
         >
-          Continuar no WhatsApp <ArrowRight size={19} aria-hidden="true" />
+          Abrir WhatsApp <ArrowRight size={19} aria-hidden="true" />
         </a>
-        <p className="lp-small">O WhatsApp abre com uma mensagem para você revisar e enviar.</p>
+        <p className="lp-small">Se o WhatsApp não abriu automaticamente, use o botão acima.</p>
       </div>
     )
   }
@@ -139,11 +144,11 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   return (
     <form className="lp-form" onSubmit={enviar} aria-busy={salvando} aria-describedby={erro ? 'lp-form-error' : undefined}>
       <div className="lp-form-top">
-        <span className="lp-eyebrow">SEU PLANEJAMENTO</span>
-        <span className="lp-step-count">0{etapa} / 03</span>
+        <span className="lp-eyebrow">SEU PLANO, PELO WHATSAPP</span>
+        <span className="lp-step-count">0{etapa} / 02</span>
       </div>
       <ol className="lp-stepper" aria-label="Etapas do pedido">
-        {['Objetivo', 'Seu momento', 'Contato'].map((label, index) => (
+        {['Seu objetivo', 'Seu contato'].map((label, index) => (
           <li key={label} aria-current={etapa === index + 1 ? 'step' : undefined} className={etapa >= index + 1 ? 'is-active' : ''}>
             <span />{label}
           </li>
@@ -152,8 +157,8 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
 
       {etapa === 1 && (
         <div className="lp-form-stage">
-          <h3 ref={titulo} tabIndex={-1}>Qual é o tamanho do seu próximo passo?</h3>
-          <p>Escolha o crédito que você gostaria de ter para {produto === 'carro' ? 'o seu carro' : 'o seu imóvel'}.</p>
+          <h3 ref={titulo} tabIndex={-1}>O que você quer conquistar?</h3>
+          <p>Escolha o crédito desejado para {produto === 'carro' ? 'o seu carro' : 'o seu imóvel'} e conte como podemos ajudar.</p>
           <label htmlFor="credito-desejado" className="lp-field-label">Crédito desejado</label>
           <output className="lp-credit" htmlFor="credito-desejado">{dinheiro(valor)}</output>
           <input
@@ -165,48 +170,49 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
           <div className="lp-range-labels"><span>{dinheiro(config.min)}</span><span>{dinheiro(config.max)}</span></div>
           <div className="lp-presets" aria-label="Sugestões de crédito">
             {config.presets.map((preset) => (
-              <button key={preset} type="button" aria-pressed={valor === preset} onClick={() => setValor(preset)}>
-                {dinheiro(preset)}
-              </button>
+              <button key={preset} type="button" aria-pressed={valor === preset} onClick={() => setValor(preset)}>{dinheiro(preset)}</button>
             ))}
           </div>
-          <p className="lp-note">Este valor é seu objetivo de compra. As parcelas e condições serão apresentadas pelo consultor, conforme o grupo disponível.</p>
+          <fieldset className="lp-intent-options">
+            <legend className="lp-field-label">Como podemos ajudar você?</legend>
+            {Object.entries(ATENDIMENTOS).map(([key, label]) => (
+              <label key={key} className={intencao === key ? 'is-selected' : ''}>
+                <input type="radio" name="intencao" value={key} checked={intencao === key} required onChange={() => setIntencao(key)} />
+                <span>{label}</span>
+              </label>
+            ))}
+          </fieldset>
+          <p className="lp-note">O crédito selecionado é um objetivo de compra. Parcelas, taxas e condições serão apresentadas no atendimento, conforme o plano disponível.</p>
         </div>
       )}
 
       {etapa === 2 && (
         <div className="lp-form-stage">
-          <h3 ref={titulo} tabIndex={-1}>Um plano começa com o seu momento.</h3>
-          <p>Essas respostas ajudam o consultor a entender o que faz sentido para você.</p>
+          <h3 ref={titulo} tabIndex={-1}>{intencao === 'avaliar_plano' ? 'Vamos conversar sobre seu plano.' : 'Vamos esclarecer suas dúvidas.'}</h3>
+          <p>Deixe seu contato e duas informações para começar a conversa com mais contexto.</p>
+          <div className="lp-contact-grid">
+            <div>
+              <label className="lp-field-label" htmlFor="nome">Seu nome</label>
+              <input id="nome" name="name" autoComplete="name" required minLength={2} maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Como podemos chamar você?" disabled={salvando} />
+            </div>
+            <div>
+              <label className="lp-field-label" htmlFor="whatsapp">WhatsApp com DDD</label>
+              <input id="whatsapp" name="tel" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={20} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(11) 99999-9999" disabled={salvando} />
+            </div>
+          </div>
           <label className="lp-field-label" htmlFor="orcamento">Quanto cabe no seu orçamento por mês?</label>
-          <select id="orcamento" required value={orcamento} onChange={(e) => setOrcamento(e.target.value)}>
+          <select id="orcamento" required value={orcamento} onChange={(e) => setOrcamento(e.target.value)} disabled={salvando}>
             <option value="">Selecione uma faixa</option>
             {ORCAMENTOS.map((item) => <option key={item}>{item}</option>)}
           </select>
           <label className="lp-field-label" htmlFor="momento">Quando você precisa do bem?</label>
-          <select id="momento" required value={momento} onChange={(e) => setMomento(e.target.value)}>
+          <select id="momento" required value={momento} onChange={(e) => setMomento(e.target.value)} disabled={salvando}>
             <option value="">Selecione seu momento</option>
             {Object.entries(MOMENTOS).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
           </select>
           {momento === 'imediato' && (
-            <p className="lp-notice" role="status">Consórcio não garante a liberação imediata do crédito. Podemos conversar para esclarecer isso antes de qualquer contratação.</p>
+            <p className="lp-notice" role="status">Consórcio não garante a liberação imediata do crédito. Vamos esclarecer isso antes de avaliar qualquer contratação.</p>
           )}
-          <label className="lp-field-label" htmlFor="lance">Você tem reserva para um possível lance?</label>
-          <select id="lance" required value={lance} onChange={(e) => setLance(e.target.value)}>
-            <option value="">Selecione uma opção</option>
-            {Object.entries(LANCES).map(([key, label]) => <option key={key} value={key}>{label}</option>)}
-          </select>
-        </div>
-      )}
-
-      {etapa === 3 && (
-        <div className="lp-form-stage">
-          <h3 ref={titulo} tabIndex={-1}>Vamos conversar sobre seu plano?</h3>
-          <p>Deixe seu contato para receber orientação sobre o consórcio de {produto === 'carro' ? 'automóvel' : 'imóvel'}.</p>
-          <label className="lp-field-label" htmlFor="nome">Como podemos chamar você?</label>
-          <input id="nome" name="name" autoComplete="name" required minLength={2} maxLength={80} value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Seu nome" disabled={salvando} />
-          <label className="lp-field-label" htmlFor="whatsapp">WhatsApp com DDD</label>
-          <input id="whatsapp" name="tel" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={20} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(11) 99999-9999" disabled={salvando} />
           <div className="lp-honeypot" aria-hidden="true">
             <label htmlFor="website">Deixe este campo em branco</label>
             <input id="website" name="website" autoComplete="off" tabIndex={-1} value={website} onChange={(e) => setWebsite(e.target.value)} />
@@ -224,13 +230,13 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
 
       {erro && <p id="lp-form-error" className="lp-error" role="alert">{erro}</p>}
       <div className="lp-form-actions">
-        {etapa > 1 && <button className="lp-back" type="button" disabled={salvando} onClick={() => { setErro(''); setEtapa(etapa - 1) }}>Voltar</button>}
+        {etapa > 1 && <button className="lp-back" type="button" disabled={salvando} onClick={() => { setErro(''); setEtapa(1) }}>Voltar</button>}
         <button type="submit" className="lp-button lp-button-full" disabled={salvando}>
-          {salvando ? 'Salvando seu pedido…' : etapa === 3 ? 'Quero meu planejamento' : 'Continuar'}
+          {salvando ? 'Preparando seu atendimento…' : etapa === 2 ? 'Ir para o WhatsApp' : 'Continuar'}
           {!salvando && <ArrowRight size={19} aria-hidden="true" />}
         </button>
       </div>
-      <p className="lp-small">Sem compromisso. Este pedido não é uma contratação.</p>
+      <p className="lp-small">{etapa === 2 ? 'Depois de salvar, abriremos o WhatsApp. Você revisa e envia a mensagem.' : 'Sem reunião obrigatória. Atendimento no WhatsApp.'}</p>
     </form>
   )
 }

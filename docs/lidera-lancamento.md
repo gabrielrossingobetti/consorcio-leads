@@ -1,6 +1,6 @@
 # Lidera: nova landing e medição de qualidade
 
-Versão preparada em 14/09/2026. A implementação é uma proposta em branch para revisão. Este documento não é uma auditoria da conta Google Ads: não houve acesso aos relatórios privados nem alteração de anúncios, orçamento, lances ou status de campanhas.
+Versão preparada em 14/09/2026. A implementação é uma proposta em branch para revisão. A continuação por WhatsApp e o formulário em duas etapas incorporam a orientação do anunciante. Este documento não é uma auditoria da conta Google Ads: não houve acesso aos relatórios privados nem alteração de anúncios, orçamento, lances ou status de campanhas.
 
 ## O que motivou a mudança
 
@@ -24,13 +24,13 @@ A nova landing prioriza uma apresentação explícita de consórcio, distingue c
 
 A escolha de produto atualiza o endereço e reinicia o formulário com a faixa correspondente. Imagens continuam sendo ilustrativas, sem uso de marcas, peças ou ativos da Embracon. A referência orienta hierarquia visual, destaque ao produto e clareza das chamadas; não permite concluir que a página resultante converterá mais sem experimento.
 
-O novo fluxo contém três etapas: crédito desejado; orçamento, urgência e reserva; nome, WhatsApp e confirmações. Os valores são objetivos, não ofertas de parcela. O pedido só é confirmado após resposta de gravação bem-sucedida. Erros preservam os campos e uma repetição com a mesma chave não sobrescreve outro contato.
+O novo fluxo contém duas etapas: objetivo de crédito e intenção de atendimento; contato, orçamento, urgência e confirmações. A reserva para lance fica para a conversa no WhatsApp e é registrada no pedido inicial como não informada. Os valores são objetivos, não ofertas de parcela. O pedido só é confirmado após resposta de gravação bem-sucedida. Erros preservam os campos e uma repetição com a mesma chave não sobrescreve outro contato.
 
 ## Onde ficam os pedidos
 
 POST /api/planejamento grava em leads_captacao usando SUPABASE_SERVICE_ROLE_KEY somente no servidor. A coluna notas, já prevista no supabase_setup.sql, recebe JSON com versão, respostas, origem, confirmações e identificadores de campanha. O status inicial é novo.
 
-O novo formulário não agenda uma reunião nem dispara notificação por e-mail. O pedido fica no Supabase e a tela de sucesso oferece continuação voluntária no WhatsApp. O painel legado de eventos não foi transformado em CRM de qualificação. Antes do lançamento, definir quem acompanha esses registros ou configurar a rotina de notificação já adotada pelo atendimento.
+O novo formulário não agenda uma reunião nem dispara notificação por e-mail. O pedido fica no Supabase e, após confirmação, a página abre o WhatsApp na mesma aba. A mensagem é adaptada a quem já conhece e quer avaliar um plano ou a quem deseja entender a modalidade. A pessoa ainda revisa e envia a mensagem. Se a navegação não acontecer, a confirmação mantém um link de apoio. O painel legado de eventos não foi transformado em CRM de qualificação. Antes do lançamento, definir quem acompanha esses registros ou configurar a rotina de notificação já adotada pelo atendimento.
 
 A presença da coluna no arquivo SQL não confirma o esquema do banco em produção. Não foi executada migração nem consulta a dados reais.
 
@@ -39,7 +39,7 @@ A presença da coluna no arquivo SQL não confirma o esquema do banco em produç
 | Sinal | O que realmente significa | Uso proposto |
 | --- | --- | --- |
 | planejamento_enviado | API confirmou o pedido salvo | Medição do formulário; possível meta intermediária durante a implantação |
-| whatsapp_aberto | Pessoa clicou para abrir WhatsApp | Observação; não chamar de lead qualificado |
+| whatsapp_aberto | Tentativa de abertura após pedido salvo ou clique no link de apoio | Observação; não chamar de lead qualificado |
 | Lead qualificado, futuro | Atendimento confirmou contato válido, interesse e adequação | Meta comercial a importar após validar o processo |
 | Venda/adesão, futuro | Resultado confirmado no processo comercial | Ação separada; valor deve representar a economia real do negócio |
 | meeting_scheduled e whatsapp_qualificado | Eventos dos fluxos antigos | Auditar vínculos antes de qualquer alteração na conta |
@@ -103,7 +103,7 @@ A definição proposta de qualificado exige conversa válida, produto compatíve
 
 ## Verificação e lançamento
 
-O workflow Landing validation executa testes de entrada, falhas de gravação, repetição e colisão, lint dos arquivos novos e build do Next. Os testes de API usam dependências isoladas e não contatam produção.
+O workflow Landing validation executa testes de entrada, falhas de gravação, repetição, colisão e mensagens por intenção, lint dos arquivos novos e build do Next. Os testes de API usam dependências isoladas e não contatam produção.
 
 A revisão de renderização em navegador, inclusive em 360/390px e desktop, ainda é necessária. Nesta etapa de continuação não havia terminal ou navegador disponíveis; uma prévia HTML local anterior não pôde ser recuperada. Não há resultado de Lighthouse, Core Web Vitals ou aumento de conversão medido.
 
@@ -117,3 +117,7 @@ Antes de publicar:
 6. Fazer merge e publicação apenas depois de a versão estar revisada. O rollback consiste em reverter o commit da landing e restaurar a configuração de medição correspondente; os pedidos já salvos permanecem no banco.
 
 A landing prepara a captação e a atribuição. A importação de qualificação, a análise quantitativa das campanhas e mudanças de orçamento dependem do acesso à conta e do processo comercial.
+
+## Atendimento por WhatsApp
+
+O caminho e os roteiros de conversa propostos estão em [atendimento-whatsapp.md](atendimento-whatsapp.md). Há uma única saída comercial, com contexto de intenção, sem exigência de reunião. A hipótese de menor atrito deve ser confrontada com taxa de conversa válida e custo por qualificado, sem pressupor ganho de conversão.

@@ -15,7 +15,7 @@ const pedido = () => ({
   request_id: 'b85dbbce-e7a9-4cba-96d1-094390b19994',
   nome: 'Pessoa de Teste', whatsapp: '11987654321',
   bem: 'carro', valor: 100000, orcamento: planejamento.ORCAMENTOS[1],
-  momento: 'flexivel', lance: 'sem_reserva',
+  momento: 'flexivel', lance: 'sem_reserva', intencao: 'avaliar_plano',
   consentimento: true, ciente_contemplacao: true,
   atribuicao: { gclid: 'click-teste' },
 })
