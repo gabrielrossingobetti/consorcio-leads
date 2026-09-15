@@ -24,8 +24,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Consórcio sem juros | Simule e compare com financiamento",
-  description: "Veja quanto você economiza comprando imóvel ou carro por consórcio em vez de financiamento. Simulação gratuita em 30 segundos.",
+  metadataBase: new URL("https://www.consorciolidera.com.br"),
+  title: "Consórcio Lidera | Planeje seu próximo carro ou imóvel",
+  description: "Consórcio para uma compra planejada. Conte seu objetivo, orçamento e momento de compra para receber orientação sem compromisso.",
 };
 
 export default function RootLayout({
@@ -33,12 +34,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const analyticsEnabled = process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true" ||
+    (process.env.VERCEL_ENV === "production" && process.env.NEXT_PUBLIC_ENABLE_ANALYTICS !== "false");
+
   return (
     <html
       lang="pt-BR"
       className={`${syne.variable} ${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
+        {analyticsEnabled && <>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-1826905772"
           strategy="afterInteractive"
@@ -61,6 +66,7 @@ export default function RootLayout({
             })(window, document, "clarity", "script", "wyquou728a");
           `}
         </Script>
+        </>}
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
