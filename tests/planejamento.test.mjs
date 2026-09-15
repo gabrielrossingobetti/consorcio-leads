@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   validarPlanejamento, notasPlanejamento, lerAtribuicao,
-  ORCAMENTOS, PRODUTOS_PLANO, linkWhatsApp,
+  ORCAMENTOS, PRODUTOS_PLANO, linkWhatsApp, calcularLanceEmbutido,
 } from '../lib/planejamento.mjs'
 
 export const pedidoValido = () => ({
@@ -89,4 +89,42 @@ test('as duas intenções vão ao mesmo WhatsApp com contexto, sem dados pessoai
     assert.equal(mensagem.includes('11987654321'), false)
     assert.equal(mensagem.includes('click-teste'), false)
   }
+})
+
+test('exemplo de 25% deduz o lance da carta, incluindo centavos e limites', () => {
+  assert.deepEqual(calcularLanceEmbutido(100000, 25), {
+    credito: 100000, percentual: 25, lance: 25000, creditoParaCompra: 75000,
+  })
+  for (const credito of [30000, 99999, 100001, 400000, 1500000, 100000.03]) {
+    const exemplo = calcularLanceEmbutido(credito, 25)
+    assert.equal(Math.round((exemplo.lance + exemplo.creditoParaCompra) * 100), Math.round(credito * 100))
+    assert.equal(calcularLanceEmbutido(credito, 0).creditoParaCompra, credito)
+  }
+  for (const [credito, percentual] of [[0, 25], [-10, 25], [NaN, 25], [Infinity, 25], [1500001, 25], [100000, 30], [100000, '25']]) {
+    assert.throws(() => calcularLanceEmbutido(credito, percentual), RangeError)
+  }
+})
+
+test('servidor recalcula o exemplo e rejeita percentuais manipulados', () => {
+  const result = validarPlanejamento({ ...pedidoValido(), lance_embutido_percentual: 25,
+    creditoParaCompra: 100000, exemplo_lance_embutido: { lance: 0 } })
+  assert.equal(result.ok, true)
+  const exemplo = JSON.parse(notasPlanejamento(result.data)).exemplo_lance_embutido
+  assert.equal(exemplo.creditoParaCompra, 75000)
+  assert.equal(exemplo.lance, 25000)
+  assert.equal(exemplo.sujeito_as_regras_do_grupo, true)
+  for (const lance_embutido_percentual of [null, '25', 26, -25, {}, true]) {
+    assert.equal(validarPlanejamento({ ...pedidoValido(), lance_embutido_percentual }).ok, false)
+  }
+  assert.equal(JSON.parse(notasPlanejamento(validarPlanejamento(pedidoValido()).data)).exemplo_lance_embutido, null)
+})
+
+test('mensagem leva a simulação escolhida, o crédito restante e a condição do grupo', () => {
+  const mensagem = new URL(linkWhatsApp({ ...pedidoValido(), lance_embutido_percentual: 25 })).searchParams.get('text')
+  assert.match(mensagem, /25\.000,00/)
+  assert.match(mensagem, /75\.000,00/)
+  assert.match(mensagem, /se permitido pelo grupo/)
+  assert.match(mensagem, /se o lance vencer/)
+  const semExemplo = new URL(linkWhatsApp(pedidoValido())).searchParams.get('text')
+  assert.equal(semExemplo.includes('embutido'), false)
 })

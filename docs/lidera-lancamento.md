@@ -1,6 +1,6 @@
 # Lidera: nova landing e medição de qualidade
 
-Versão preparada em 14/09/2026. A implementação é uma proposta em branch para revisão. A continuação por WhatsApp e o formulário em duas etapas incorporam a orientação do anunciante. Este documento não é uma auditoria da conta Google Ads: não houve acesso aos relatórios privados nem alteração de anúncios, orçamento, lances ou status de campanhas.
+Versão revisada em 15/09/2026. A implementação é uma proposta em branch para revisão. A continuação por WhatsApp e o formulário em duas etapas incorporam a orientação do anunciante. Este documento não é uma auditoria da conta Google Ads: não houve acesso aos relatórios privados nem alteração de anúncios, orçamento, lances ou status de campanhas. A revisão de tipografia, experiência e lance embutido está em [revisao-simulador-2026-09-15.md](revisao-simulador-2026-09-15.md).
 
 ## O que motivou a mudança
 
@@ -24,7 +24,7 @@ A nova landing prioriza uma apresentação explícita de consórcio, distingue c
 
 A escolha de produto atualiza o endereço e reinicia o formulário com a faixa correspondente. Imagens continuam sendo ilustrativas, sem uso de marcas, peças ou ativos da Embracon. A referência orienta hierarquia visual, destaque ao produto e clareza das chamadas; não permite concluir que a página resultante converterá mais sem experimento.
 
-O novo fluxo contém duas etapas: objetivo de crédito e intenção de atendimento; contato, orçamento, urgência e confirmações. A reserva para lance fica para a conversa no WhatsApp e é registrada no pedido inicial como não informada. Os valores são objetivos, não ofertas de parcela. O pedido só é confirmado após resposta de gravação bem-sucedida. Erros preservam os campos e uma repetição com a mesma chave não sobrescreve outro contato.
+O novo fluxo contém duas etapas: objetivo de crédito, exemplo opcional de lance embutido e intenção de atendimento; contato, orçamento, urgência e confirmações. A reserva própria fica para a conversa no WhatsApp e é registrada no pedido inicial como não informada. A escolha do exemplo de 25% é registrada separadamente e recalculada no servidor. Os valores são objetivos e contas ilustrativas, não ofertas de parcela. O pedido só é confirmado após resposta de gravação bem-sucedida. Erros preservam os campos e uma repetição com a mesma chave não sobrescreve outro contato.
 
 ## Onde ficam os pedidos
 
@@ -38,6 +38,9 @@ A presença da coluna no arquivo SQL não confirma o esquema do banco em produç
 
 | Sinal | O que realmente significa | Uso proposto |
 | --- | --- | --- |
+| planejamento_iniciado | Primeiro foco ou alteração em um controle do formulário | Diagnóstico de início; não é lead |
+| planejamento_etapa_concluida | Passagem válida da etapa 1 para a etapa 2 | Diagnóstico de abandono |
+| planejamento_erro | Falha de validação, envio ou conexão | Diagnóstico, sem conteúdo dos campos |
 | planejamento_enviado | API confirmou o pedido salvo | Medição do formulário; possível meta intermediária durante a implantação |
 | whatsapp_aberto | Tentativa de abertura após pedido salvo ou clique no link de apoio | Observação; não chamar de lead qualificado |
 | Lead qualificado, futuro | Atendimento confirmou contato válido, interesse e adequação | Meta comercial a importar após validar o processo |
@@ -103,9 +106,9 @@ A definição proposta de qualificado exige conversa válida, produto compatíve
 
 ## Verificação e lançamento
 
-O workflow Landing validation executa testes de entrada, falhas de gravação, repetição, colisão e mensagens por intenção, lint dos arquivos novos e build do Next. Os testes de API usam dependências isoladas e não contatam produção.
+O workflow Landing validation executa testes de entrada, falhas de gravação, repetição, colisão, cálculo de lance embutido e mensagens por intenção, lint dos arquivos novos e build do Next. Os 16 testes e o build de produção passaram localmente em 15/09/2026. Os testes de API usam dependências isoladas e não contatam produção.
 
-A revisão de renderização em navegador, inclusive em 360/390px e desktop, ainda é necessária. Nesta etapa de continuação não havia terminal ou navegador disponíveis; uma prévia HTML local anterior não pôde ser recuperada. Não há resultado de Lighthouse, Core Web Vitals ou aumento de conversão medido.
+A revisão de renderização em navegador, inclusive em 360/390px e desktop, ainda é necessária. O terminal voltou a funcionar nesta etapa e permitiu validar o código. O navegador bloqueou a aplicação local com ERR_BLOCKED_BY_CLIENT; não foi contornado esse bloqueio. Não há resultado de Lighthouse, Core Web Vitals ou aumento de conversão medido.
 
 Antes de publicar:
 

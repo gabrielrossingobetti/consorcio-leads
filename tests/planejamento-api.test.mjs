@@ -100,3 +100,11 @@ test('ausência de credenciais é indisponibilidade, não contato salvo', async 
   assert.equal((await app.send()).status, 503)
   assert.equal(app.calls, 0)
 })
+
+test('API grava o lance recalculado e recusa percentual fora do exemplo', async () => {
+  const app = carregar()
+  assert.equal((await app.send({ ...pedido(), lance_embutido_percentual: 25, creditoParaCompra: 999999 })).status, 201)
+  assert.equal(JSON.parse(app.row.notas).exemplo_lance_embutido.creditoParaCompra, 75000)
+  assert.equal((await app.send({ ...pedido(), lance_embutido_percentual: 50 })).status, 400)
+  assert.equal(app.calls, 1)
+})

@@ -6,18 +6,18 @@ A proposta é um caminho principal: página coerente com o anúncio, objetivo de
 
 | Resposta na página | Como chega no WhatsApp | Primeira abordagem sugerida |
 | --- | --- | --- |
-| Já conheço consórcio e quero avaliar um plano | Mensagem indica que deseja avaliar condições para contratar | Confirmar objetivo e prazo; apresentar somente condições reais de grupos disponíveis |
-| Quero entender como o consórcio funciona | Mensagem pede explicação e ajuda para avaliar adequação | Explicar contemplação, custos e reajustes; verificar se a pessoa pode planejar a compra |
+| Já conheço. Quero avaliar um plano. | Mensagem indica que deseja avaliar condições para contratar | Confirmar objetivo e prazo; apresentar somente condições reais de grupos disponíveis |
+| Quero entender como funciona. | Mensagem pede explicação e ajuda para avaliar adequação | Explicar contemplação, custos e reajustes; verificar se a pessoa pode planejar a compra |
 
 O perfil declarado não é uma classificação automática de lead bom ou ruim. Uma pessoa que ainda não conhece pode fechar; alguém que marca interesse em contratar pode estar buscando crédito imediato.
 
 ## O que a página pede
 
-Etapa 1: crédito desejado e intenção de atendimento.
+Etapa 1: crédito desejado, exemplo opcional de lance embutido de 25% e intenção de atendimento. O valor da carta pode ser digitado ou escolhido pela barra e sugestões. Quando a pessoa explora o exemplo, a mensagem leva o lance e o crédito restante, condicionados às regras do grupo.
 
 Etapa 2: nome, WhatsApp, orçamento mensal e momento de compra, além das confirmações sobre consórcio e contato. Quem não conhece seu orçamento pode selecionar Quero orientação.
 
-Reserva e modalidade de lance ficam para a conversa, reduzindo perguntas antes do atendimento. Necessidade imediata aciona uma explicação de que consórcio não garante crédito na hora; o contato fica sinalizado para esclarecer compatibilidade.
+Reserva própria e condições efetivas do lance ficam para a conversa, reduzindo perguntas antes do atendimento. Explorar o exemplo de lance embutido não declara falta de reserva e não comprova elegibilidade para um grupo. Necessidade imediata aciona uma explicação de que consórcio não garante crédito na hora; o contato fica sinalizado para esclarecer compatibilidade.
 
 Ao clicar em Ir para o WhatsApp, o pedido é validado e salvo. Só então o site solicita abertura do WhatsApp, com limite breve para o evento de análise. Falhas mantêm o formulário para nova tentativa. Há um botão de apoio caso o aplicativo ou navegador não abra o link.
 

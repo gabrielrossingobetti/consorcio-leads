@@ -2,16 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Check } from 'lucide-react'
+import { ArrowRight, Check, ChevronDown, ArrowUpRight } from 'lucide-react'
 import { getAtribuicao } from '@/lib/atribuicao'
 import { trackEvent } from '@/lib/gtag'
 import {
   ATENDIMENTOS, MOMENTOS, ORCAMENTOS, PRODUTOS_PLANO,
-  linkWhatsApp, validarPlanejamento, type ProdutoPlano,
+  calcularLanceEmbutido, linkWhatsApp, validarPlanejamento, type ProdutoPlano,
 } from '@/lib/planejamento.mjs'
 
 const dinheiro = (valor: number) =>
-  valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+  valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: Number.isInteger(valor) ? 0 : 2, maximumFractionDigits: 2 })
 
 type Confirmacao = { id: string; valor: number; orcamento: string; url: string }
 
@@ -19,6 +19,9 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   const config = PRODUTOS_PLANO[produto]
   const [etapa, setEtapa] = useState(1)
   const [valor, setValor] = useState(config.inicial)
+  const [creditoDigitado, setCreditoDigitado] = useState(config.inicial.toLocaleString('pt-BR'))
+  const [creditoInvalido, setCreditoInvalido] = useState(false)
+  const [embutido, setEmbutido] = useState(false)
   const [intencao, setIntencao] = useState('')
   const [orcamento, setOrcamento] = useState('')
   const [momento, setMomento] = useState('')
@@ -31,17 +34,56 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   const [erro, setErro] = useState('')
   const [confirmacao, setConfirmacao] = useState<Confirmacao | null>(null)
   const titulo = useRef<HTMLHeadingElement>(null)
+  const etapaAnterior = useRef(1)
   const bloqueado = useRef(false)
   const tentativa = useRef<{ assinatura: string; id: string } | null>(null)
+  const iniciado = useRef(false)
+  const etapaConcluida = useRef(false)
+  const exemplo = calcularLanceEmbutido(valor, embutido ? 25 : 0)
 
   useEffect(() => { getAtribuicao() }, [])
   useEffect(() => {
-    if (etapa > 1 || confirmacao) titulo.current?.focus({ preventScroll: true })
+    if (etapaAnterior.current !== etapa || confirmacao) titulo.current?.focus()
+    etapaAnterior.current = etapa
   }, [etapa, confirmacao])
+
+  function medir(nomeEvento: string, parametros: Record<string, unknown> = {}) {
+    // Somente etapas e escolhas de navegação; sem contato, orçamento ou URL.
+    try { trackEvent(nomeEvento, { bem: produto, ...parametros }) } catch { /* Medição não bloqueia o formulário. */ }
+  }
+
+  function iniciar() {
+    if (iniciado.current) return
+    iniciado.current = true
+    medir('planejamento_iniciado')
+  }
+
+  function escolherCredito(proximo: number) {
+    setValor(proximo)
+    setCreditoDigitado(proximo.toLocaleString('pt-BR'))
+    setCreditoInvalido(false)
+  }
+
+  function digitarCredito(texto: string) {
+    setCreditoDigitado(texto)
+    const normalizado = texto.trim().replace(/^R\$\s*/, '').replace(/\./g, '').replace(/,00$/, '')
+    const proximo = /^\d+$/.test(normalizado) ? Number(normalizado) : NaN
+    const invalido = !Number.isSafeInteger(proximo) || proximo < config.min || proximo > config.max
+    setCreditoInvalido(invalido)
+    if (!invalido) setValor(proximo)
+  }
 
   function continuar() {
     setErro('')
+    if (creditoInvalido) {
+      document.getElementById('credito-desejado')?.focus()
+      return
+    }
     if (!intencao) { setErro('Escolha como podemos ajudar no WhatsApp.'); return }
+    if (!etapaConcluida.current) {
+      medir('planejamento_etapa_concluida', { etapa: 1, intencao })
+      etapaConcluida.current = true
+    }
     setEtapa(2)
   }
 
@@ -52,6 +94,7 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
     setErro('')
     const payload = {
       nome, whatsapp, bem: produto, valor, orcamento, momento, intencao,
+      lance_embutido_percentual: embutido ? 25 : 0,
       lance: 'nao_informado', consentimento, ciente_contemplacao: ciente,
       website, atribuicao: getAtribuicao(),
     }
@@ -61,7 +104,11 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
     }
     const requestId = tentativa.current.id
     const validacao = validarPlanejamento({ ...payload, request_id: requestId })
-    if (!validacao.ok) { setErro(validacao.error); return }
+    if (!validacao.ok) {
+      setErro(validacao.error)
+      medir('planejamento_erro', { etapa: 2, motivo: 'validacao' })
+      return
+    }
 
     bloqueado.current = true
     setSalvando(true)
@@ -75,7 +122,8 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
         signal: controller.signal,
       })
       const resultado = await resposta.json()
-      if (!resposta.ok || resultado.success !== true || typeof resultado.id !== 'string') {
+      if (!resposta.ok || resultado.success !== true || resultado.id !== requestId) {
+        medir('planejamento_erro', { etapa: 2, motivo: 'envio' })
         setErro(typeof resultado.error === 'string'
           ? resultado.error
           : 'Não conseguimos confirmar o envio. Tente novamente.')
@@ -110,6 +158,7 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
         abrir()
       }
     } catch {
+      medir('planejamento_erro', { etapa: 2, motivo: 'conexao' })
       setErro('Não conseguimos confirmar o envio. Seus dados foram mantidos; tente novamente.')
     } finally {
       window.clearTimeout(timeout)
@@ -142,9 +191,11 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
   }
 
   return (
-    <form className="lp-form" onSubmit={enviar} aria-busy={salvando} aria-describedby={erro ? 'lp-form-error' : undefined}>
+    <form className="lp-form" onSubmit={enviar} onChange={iniciar}
+      onFocusCapture={(event) => { if (event.target.matches('input, select, button')) iniciar() }}
+      aria-busy={salvando} aria-describedby={erro ? 'lp-form-error' : undefined}>
       <div className="lp-form-top">
-        <span className="lp-eyebrow">SEU PLANO, PELO WHATSAPP</span>
+        <span className="lp-eyebrow">SIMULE SUA CONQUISTA</span>
         <span className="lp-step-count">0{etapa} / 02</span>
       </div>
       <ol className="lp-stepper" aria-label="Etapas do pedido">
@@ -158,23 +209,51 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
       {etapa === 1 && (
         <div className="lp-form-stage">
           <h3 ref={titulo} tabIndex={-1}>O que você quer conquistar?</h3>
-          <p>Escolha o crédito desejado para {produto === 'carro' ? 'o seu carro' : 'o seu imóvel'} e conte como podemos ajudar.</p>
-          <label htmlFor="credito-desejado" className="lp-field-label">Crédito desejado</label>
-          <output className="lp-credit" htmlFor="credito-desejado">{dinheiro(valor)}</output>
+          <p>Comece pelo valor da carta de consórcio para {produto === 'carro' ? 'o seu carro' : 'o seu imóvel'}. Sem informar seu contato nesta etapa.</p>
+          <label htmlFor="credito-desejado" className="lp-field-label">Valor da carta de crédito</label>
+          <div className="lp-credit-input">
+            <span aria-hidden="true">R$</span>
+            <input id="credito-desejado" type="text" inputMode="numeric" required
+              value={creditoDigitado} maxLength={16} aria-invalid={creditoInvalido || undefined}
+              aria-describedby={creditoInvalido ? 'credito-erro' : 'credito-ajuda'}
+              onChange={(event) => digitarCredito(event.target.value)}
+              onBlur={() => { if (!creditoInvalido) setCreditoDigitado(valor.toLocaleString('pt-BR')) }} />
+          </div>
+          <p className="lp-field-hint" id="credito-ajuda">Digite um valor em reais ou use a barra abaixo.</p>
+          {creditoInvalido && <p className="lp-field-error" id="credito-erro" role="status">Informe de {dinheiro(config.min)} a {dinheiro(config.max)}, sem centavos.</p>}
           <input
-            id="credito-desejado" className="lp-range" type="range"
-            min={config.min} max={config.max} step={config.passo} value={valor}
-            onChange={(event) => setValor(Number(event.target.value))}
+            aria-label="Ajustar o valor da carta" className="lp-range" type="range"
+            min={config.min} max={config.max} step={1} value={valor}
+            onChange={(event) => escolherCredito(Number(event.target.value))}
+            onKeyDown={(event) => {
+              if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
+              event.preventDefault()
+              escolherCredito(Math.min(config.max, Math.max(config.min, valor + (event.key === 'ArrowRight' ? config.passo : -config.passo))))
+            }}
             aria-valuetext={dinheiro(valor)}
           />
           <div className="lp-range-labels"><span>{dinheiro(config.min)}</span><span>{dinheiro(config.max)}</span></div>
           <div className="lp-presets" aria-label="Sugestões de crédito">
             {config.presets.map((preset) => (
-              <button key={preset} type="button" aria-pressed={valor === preset} onClick={() => setValor(preset)}>{dinheiro(preset)}</button>
+              <button key={preset} type="button" aria-pressed={!creditoInvalido && valor === preset} onClick={() => escolherCredito(preset)}>{dinheiro(preset)}</button>
             ))}
           </div>
+          <label className="lp-embedded-toggle">
+            <input type="checkbox" checked={embutido} onChange={(event) => setEmbutido(event.target.checked)} aria-controls="exemplo-lance" />
+            <span><strong>Ver exemplo com lance embutido de 25%</strong><small>Opcional · usar parte da própria carta no lance</small></span>
+          </label>
+          {embutido && !creditoInvalido && (
+            <div id="exemplo-lance" className={'lp-credit-result' + (embutido ? ' has-bid' : '')}>
+              <div className="lp-result-heading"><span>{embutido ? 'SE O LANCE DO EXEMPLO VENCER' : 'SEU PONTO DE PARTIDA'}</span><ArrowUpRight size={18} aria-hidden="true" /></div>
+              {embutido && <div className="lp-result-deduction"><span>Lance com 25% da carta</span><strong>− {dinheiro(exemplo.lance)}</strong></div>}
+              <div className="lp-result-net"><span>{embutido ? 'Crédito restante para a compra' : 'Crédito para planejar sua compra'}</span><output htmlFor="credito-desejado">{dinheiro(exemplo.creditoParaCompra)}</output></div>
+              <div className="lp-credit-bar" aria-hidden="true"><span style={{ width: embutido ? '75%' : '100%' }} /><i /></div>
+              <p>{embutido ? 'Esse lance sai da carta, sem usar reserva própria para essa parte. A utilização de 25% depende das regras do grupo e reduz o crédito para a compra.' : 'Uso do crédito após a contemplação e o cumprimento das condições do contrato.'}</p>
+              {embutido && <details className="lp-result-details"><summary>O que este exemplo considera <ChevronDown size={14} aria-hidden="true" /></summary><p>É uma conta ilustrativa sobre o valor da carta. Não prevê a chance ou a data de contemplação, nem calcula parcelas, taxas ou reajustes. A base para classificar o lance pode incluir encargos e ser diferente do valor da carta. Confirme as condições do grupo no atendimento.</p></details>}
+            </div>
+          )}
           <fieldset className="lp-intent-options">
-            <legend className="lp-field-label">Como podemos ajudar você?</legend>
+            <legend className="lp-field-label">Como podemos ajudar você? <span>(obrigatório)</span></legend>
             {Object.entries(ATENDIMENTOS).map(([key, label]) => (
               <label key={key} className={intencao === key ? 'is-selected' : ''}>
                 <input type="radio" name="intencao" value={key} checked={intencao === key} required onChange={() => setIntencao(key)} />
@@ -182,14 +261,15 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
               </label>
             ))}
           </fieldset>
-          <p className="lp-note">O crédito selecionado é um objetivo de compra. Parcelas, taxas e condições serão apresentadas no atendimento, conforme o plano disponível.</p>
+          <p className="lp-note">Consórcio tem taxa de administração e pode ter outros custos e reajustes. Parcelas e condições serão apresentadas no WhatsApp. Contemplação por sorteios ou lances, sem data garantida.</p>
         </div>
       )}
 
       {etapa === 2 && (
         <div className="lp-form-stage">
           <h3 ref={titulo} tabIndex={-1}>{intencao === 'avaliar_plano' ? 'Vamos conversar sobre seu plano.' : 'Vamos esclarecer suas dúvidas.'}</h3>
-          <p>Deixe seu contato e duas informações para começar a conversa com mais contexto.</p>
+          <p>Falta seu contato e o que precisamos para orientar você. Os campos desta etapa são obrigatórios.</p>
+          <div className="lp-plan-review"><span>{produto === 'carro' ? 'Automóvel' : 'Imóvel'} · carta de {dinheiro(valor)}</span>{embutido && <small>Exemplo de lance: {dinheiro(exemplo.lance)} · restariam {dinheiro(exemplo.creditoParaCompra)} para comprar.</small>}<button type="button" className="lp-text-link" disabled={salvando} onClick={() => { setErro(''); setEtapa(1) }}>Editar objetivo</button></div>
           <div className="lp-contact-grid">
             <div>
               <label className="lp-field-label" htmlFor="nome">Seu nome</label>
@@ -197,7 +277,8 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
             </div>
             <div>
               <label className="lp-field-label" htmlFor="whatsapp">WhatsApp com DDD</label>
-              <input id="whatsapp" name="tel" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={20} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(11) 99999-9999" disabled={salvando} />
+              <input id="whatsapp" name="tel" type="tel" inputMode="tel" autoComplete="tel-national" required maxLength={20} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="(11) 99999-9999" aria-describedby="whatsapp-ajuda" disabled={salvando} />
+              <p className="lp-field-hint" id="whatsapp-ajuda">Usaremos este número para conversar sobre o seu plano.</p>
             </div>
           </div>
           <label className="lp-field-label" htmlFor="orcamento">Quanto cabe no seu orçamento por mês?</label>
@@ -219,7 +300,7 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
           </div>
           <label className="lp-check">
             <input type="checkbox" required checked={ciente} onChange={(e) => setCiente(e.target.checked)} disabled={salvando} />
-            <span>Entendo que se trata de consórcio, com contemplação por sorteio ou lance e sem data garantida.</span>
+            <span>Entendo que se trata de consórcio, com contemplação por sorteios ou lances e sem data garantida.</span>
           </label>
           <label className="lp-check">
             <input type="checkbox" required checked={consentimento} onChange={(e) => setConsentimento(e.target.checked)} disabled={salvando} />
@@ -232,7 +313,7 @@ export default function PlanoForm({ produto }: { produto: ProdutoPlano }) {
       <div className="lp-form-actions">
         {etapa > 1 && <button className="lp-back" type="button" disabled={salvando} onClick={() => { setErro(''); setEtapa(1) }}>Voltar</button>}
         <button type="submit" className="lp-button lp-button-full" disabled={salvando}>
-          {salvando ? 'Preparando seu atendimento…' : etapa === 2 ? 'Ir para o WhatsApp' : 'Continuar'}
+          {salvando ? 'Preparando seu atendimento…' : etapa === 2 ? 'Ir para o WhatsApp' : 'Continuar com meu objetivo'}
           {!salvando && <ArrowRight size={19} aria-hidden="true" />}
         </button>
       </div>
